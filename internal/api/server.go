@@ -15,6 +15,8 @@ import (
 
 type response interface{}
 
+type empty struct{}
+
 type responseError struct {
 	StatusCode int
 	Error      error
@@ -76,6 +78,10 @@ func generateHandler() http.Handler {
 	api.HandleFunc("GET /team/{id}", setupHandler(getTeamById))
 	api.HandleFunc("DELETE /team/{id}", setupHandler(deleteTeam))
 	api.HandleFunc("PUT /team/{id}", setupHandler(updateTeam))
+	api.HandleFunc("POST /team/{id}/member/{mem_id}", setupHandler(addMember))
+	api.HandleFunc("DELETE /team/{id}/member/{mem_id}", setupHandler(removeMember))
+	api.HandleFunc("POST /team/{id}/skill/{skill_id}", setupHandler(addSkill))
+	api.HandleFunc("DELETE /team/{id}/skill/{skill_id}", setupHandler(removeSkill))
 
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 
@@ -94,14 +100,14 @@ func setupHandler(fn responseFunc) http.HandlerFunc {
 			return
 		}
 
+		w.WriteHeader(http.StatusOK)
+
 		if res == nil {
 			slog.Info("Nothing found for that request")
-			w.WriteHeader(http.StatusNoContent)
-			json.NewEncoder(w).Encode([]interface{}{})
+			json.NewEncoder(w).Encode(&empty{})
 			return
 		}
 
-		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(res)
 	})
 }

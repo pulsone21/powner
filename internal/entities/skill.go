@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -45,40 +46,22 @@ func GetSkills(db *gorm.DB) (*[]Skill, error) {
 		return &[]Skill{}, nil
 	}
 
-	//rows, err := res.Rows()
-	//if err != nil {
-	//	log.Printf("Error in loading rows %v\n", res.Error.Error())
-	//	return nil, res.Error
-	//}
-
-	//	defer rows.Close()
-	//var skills []Skill
-	//
-	//for rows.Next() {
-	//	var skill Skill
-	//	err = rows.Scan(&skill)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	skills = append(skills, skill)
-	//}
 	return &skills, nil
 }
 
 func GetSkillById(db *gorm.DB, id uint) (*Skill, error) {
-	var Skill Skill
-	res := db.Where("Id = ?", id).First(&Skill)
+	var skill Skill
+	res := db.Where("Id = ?", id).First(&skill)
+
+	if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
 
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
-	if res.RowsAffected == 0 {
-		return nil, nil
-	}
-
-	return &Skill, nil
+	return &skill, nil
 }
 
 func CreateSkill(db *gorm.DB, t Skill) (*Skill, error) {

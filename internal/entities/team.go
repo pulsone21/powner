@@ -70,6 +70,19 @@ func CreateTeam(db *gorm.DB, t Team) (*Team, error) {
 }
 
 func DeleteTeam(db *gorm.DB, id uint) error {
+	t, err := GetTeamById(db, id)
+	if err != nil {
+		return err
+	}
+	err = db.Unscoped().Model(&t).Association("Members").Unscoped().Clear()
+	if err != nil {
+		return err
+	}
+	err = db.Unscoped().Model(&t).Association("Skills").Unscoped().Clear()
+	if err != nil {
+		return err
+	}
+
 	return db.Delete(&Team{}, id).Error
 }
 
@@ -83,4 +96,61 @@ func UpdateTeam(db *gorm.DB, newT Team) error {
 	oldT = &newT
 	log.Println(newT)
 	return db.Save(&oldT).Error
+}
+
+func AddMemberToTeam(db *gorm.DB, id, mem_id uint) error {
+	t, err := GetTeamById(db, id)
+	if err != nil {
+		return err
+	}
+
+	m, err := GetMemberById(db, mem_id)
+	if err != nil {
+		return err
+	}
+
+	return db.Model(&t).Association("Members").Append(m)
+}
+
+func RemoveMemberFromTeam(db *gorm.DB, id, mem_id uint) error {
+	t, err := GetTeamById(db, id)
+	if err != nil {
+		return err
+	}
+
+	m, err := GetMemberById(db, mem_id)
+	if err != nil {
+		return err
+	}
+
+	return db.Model(&t).Association("Members").Delete(m)
+}
+
+func AddSkillToTeam(db *gorm.DB, id, skill_id uint) error {
+	t, err := GetTeamById(db, id)
+	if err != nil {
+		return err
+	}
+
+	s, err := GetSkillById(db, skill_id)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(s)
+	return db.Model(&t).Association("Skills").Append(s)
+}
+
+func RemoveSkillFromTeam(db *gorm.DB, id, skill_id uint) error {
+	t, err := GetTeamById(db, id)
+	if err != nil {
+		return err
+	}
+
+	s, err := GetSkillById(db, skill_id)
+	if err != nil {
+		return err
+	}
+
+	return db.Model(&t).Association("Skills").Delete(s)
 }

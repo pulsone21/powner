@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -10,10 +11,8 @@ import (
 )
 
 type teamRequest struct {
-	Name        string            `json:"name"`
-	Description string            `json:"description"`
-	Member      []entities.Member `json:"member"`
-	Skills      []entities.Skill  `json:"skills"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 func getTeams(w http.ResponseWriter, r *http.Request) (any, *responseError) {
@@ -73,6 +72,7 @@ func deleteTeam(w http.ResponseWriter, r *http.Request) (any, *responseError) {
 	if err != nil {
 		return nil, newRespErr(500, err)
 	}
+
 	return "Done", nil
 }
 
@@ -83,7 +83,7 @@ func updateTeam(w http.ResponseWriter, r *http.Request) (any, *responseError) {
 		return nil, newRespErr(400, err)
 	}
 
-	strId := r.URL.Query().Get("id")
+	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
 		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
@@ -92,7 +92,6 @@ func updateTeam(w http.ResponseWriter, r *http.Request) (any, *responseError) {
 	nT := entities.Team{
 		Name:        teamReq.Name,
 		Description: teamReq.Description,
-		Skills:      teamReq.Skills,
 	}
 	nT.ID = uint(id)
 
@@ -102,4 +101,91 @@ func updateTeam(w http.ResponseWriter, r *http.Request) (any, *responseError) {
 	}
 
 	return nT, nil
+}
+
+func addMember(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+	strId := r.PathValue("id")
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+	}
+
+	strId = r.PathValue("mem_id")
+	mem_id, err := strconv.Atoi(strId)
+	if err != nil {
+		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+	}
+
+	err = entities.AddMemberToTeam(db, uint(id), uint(mem_id))
+	if err != nil {
+		return nil, newRespErr(400, err)
+	}
+
+	return "Done", nil
+}
+
+func removeMember(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+	strId := r.PathValue("id")
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+	}
+
+	strId = r.PathValue("mem_id")
+	mem_id, err := strconv.Atoi(strId)
+	if err != nil {
+		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+	}
+
+	err = entities.RemoveMemberFromTeam(db, uint(id), uint(mem_id))
+	if err != nil {
+		return nil, newRespErr(400, err)
+	}
+
+	return "Done", nil
+}
+
+func addSkill(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+	strId := r.PathValue("id")
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+	}
+
+	strId = r.PathValue("skill_id")
+	skill_id, err := strconv.Atoi(strId)
+	if err != nil {
+		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+	}
+
+	err = entities.AddSkillToTeam(db, uint(id), uint(skill_id))
+	fmt.Println(err)
+	if err != nil {
+		return nil, newRespErr(400, err)
+	}
+
+	slog.Info(fmt.Sprintf("Add this point we should have added the skill with id: %b to team id: %b", skill_id, id))
+	return "Done", nil
+}
+
+func removeSkill(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+	strId := r.PathValue("id")
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+	}
+
+	strId = r.PathValue("skill_id")
+	skill_id, err := strconv.Atoi(strId)
+	if err != nil {
+		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+	}
+
+	err = entities.RemoveSkillFromTeam(db, uint(id), uint(skill_id))
+	fmt.Println(err)
+	if err != nil {
+		return nil, newRespErr(400, err)
+	}
+
+	return "Done", nil
 }

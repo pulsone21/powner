@@ -70,13 +70,6 @@ func DeleteMember(db *gorm.DB, id uint) error {
 	return db.Delete(&Member{}, id).Error
 }
 
-func UpdateMember(db *gorm.DB, newM Member) error {
-	oldM, err := GetMemberById(db, newM.ID)
-	if err != nil {
-		return err
-	}
-
-	oldM = &newM
-
-	return db.Save(&oldM).Error
+func UpdateMember(db *gorm.DB, mem Member) error {
+	return db.Save(&mem).Error
 }

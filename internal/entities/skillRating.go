@@ -32,3 +32,7 @@ func GetSkillRating(db *gorm.DB, id uint) (*SkillRating, error) {
 
 	return &rat, nil
 }
+
+func DeleteSkillRating(db *gorm.DB, id uint) error {
+	return db.Delete(&SkillRating{}, id).Error
+}
