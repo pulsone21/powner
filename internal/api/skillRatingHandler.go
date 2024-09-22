@@ -31,41 +31,41 @@ func loadRating(r *http.Request) (*ratingRequest, error) {
 	return &ratReq, nil
 }
 
-func getSkillratingByMember(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func getSkillratingByMember(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	memId, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	mem, err2 := try_find_member(uint(memId))
 	if err2 != nil {
-		return nil, err2
+		return err2
 	}
 
-	return mem.Skills, nil
+	return success(mem.Skills, nil)
 }
 
-func addSkillrating(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func addSkillrating(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	memId, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	mem, err2 := try_find_member(uint(memId))
 	if err2 != nil {
-		return nil, err2
+		return err2
 	}
 
 	ratReq, err := loadRating(r)
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return badRequest(err)
 	}
 
 	_, err = entities.GetSkillById(db, uint(ratReq.SkillId))
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return badRequest(err)
 	}
 
 	rating := entities.SkillRating{
@@ -77,58 +77,58 @@ func addSkillrating(w http.ResponseWriter, r *http.Request) (any, *responseError
 
 	err = entities.UpdateMember(db, *mem)
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
-	return mem, nil
+	return success(mem, nil)
 }
 
-func updateSkillrating(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func updateSkillrating(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("rating_id")
 	ratingId, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	ratReq, err := loadRating(r)
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return badRequest(err)
 	}
 
 	err = entities.UpdateSkillRating(db, uint(ratingId), ratReq.Rating)
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return badRequest(err)
 	}
 
-	return "Done", nil
+	return success("Done", nil)
 }
 
-func getSkillrating(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func getSkillrating(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("rating_id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	rat, err := entities.GetSkillRating(db, uint(id))
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
-	return rat, nil
+	return success(rat, nil)
 }
 
-func deleteSkillrating(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func deleteSkillrating(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("rating_id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	err = entities.DeleteSkillRating(db, uint(id))
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
-	return "Done", nil
+	return success("Done", nil)
 }

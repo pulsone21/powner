@@ -15,78 +15,78 @@ type teamRequest struct {
 	Description string `json:"description"`
 }
 
-func getTeams(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func getTeams(w http.ResponseWriter, r *http.Request) *response {
 	mem, err := entities.GetTeams(db)
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
 	if len(*mem) == 0 {
-		return nil, nil
+		return emptyResp()
 	}
 
-	return mem, nil
+	return success(mem, nil)
 }
 
-func createTeam(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func createTeam(w http.ResponseWriter, r *http.Request) *response {
 	var teamReq teamRequest
 	err := json.NewDecoder(r.Body).Decode(&teamReq)
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return newResponse(nil, nil, 400, err)
 	}
 
 	mem, err := entities.CreateTeam(db, *entities.NewTeam(teamReq.Name, teamReq.Description))
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
-	return mem, nil
+	return success(mem, nil)
 }
 
-func getTeamById(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func getTeamById(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	mem, err := entities.GetTeamById(db, uint(id))
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
 	if mem == nil {
-		return nil, nil
+		return emptyResp()
 	}
 
-	return mem, nil
+	return success(mem, nil)
 }
 
-func deleteTeam(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func deleteTeam(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 	err = entities.DeleteTeam(db, uint(id))
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
-	return "Done", nil
+	return success("Done", nil)
 }
 
-func updateTeam(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func updateTeam(w http.ResponseWriter, r *http.Request) *response {
 	var teamReq teamRequest
 	err := json.NewDecoder(r.Body).Decode(&teamReq)
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return newResponse(nil, nil, 400, err)
 	}
 
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	nT := entities.Team{
@@ -97,95 +97,95 @@ func updateTeam(w http.ResponseWriter, r *http.Request) (any, *responseError) {
 
 	err = entities.UpdateTeam(db, nT)
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
-	return nT, nil
+	return success(nT, nil)
 }
 
-func addMember(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func addMember(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	strId = r.PathValue("mem_id")
 	mem_id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	err = entities.AddMemberToTeam(db, uint(id), uint(mem_id))
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return newResponse(nil, nil, 400, err)
 	}
 
-	return "Done", nil
+	return success("Done", nil)
 }
 
-func removeMember(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func removeMember(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	strId = r.PathValue("mem_id")
 	mem_id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	err = entities.RemoveMemberFromTeam(db, uint(id), uint(mem_id))
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return newResponse(nil, nil, 400, err)
 	}
 
-	return "Done", nil
+	return success("Done", nil)
 }
 
-func addSkill(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func addSkill(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	strId = r.PathValue("skill_id")
 	skill_id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	err = entities.AddSkillToTeam(db, uint(id), uint(skill_id))
 	fmt.Println(err)
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return newResponse(nil, nil, 400, err)
 	}
 
 	slog.Info(fmt.Sprintf("Add this point we should have added the skill with id: %b to team id: %b", skill_id, id))
-	return "Done", nil
+	return success("Done", nil)
 }
 
-func removeSkill(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func removeSkill(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	strId = r.PathValue("skill_id")
 	skill_id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	err = entities.RemoveSkillFromTeam(db, uint(id), uint(skill_id))
 	fmt.Println(err)
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return newResponse(nil, nil, 400, err)
 	}
 
-	return "Done", nil
+	return success("Done", nil)
 }

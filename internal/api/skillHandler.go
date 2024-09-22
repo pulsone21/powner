@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -17,24 +16,24 @@ type skillRequest struct {
 	Importance  int                `json:"importance"`
 }
 
-func getSkills(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func getSkills(w http.ResponseWriter, r *http.Request) *response {
 	mem, err := entities.GetSkills(db)
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
 	if len(*mem) == 0 {
-		return nil, nil
+		return emptyResp()
 	}
 
-	return mem, nil
+	return success(mem, nil)
 }
 
-func createSkill(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func createSkill(w http.ResponseWriter, r *http.Request) *response {
 	var skillReq skillRequest
 	err := json.NewDecoder(r.Body).Decode(&skillReq)
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return badRequest(err)
 	}
 
 	s := *entities.NewSkill(skillReq.Name, skillReq.Description, skillReq.Type, skillReq.Importance)
@@ -43,56 +42,56 @@ func createSkill(w http.ResponseWriter, r *http.Request) (any, *responseError) {
 
 	mem, err := entities.CreateSkill(db, s)
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
-	return mem, nil
+	return success(mem, nil)
 }
 
-func getSkillById(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func getSkillById(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	mem, err := entities.GetSkillById(db, uint(id))
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
 	if mem == nil {
-		return nil, nil
+		return emptyResp()
 	}
 
-	return mem, nil
+	return success(mem, nil)
 }
 
-func deleteSkill(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func deleteSkill(w http.ResponseWriter, r *http.Request) *response {
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	err = entities.DeleteSkill(db, uint(id))
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
-	return "Done", nil
+	return success("Done", nil)
 }
 
-func updateSkill(w http.ResponseWriter, r *http.Request) (any, *responseError) {
+func updateSkill(w http.ResponseWriter, r *http.Request) *response {
 	var skillReq skillRequest
 	err := json.NewDecoder(r.Body).Decode(&skillReq)
 	if err != nil {
-		return nil, newRespErr(400, err)
+		return badRequest(err)
 	}
 
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)
 	if err != nil {
-		return nil, newRespErr(400, fmt.Errorf("id is not an uint: %v", strId))
+		return idNotValid(strId)
 	}
 
 	nT := &entities.Skill{
@@ -106,8 +105,8 @@ func updateSkill(w http.ResponseWriter, r *http.Request) (any, *responseError) {
 
 	err = entities.UpdateSkill(db, *nT)
 	if err != nil {
-		return nil, newRespErr(500, err)
+		return internalError(err)
 	}
 
-	return nT, nil
+	return success(nT, nil)
 }
