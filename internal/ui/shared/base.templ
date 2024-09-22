@@ -1,0 +1,19 @@
+package shared
+
+
+templ Base() {
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Powner</title>
+    <link rel="stylesheet" href="/static/base.css" />
+    <script src="/static/scripts/htmx.min.js"></script>
+  </head>
+  <body>
+    {children... }
+    <div class="modal"></div>
+    <div class="notification"></div>
+  </body>
+</html>
+  }
