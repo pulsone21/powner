@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 
 	"gorm.io/gorm"
 )
@@ -109,6 +110,7 @@ func AddMemberToTeam(db *gorm.DB, id, mem_id uint) error {
 		return err
 	}
 
+	// TODO: After the Member was added to team, he should get all skills from the team which he don't have
 	return db.Model(&t).Association("Members").Append(m)
 }
 
@@ -137,7 +139,7 @@ func AddSkillToTeam(db *gorm.DB, id, skill_id uint) error {
 		return err
 	}
 
-	fmt.Println(s)
+	// TODO: After the Member was added to team, he should get all skills from the team which he don't have
 	return db.Model(&t).Association("Skills").Append(s)
 }
 
@@ -153,4 +155,31 @@ func RemoveSkillFromTeam(db *gorm.DB, id, skill_id uint) error {
 	}
 
 	return db.Model(&t).Association("Skills").Delete(s)
+}
+
+func (t Team) HasSkill(skillID uint) bool {
+	for _, sR := range t.Skills {
+		if sR.ID == skillID {
+			slog.Info("Team: %v has the Skill: %v with id: %v\n", t.Name, sR.Name, skillID)
+			return true
+		}
+	}
+	return false
+}
+
+func (t Team) GetType() string {
+	return "team"
+}
+
+func (t Team) GetID() uint {
+	return t.ID
+}
+
+func (t Team) HasMember(id uint) bool {
+	for _, m := range t.Members {
+		if m.ID == id {
+			return true
+		}
+	}
+	return false
 }

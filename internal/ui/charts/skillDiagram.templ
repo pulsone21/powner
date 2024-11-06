@@ -1,0 +1,61 @@
+package charts
+
+import (
+	"fmt"
+	"github.com/pulsone21/powner/internal/entities"
+)
+
+templ DiagramList(t entities.Team) {
+	if len(t.Skills) > 0 {
+		<div id="charts">
+			<div class="grid col-auto row-auto gap-1">
+				@diagram("start", t)
+			</div>
+		</div>
+	} else {
+		<h2 class="font-bold text-subtext0 text-xl">No skills defined for that team</h2>
+	}
+}
+
+templ diagram(id string, t entities.Team) {
+	<div class="w-[400px] h-[400px] p-2 rounded-lg border-2 bg-base border-surface0">
+		<canvas id={ id }></canvas>
+		@templ.JSONScript(fmt.Sprintf("%v-data", id), newRadarChart(t))
+		<script type="text/javascript"> 
+
+  var data = JSON.parse(document.currentScript.previousSibling.textContent);
+  console.log(data)
+  Chart.defaults.color = "#b4befe"
+  var config = {
+    type: "radar",
+    data: data,
+    options: {
+	scales:{
+		r:{
+		min:0, 
+		max:5, 
+		ticks: {
+			showLabelBackdrop: false,
+			stepSize: 1
+			},
+		angleLines: {
+			color:"#45475a"
+			},
+		grid: {
+			color:"#45475a"
+			},
+		}
+	},
+      elements: {
+        line: {
+          borderWidth: 3,
+        },
+      },
+    },
+  };
+  var canvas = document.currentScript.previousSibling.previousSibling
+  new Chart(canvas, config)
+
+		</script>
+	</div>
+}

@@ -1,12 +1,12 @@
 package api
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/pulsone21/powner/internal/entities"
+	"github.com/pulsone21/powner/internal/ui/modals"
+	"github.com/pulsone21/powner/internal/ui/partials"
 )
 
 type memberRequest struct {
@@ -24,24 +24,23 @@ func getMembers(w http.ResponseWriter, r *http.Request) *response {
 		return newResponse(nil, nil, 200, nil)
 	}
 
+	// return success(mem, partials.MemberList(*mem, nil, "No member found"))
 	return success(mem, nil)
 }
 
 func createMember(w http.ResponseWriter, r *http.Request) *response {
-	var memReq memberRequest
-	err := json.NewDecoder(r.Body).Decode(&memReq)
+	memReq, err := decodeRequest[memberRequest](r)
 	if err != nil {
-		return newResponse(nil, nil, 400, err)
+		return badRequest(err)
 	}
-
-	log.Println(memReq)
 
 	mem, err := entities.CreateMember(db, *entities.NewMember(memReq.Name, memReq.Age))
 	if err != nil {
 		return internalError(err)
 	}
 
-	return newResponse(mem, nil, 201, nil)
+	w.Header().Add("HX-Trigger", "newMember")
+	return newResponse(mem, partials.MemberForm(), 201, nil)
 }
 
 func getMemberById(w http.ResponseWriter, r *http.Request) *response {
@@ -59,7 +58,7 @@ func getMemberById(w http.ResponseWriter, r *http.Request) *response {
 		return newResponse(nil, nil, 200, nil)
 	}
 
-	return success(mem, nil)
+	return success(mem, modals.MemberInfoModal(*mem))
 }
 
 func deleteMember(w http.ResponseWriter, r *http.Request) *response {
@@ -76,11 +75,7 @@ func deleteMember(w http.ResponseWriter, r *http.Request) *response {
 }
 
 func updateMember(w http.ResponseWriter, r *http.Request) *response {
-	var memReq memberRequest
-	err := json.NewDecoder(r.Body).Decode(&memReq)
-	if err != nil {
-		return newResponse(nil, nil, 400, err)
-	}
+	memReq, err := decodeRequest[memberRequest](r)
 
 	strId := r.PathValue("id")
 	id, err := strconv.Atoi(strId)

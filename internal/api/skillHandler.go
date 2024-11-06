@@ -2,11 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/pulsone21/powner/internal/entities"
+	"github.com/pulsone21/powner/internal/ui/partials"
 )
 
 type skillRequest struct {
@@ -17,35 +18,39 @@ type skillRequest struct {
 }
 
 func getSkills(w http.ResponseWriter, r *http.Request) *response {
-	mem, err := entities.GetSkills(db)
+	skills, err := entities.GetSkills(db)
 	if err != nil {
 		return internalError(err)
 	}
 
-	if len(*mem) == 0 {
+	if len(*skills) == 0 {
 		return emptyResp()
 	}
 
-	return success(mem, nil)
+	t := getTeamFromQuery(r.URL.Query().Get("teamID"))
+	if t != nil {
+		fmt.Println(t)
+		return success(skills, partials.SkillList(*skills, t, "No skills found"))
+	}
+
+	m := getMemberFromQuery(r.URL.Query().Get("memID"))
+	return success(skills, partials.SkillList(*skills, m, "No skills found"))
 }
 
 func createSkill(w http.ResponseWriter, r *http.Request) *response {
-	var skillReq skillRequest
-	err := json.NewDecoder(r.Body).Decode(&skillReq)
+	skillReq, err := decodeRequest[skillRequest](r)
 	if err != nil {
 		return badRequest(err)
 	}
 
 	s := *entities.NewSkill(skillReq.Name, skillReq.Description, skillReq.Type, skillReq.Importance)
 
-	log.Println(s)
-
-	mem, err := entities.CreateSkill(db, s)
+	sk, err := entities.CreateSkill(db, s)
 	if err != nil {
 		return internalError(err)
 	}
-
-	return success(mem, nil)
+	w.Header().Add("HX-Trigger", "newSkill")
+	return success(sk, partials.SkillForm())
 }
 
 func getSkillById(w http.ResponseWriter, r *http.Request) *response {
@@ -109,4 +114,26 @@ func updateSkill(w http.ResponseWriter, r *http.Request) *response {
 	}
 
 	return success(nT, nil)
+}
+
+func getTeamFromQuery(id string) entities.SkillHolder {
+	if id != "" {
+		tID, err := strconv.Atoi(id)
+		if err == nil {
+			t, _ := entities.GetTeamById(db, uint(tID))
+			return t
+		}
+	}
+	return nil
+}
+
+func getMemberFromQuery(id string) entities.SkillHolder {
+	if id != "" {
+		mID, err := strconv.Atoi(id)
+		if err == nil {
+			m, _ := entities.GetMemberById(db, uint(mID))
+			return m
+		}
+	}
+	return nil
 }

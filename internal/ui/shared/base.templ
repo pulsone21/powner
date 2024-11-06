@@ -1,19 +1,22 @@
 package shared
 
-
 templ Base() {
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Powner</title>
-    <link rel="stylesheet" href="/static/base.css" />
-    <script src="/static/scripts/htmx.min.js"></script>
-  </head>
-  <body>
-    {children... }
-    <div class="modal"></div>
-    <div class="notification"></div>
-  </body>
-</html>
-  }
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Powner</title>
+			<link href="/static/styles/base.css" rel="stylesheet"/>
+			<link href="/static/styles/icon_inverted.svg" rel="icon"/>
+			<script src="/static/scripts/htmx.min.js"></script>
+			<script src="/static/scripts/htmx.response-target.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+			<script src="/static/scripts/hyperscript.js"></script>
+		</head>
+		<body class="mocha flex text-text p-2 h-dv max-h-dvh bg-base ">
+			{ children... }
+			<div id="modalContainer"></div>
+			<div></div>
+		</body>
+	</html>
+}

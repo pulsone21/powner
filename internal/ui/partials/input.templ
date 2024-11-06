@@ -1,0 +1,27 @@
+package partials
+
+templ Input(attr templ.Attributes) {
+	<div class="mt-3 flex flex-col w-full h-full max-h-20">
+		<label for={ attr["id"].(string) } class="w-full h-1/3 mb-1">{ capitalizeFirst(attr["id"].(string)) }</label>
+		<input class="rounded-lg p-1 px-3 block w-full h-2/3 ring-overlay0 ring-1 bg-crust ring-inset focus:ring-sapphire border-0" { attr... }/>
+	</div>
+}
+
+templ Selection(label string, opt []InputOptions, attr templ.Attributes) {
+	<div class="mt-2 flex flex-col w-full h-full max-h-20">
+		<label for={ attr["id"].(string) } class="w-full h-1/3 mb-1">{ capitalizeFirst(label) }</label>
+		<select class="rounded-lg p-1 px-3 block w-full h-2/3 ring-overlay0 ring-1 bg-crust ring-inset focus:ring-sapphire border-0" { attr... }>
+			for _, o := range opt {
+				@options(o.Label, o.Value)
+			}
+		</select>
+	</div>
+}
+
+templ options(Label string, Value string) {
+	<option value={ Value }>{ Label }</option>
+}
+
+templ Checkbox(id string, attr templ.Attributes) {
+	<input id={ id } type="checkbox" class="rounded bg-base ring-0 ring-surface0 m-0.5 checked:text-base checked:border-lavender checked:ring-0  checked:ring-lavender"/>
+}

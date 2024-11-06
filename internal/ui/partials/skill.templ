@@ -1,0 +1,129 @@
+package partials
+
+import (
+	"fmt"
+	"github.com/pulsone21/powner/internal/entities"
+)
+
+templ SkillForm() {
+	<div id="formContainer" class="h-full flex flex-col items-center">
+		<h4 class="font-extrabold text-red text-2xl">New Skill</h4>
+		<form id="skillForm" autocomplete="off" class="flex h-full w-5/6 flex-col items-center justify-evenly" hx-post="/api/skill" hx-target="#formContainer" hx-swap="outerHTML">
+			@Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name"})
+			@Input(templ.Attributes{"placeholder": "Description", "id": "description", "name": "description"})
+			@Input(templ.Attributes{"placeholder": "Importance", "id": "importance", "name": "importance"})
+			@Selection("Type", []InputOptions{
+				InputOptions{Label: "Hard", Value: "0"},
+				InputOptions{Label: "Soft", Value: "1"},
+			}, templ.Attributes{"placeholder": "Type", "id": "type", "name": "type"})
+			<div class="h-12 w-full">
+				@Button(ButtonProps{Label: "Save skill", Type: "submit"})
+			</div>
+		</form>
+	</div>
+}
+
+templ SkillList(skills []entities.Skill, ent entities.SkillHolder, placeholder string) {
+	if len(skills) > 0 {
+		<ul role="list" class="scroll-smooth overflow-hidden min-w-52 h-full overflow-y-auto divide-y-2 divide-base">
+			for _,s := range skills {
+				if ent != nil {
+					@SkillListItem(s, string(ent.GetID()), ent.GetType(), ent.HasSkill(s.ID))
+				} else {
+					@SkillListItem(s, "", "", false)
+				}
+			}
+		</ul>
+	} else {
+		<p class="text-overlay1">
+			{ placeholder }
+		</p>
+	}
+}
+
+templ skillListHeader(name string, description string) {
+	<div class="flex flex-col max-w-4/6">
+		<span class="font-bold">{ name }</span>
+		<span class="text-subtext0 truncate max-h-6">{ fmt.Sprint(description) }</span>
+	</div>
+}
+
+templ SkillListItem(s entities.Skill, id string, dest string, add bool) {
+	<li class="min-h-12">
+		<div class="flex flex-row justify-between">
+			@skillListHeader(s.Name, s.Description)
+			if id != "" && dest != "" {
+				<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
+					switch add {
+						case false:
+							@AddButton(ButtonProps{
+								HxAttr: &HXAttributes{
+									Trigger: "click",
+									Method:  "POST",
+									Target:  "closest li",
+									Swap:    "outerHTML",
+									Action:  fmt.Sprintf("/api/%v/%v/skill/%v", dest, id, s.ID),
+								},
+							})
+						case true:
+							@RemoveButton(ButtonProps{
+								HxAttr: &HXAttributes{
+									Trigger: "click",
+									Method:  "DELETE",
+									Target:  "closest li",
+									Swap:    "outerHTML",
+									Action:  fmt.Sprintf("/api/%v/%v/skill/%v", dest, id, s.ID),
+								},
+							})
+					}
+				</div>
+			}
+		</div>
+	</li>
+}
+
+templ SkillAdjustList(mem entities.Member) {
+	<ul
+		role="list"
+		class="p-1 divide-y-2 divide-base"
+	>
+		for _, s := range mem.Skills {
+			@SkillAddjustItem(fmt.Sprintf("%v", mem.ID), s)
+		}
+	</ul>
+}
+
+templ SkillAddjustItem(memId string, s entities.SkillRating) {
+	<li id={ fmt.Sprintf("%v-%v", memId, s.ID) } class="py-1 px-2 flex flex-row justify-between">
+		<div
+			class="w-3/6"
+		>
+			@skillListHeader(s.Skill.Name, s.Skill.Description)
+		</div>
+		<div class="flex w-28 flex-row justify-around min-w-28">
+			<div class="w-10 h-10">
+				@AddButton(
+					ButtonProps{Label: "+",
+						HxAttr: &HXAttributes{
+							Method: "GET",
+							Action: fmt.Sprintf("/api/member/%v/skillrating/%v/%v", memId, s.ID, s.Rating+1),
+							Target: "closest li",
+							Swap:   "outerHTML",
+						}},
+				)
+			</div>
+			<span class="mx-2 text-center inline-flex justify-center items-center">{ fmt.Sprint(s.Rating) }</span>
+			<div class="w-10 h-10">
+				@RemoveButton(
+					ButtonProps{Label: "-",
+						HxAttr: &HXAttributes{
+							Method: "GET",
+							Action: fmt.Sprintf("/api/member/%s/skillrating/%v/%v", memId, s.ID, s.Rating-1),
+							Target: "closest li",
+							Swap:   "outerHTML",
+						}},
+				)
+			</div>
+		</div>
+	</li>
+}

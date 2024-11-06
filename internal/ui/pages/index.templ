@@ -1,36 +1,23 @@
 package pages
 
-import "github.com/pulsone21/powner/internal/ui/shared"
-
+import (
+	"github.com/pulsone21/powner/internal/ui/partials"
+	"github.com/pulsone21/powner/internal/ui/shared"
+	"github.com/pulsone21/powner/internal/ui/subpage"
+)
 
 templ Index() {
-  @shared.Base() {
-    <div class="main">
-      <div class="icon">
-        <div>POWNER</div>
-      </div>
-      <div class="header">
-        <div>
-          <p>Team Informations</p>
-          <p>TeamSize: 10</p>
-          <p>Needed Skills: React, Node.JS,Go</p>
-        </div>
-        <div>
-          <button type="">Member</button> <button type="">Skills</button>
-        </div>
-      </div>
-      <div class="navbar">
-        <button>Add Team</button>
-        <div class="team-selection">
-          <button type="">Team 1</button>
-          <button type="">Team 1</button>
-          <button type="">Team 1</button>
-          <button type="">Team 1</button>
-          <button type="">Team 1</button>
-          <button type="">Team 1</button>
-        </div>
-      </div>
-      <div class="content"></div>
-    </div>
-  }
-  }
+	@shared.Base() {
+		<div class="bg-base flex flex-row max-w-full w-full h-full ">
+			<div class="w-20 mr-2 flex flex-col justify-between">
+				@partials.Logo()
+				@partials.Navbar()
+			</div>
+			<div class=" w-full flex flex-col justify-between">
+				<div id="content" class="h-full flex flex-col justify-between">
+					@subpage.MainDashboard()
+				</div>
+			</div>
+		</div>
+	}
+}

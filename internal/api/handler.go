@@ -1,19 +1,16 @@
 package api
 
 import (
-	"fmt"
-	"log/slog"
 	"net/http"
-	"path/filepath"
-	"text/template"
+
+	"github.com/pulsone21/powner/internal/ui/pages"
 )
 
-func serveHtml(w http.ResponseWriter, r *http.Request) {
-	route := filepath.Clean(r.URL.Path)
-	slog.Info(fmt.Sprintf("requested view route: %s", route))
-	_ = filepath.Join(".", "public", route, ".html")
+func indexPage(w http.ResponseWriter, r *http.Request) {
+	pages.Index().Render(r.Context(), w)
+}
 
-	tmpl := template.Must(template.ParseFiles("./public/index.html"))
-
-	tmpl.ExecuteTemplate(w, "index.html", nil)
+func writeError(err error, w http.ResponseWriter) {
+	w.WriteHeader(400)
+	w.Write([]byte(err.Error()))
 }

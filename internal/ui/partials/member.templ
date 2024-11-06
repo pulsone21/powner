@@ -1,0 +1,107 @@
+package partials
+
+import (
+	"fmt"
+	"github.com/pulsone21/powner/internal/entities"
+)
+
+templ MemberForm() {
+	<div id="formContainer" class="h-full flex flex-col items-center">
+		<h4 class="font-extrabold text-red text-2xl">New Member</h4>
+		<form
+			id="memberForm"
+			autocomplete="off"
+			class="flex h-full justify-between w-5/6 flex-col items-center"
+			hx-post="/api/member"
+			hx-target="#formContainer"
+			hx-swap="outerHTML"
+		>
+			<div class="w-full h-full">
+				@Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name"})
+				@Input(templ.Attributes{"placeholder": "Age", "id": "age", "name": "age"})
+			</div>
+			<div class="h-12 w-full mt-2">
+				@Button(ButtonProps{Label: "Save member", Type: "submit"})
+			</div>
+		</form>
+	</div>
+}
+
+templ MemberInfo(mem entities.Member) {
+	<div class="w-full h-full bg-base flex-col flex items-center rounded-lg p-3">
+		<div class="w-full h-16 flex flex-col bg-mantle p-2 rounded-lg">
+			<h3 class="text-lavender font-extrabold text-xl">{ mem.Name }</h3>
+			<p>{ fmt.Sprintf("Age: %v",mem.Age) }</p>
+		</div>
+		<div
+			class="w-full h-full mt-1 flex flex-row rounded-lg"
+		>
+			<div
+				class="h-full w-1/3 mr-1 flex flex-col bg-mantle rounded-lg"
+				hx-get={ fmt.Sprintf("/api/member/%v/skill", mem.ID) }
+				hx-trigger="skillRatingChange from:body"
+			>
+				@SkillAdjustList(mem)
+			</div>
+			<div class="w-2/3 h-full flex gap-1 flex-row bg-mantle rounded-lg divide-x-2 divide-base">
+				<div class="w-1/2 h-full p-2" hx-get={ fmt.Sprintf("/api/skill?memID=%v", mem.ID) } hx-trigger="load"></div>
+				<div class="w-1/2 h-full p-2" hx-get={ fmt.Sprintf("/api/team?memID=%v", mem.ID) } hx-trigger="load"></div>
+			</div>
+		</div>
+	</div>
+}
+
+templ MemberList(mems []entities.Member, team *entities.Team, placeholder string) {
+	if len(mems) > 0 {
+		<ul role="list" class="scroll-smooth overflow-hidden h-full overflow-y-auto divide-y-2 divide-base">
+			for _,m := range mems {
+				@MemberListItem(m, string(team.GetID()), team.HasMember(m.ID))
+			}
+		</ul>
+	} else {
+		<p class="text-overlay1">
+			{ placeholder }
+		</p>
+	}
+}
+
+templ MemberListItem(mem entities.Member, teamID string, add bool) {
+	<li class="min-h-12">
+		<div
+			class="flex flex-row justify-between hover:bg-surface0 rounded-lg p-1 cursor-pointer"
+			hx-get={ fmt.Sprintf("/api/member/%v", mem.ID) }
+			hx-target="#modalContainer"
+		>
+			<div class="flex flex-col w-1/2">
+				<span class="font-bold">{ mem.Name }</span>
+				<span class="text-subtext0">{ fmt.Sprint(mem.Age) }</span>
+			</div>
+			if teamID != "" {
+				switch add {
+					case false:
+						<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
+							@AddButton(ButtonProps{
+								HxAttr: &HXAttributes{
+									Method: "POST",
+									Target: "closest li",
+									Swap:   "outerHTML",
+									Action: fmt.Sprintf("/api/team/%v/member/%v", teamID, mem.ID),
+								},
+							})
+						</div>
+					case true:
+						<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
+							@RemoveButton(ButtonProps{
+								HxAttr: &HXAttributes{
+									Method: "DELETE",
+									Target: "closest li",
+									Swap:   "outerHTML",
+									Action: fmt.Sprintf("/api/team/%v/member/%v", teamID, mem.ID),
+								},
+							})
+						</div>
+				}
+			}
+		</div>
+	</li>
+}

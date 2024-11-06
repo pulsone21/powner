@@ -1,0 +1,107 @@
+package partials
+
+import (
+	"fmt"
+	"github.com/pulsone21/powner/internal/entities"
+)
+
+templ TeamForm() {
+	<div id="formContainer" class="h-full w-full p-2 bg-base rounded-lg ">
+		<div
+			class="bg-mantle h-full w-full flex flex-col items-center"
+		>
+			<h4 class="font-extrabold text-red mt-2 text-2xl">New Tean</h4>
+			<form
+				id="teamForm"
+				autocomplete="off"
+				class="flex h-full justify-between w-5/6 flex-col items-center"
+				hx-post="/api/team"
+				hx-target="#formContainer"
+				hx-swap="outerHTML"
+			>
+				<div class="w-full h-full">
+					@Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name"})
+					@Input(templ.Attributes{"placeholder": "Description", "id": "description", "name": "description"})
+				</div>
+				<div class="h-12 w-full mt-2">
+					@Button(ButtonProps{Label: "Save team", Type: "submit"})
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+templ TeamNavbarList(teams []entities.Team) {
+	<div class="w-full">
+		for _,t := range teams {
+			<div class="w-full h-12 flex mb-2 items-center justify-center">
+				@Button(ButtonProps{
+					Label: teamNameToBtnName(t.Name),
+					HxAttr: &HXAttributes{
+						Method:     GET,
+						Target:     "#content",
+						Trigger:    "click",
+						ReplaceURL: fmt.Sprintf("/team/%v", t.ID),
+						Action:     fmt.Sprintf("/api/team/%v", t.ID),
+					},
+				})
+			</div>
+		}
+	</div>
+}
+
+templ TeamList(teams []entities.Team, memID uint, placeholder string) {
+	if len(teams) > 0 {
+		<div>
+			<ul role="list" class="scroll-smooth overflow-hidden h-full overflow-y-auto divide-y-2 divide-base">
+				for _, t := range teams {
+					@TeamListItem(t, fmt.Sprint(memID), t.HasMember(memID))
+				}
+			</ul>
+		</div>
+	} else {
+		<p class="text-overlay1">
+			{ placeholder }
+		</p>
+	}
+}
+
+templ TeamListItem(t entities.Team, memID string, add bool) {
+	<li class="min-h-12">
+		<div
+			class="flex flex-row justify-between rounded-lg p-1"
+		>
+			//hx-get={ fmt.Sprintf("/api/member/%v", mem.ID) }
+			<div class="flex flex-col w-1/2">
+				<span class="font-bold">{ t.Name }</span>
+				<span class="text-subtext0 truncate max-h-6">{ t.Description }</span>
+			</div>
+			if memID != "" || memID != "0" {
+				switch add {
+					case false:
+						<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
+							@AddButton(ButtonProps{
+								HxAttr: &HXAttributes{
+									Method: "POST",
+									Target: "closest li",
+									Swap:   "outerHTML",
+									Action: fmt.Sprintf("/api/member/%v/team/%v", memID, t.ID),
+								},
+							})
+						</div>
+					case true:
+						<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
+							@RemoveButton(ButtonProps{
+								HxAttr: &HXAttributes{
+									Method: "DELETE",
+									Target: "closest li",
+									Swap:   "outerHTML",
+									Action: fmt.Sprintf("/api/member/%v/team/%v", memID, t.ID),
+								},
+							})
+						</div>
+				}
+			}
+		</div>
+	</li>
+}

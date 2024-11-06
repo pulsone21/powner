@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"log/slog"
 	"net/http"
 
@@ -29,7 +28,8 @@ func newResponse(data any, html templ.Component, statusCode int, e error) *respo
 }
 
 func emptyResp() *response {
-	return newResponse(nil, nil, 200, nil)
+	slog.Info("returning empty response")
+	return newResponse(make([]interface{}, 1), nil, 200, nil)
 }
 
 func badRequest(err error) *response {
@@ -53,37 +53,37 @@ type responseFunc func(w http.ResponseWriter, r *http.Request) *response
 func (res *response) Respond(w http.ResponseWriter, r *http.Request) {
 	if res.Error != nil {
 		w.Header().Set("Content-Type", "application/json")
-		log.Printf("ERROR %v\n", res.Error.Error())
+		slog.Error(res.Error.Error())
 		w.WriteHeader(res.StatusCode)
 		w.Write([]byte(res.Error.Error()))
 		return
 	}
 
-	if r.Header.Get("HX-Request") == "true" {
+	if r.Header.Get("Hx-Request") == "true" {
+		slog.Info("Request is an HTMX Request")
 
 		if res.Html == nil {
 			w.Header().Set("Content-Type", "application/json")
-			log.Printf("ERROR %v\n", res.Error.Error())
+			slog.Error("Not an htmx route\n")
 			w.WriteHeader(404)
-			w.Write([]byte(res.Error.Error()))
+			w.Write([]byte("Not an htmx route"))
 			return
 		}
 		w.Header().Set("Content-Type", "text/html")
 		w.WriteHeader(res.StatusCode)
-		log.Println("Request is an HTMX Request")
 		res.Html.Render(r.Context(), w)
 		return
 
 	} else {
 
-		w.WriteHeader(res.StatusCode)
 		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(res.StatusCode)
 		if res.Data == nil {
 			slog.Info("Nothing found for that request")
 			json.NewEncoder(w).Encode(&empty{})
 			return
 		}
 
-		json.NewEncoder(w).Encode(res)
+		json.NewEncoder(w).Encode(res.Data)
 	}
 }
