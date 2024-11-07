@@ -28,7 +28,7 @@ func (r DBTeamRepository) GetAll() (*[]entities.Team, error) {
 	return &teams, nil
 }
 
-func (r DBTeamRepository) GetByID(id string) (*entities.Team, error) {
+func (r DBTeamRepository) GetByID(id uint) (*entities.Team, error) {
 	var team entities.Team
 	res := r.db.Model(&entities.Team{}).Preload("Members").Preload("Skills").Where("Id = ?", id).First(&team)
 
@@ -58,7 +58,7 @@ func (r DBTeamRepository) Create(newTeam entities.Team) (*entities.Team, error) 
 }
 
 func (r DBTeamRepository) Update(newTeam entities.Team) (*entities.Team, error) {
-	oldT, err := r.GetByID(fmt.Sprint(newTeam.ID))
+	oldT, err := r.GetByID(newTeam.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (r DBTeamRepository) Update(newTeam entities.Team) (*entities.Team, error) 
 	return &newTeam, r.db.Save(&oldT).Error
 }
 
-func (r DBTeamRepository) Delete(id string) error {
+func (r DBTeamRepository) Delete(id uint) error {
 	t, err := r.GetByID(id)
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func (r DBTeamRepository) Delete(id string) error {
 	return r.db.Delete(&entities.Team{}, id).Error
 }
 
-func (r DBTeamRepository) RemoveMember(team_id string, mem entities.Member) error {
+func (r DBTeamRepository) RemoveMember(team_id uint, mem entities.Member) error {
 	t, err := r.GetByID(team_id)
 	if err != nil {
 		return err
@@ -93,7 +93,7 @@ func (r DBTeamRepository) RemoveMember(team_id string, mem entities.Member) erro
 	return r.db.Model(&t).Association("Members").Delete(mem)
 }
 
-func (r DBTeamRepository) AddMember(team_id string, mem entities.Member) error {
+func (r DBTeamRepository) AddMember(team_id uint, mem entities.Member) error {
 	t, err := r.GetByID(team_id)
 	if err != nil {
 		return err
@@ -103,7 +103,7 @@ func (r DBTeamRepository) AddMember(team_id string, mem entities.Member) error {
 	return r.db.Model(&t).Association("Members").Append(mem)
 }
 
-func (r DBTeamRepository) AddSkill(team_id string, skill entities.Skill) error {
+func (r DBTeamRepository) AddSkill(team_id uint, skill entities.Skill) error {
 	t, err := r.GetByID(team_id)
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func (r DBTeamRepository) AddSkill(team_id string, skill entities.Skill) error {
 	return r.db.Model(&t).Association("Skills").Append(skill)
 }
 
-func (r DBTeamRepository) RemoveSkill(team_id string, skill entities.Skill) error {
+func (r DBTeamRepository) RemoveSkill(team_id uint, skill entities.Skill) error {
 	t, err := r.GetByID(team_id)
 	if err != nil {
 		return err

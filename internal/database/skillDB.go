@@ -30,7 +30,7 @@ func (r DBSkillRepository) GetAll() (*[]entities.Skill, error) {
 	return &skills, nil
 }
 
-func (r DBSkillRepository) GetByID(id string) (*entities.Skill, error) {
+func (r DBSkillRepository) GetByID(id uint) (*entities.Skill, error) {
 	var skill entities.Skill
 	res := r.db.Where("Id = ?", id).First(&skill)
 
@@ -60,7 +60,7 @@ func (r DBSkillRepository) Create(newSkill entities.Skill) (*entities.Skill, err
 }
 
 func (r DBSkillRepository) Update(newSkill entities.Skill) (*entities.Skill, error) {
-	oldS, err := r.GetByID(fmt.Sprint(newSkill.ID))
+	oldS, err := r.GetByID(newSkill.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -70,6 +70,6 @@ func (r DBSkillRepository) Update(newSkill entities.Skill) (*entities.Skill, err
 	return &newSkill, r.db.Save(&oldS).Error
 }
 
-func (r DBSkillRepository) Delete(id string) error {
+func (r DBSkillRepository) Delete(id uint) error {
 	return r.db.Delete(&entities.Skill{}, id).Error
 }

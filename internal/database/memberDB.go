@@ -27,7 +27,7 @@ func (r DBMemberRepository) GetAll() (*[]entities.Member, error) {
 	return &mems, nil
 }
 
-func (r DBMemberRepository) GetByID(id string) (*entities.Member, error) {
+func (r DBMemberRepository) GetByID(id uint) (*entities.Member, error) {
 	var member entities.Member
 	res := r.db.Model(&entities.Member{}).Preload("Skills").Preload("Skills.Skill").Where("Id = ?", id).First(&member)
 
@@ -57,7 +57,7 @@ func (r DBMemberRepository) Create(newTeam entities.Member) (*entities.Member, e
 }
 
 func (r DBMemberRepository) Update(newMem entities.Member) (*entities.Member, error) {
-	oldM, err := r.GetByID(fmt.Sprint(newMem.ID))
+	oldM, err := r.GetByID(newMem.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +66,6 @@ func (r DBMemberRepository) Update(newMem entities.Member) (*entities.Member, er
 	return &newMem, r.db.Save(&oldM).Error
 }
 
-func (r DBMemberRepository) Delete(id string) error {
+func (r DBMemberRepository) Delete(id uint) error {
 	return r.db.Delete(&entities.Member{}, id).Error
 }
