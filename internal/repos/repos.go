@@ -8,10 +8,10 @@ type TeamRepository interface {
 	Create(newTeam entities.Team) (*entities.Team, error)
 	Update(newTeam entities.Team) (*entities.Team, error)
 	Delete(id uint) error
-	RemoveMember(team_id uint, mem entities.Member) error
-	AddMember(team_id uint, mem entities.Member) error
-	AddSkill(team_id uint, skill entities.Skill) error
-	RemoveSkill(team_id uint, skill entities.Skill) error
+	RemoveMember(team_id uint, mem entities.Member) (*entities.Team, error)
+	AddMember(team_id uint, mem entities.Member) (*entities.Team, error)
+	AddSkill(team_id uint, skill entities.Skill) (*entities.Team, error)
+	RemoveSkill(team_id uint, skill entities.Skill) (*entities.Team, error)
 }
 
 type MemberRepository interface {

@@ -48,3 +48,10 @@ func (m Member) GetSkillRatingBySkill(id uint) *SkillRating {
 	}
 	return nil
 }
+
+type memberSort []Member
+
+func (s memberSort) Len() int           { return len(s) }
+func (s memberSort) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s memberSort) Less(i, j int) bool { return s[i].ID > s[i].ID }
+func (s memberSort) toMember() []Member { return []Member(s) }

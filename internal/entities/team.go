@@ -3,6 +3,7 @@ package entities
 import (
 	"fmt"
 	"log/slog"
+	"sort"
 
 	"gorm.io/gorm"
 )
@@ -45,6 +46,70 @@ func (t Team) GetID() uint {
 func (t Team) HasMember(id uint) bool {
 	for _, m := range t.Members {
 		if m.ID == id {
+			return true
+		}
+	}
+	return false
+}
+
+func (t *Team) HasChanges(name, description string, skills *[]Skill, members *[]Member) (*Team, bool) {
+	changes := false
+
+	if t.Name != name {
+		changes = true
+		t.Name = name
+	}
+
+	if t.Description != description {
+		changes = true
+		t.Description = description
+	}
+
+	if skills != nil {
+		skillChange := t.skillsChanged(*skills)
+		if skillChange {
+			changes = true
+			t.Skills = *skills
+		}
+	}
+
+	if members != nil {
+		memChange := t.memberChanged(*members)
+		if memChange {
+			changes = true
+			t.Members = *members
+		}
+	}
+
+	return t, changes
+}
+
+func (t Team) skillsChanged(newS []Skill) bool {
+	if len(newS) != len(t.Skills) {
+		return true
+	}
+
+	sort.Sort(skillSort(newS))
+	sort.Sort(skillSort(t.Skills))
+
+	for i, s := range t.Skills {
+		if s != newS[i] {
+			return true
+		}
+	}
+	return false
+}
+
+func (t Team) memberChanged(newM []Member) bool {
+	if len(newM) != len(t.Members) {
+		return true
+	}
+
+	sort.Sort(memberSort(newM))
+	sort.Sort(memberSort(t.Members))
+
+	for i, m := range t.Members {
+		if m.ID != newM[i].ID {
 			return true
 		}
 	}

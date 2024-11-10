@@ -84,40 +84,68 @@ func (r DBTeamRepository) Delete(id uint) error {
 	return r.db.Delete(&entities.Team{}, id).Error
 }
 
-func (r DBTeamRepository) RemoveMember(team_id uint, mem entities.Member) error {
+func (r DBTeamRepository) RemoveMember(team_id uint, mem entities.Member) (*entities.Team, error) {
 	t, err := r.GetByID(team_id)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	return r.db.Model(&t).Association("Members").Delete(mem)
+	err = r.db.Model(&t).Association("Members").Delete(mem)
+	if err != nil {
+		return nil, err
+	}
+	idx := 0
+	for i, m := range t.Members {
+		if m.ID == mem.ID {
+			idx = i
+		}
+	}
+	t.Members = append(t.Members[:idx], t.Members[idx+1:]...)
+	return t, nil
 }
 
-func (r DBTeamRepository) AddMember(team_id uint, mem entities.Member) error {
+func (r DBTeamRepository) AddMember(team_id uint, mem entities.Member) (*entities.Team, error) {
 	t, err := r.GetByID(team_id)
 	if err != nil {
-		return err
+		return nil, err
+	}
+	err = r.db.Model(&t).Association("Members").Append(mem)
+	if err != nil {
+		return nil, err
 	}
 
-	// TODO: After the Member was added to team, he should get all skills from the team which he don't have
-	return r.db.Model(&t).Association("Members").Append(mem)
+	t.Members = append(t.Members, mem)
+	return t, nil
 }
 
-func (r DBTeamRepository) AddSkill(team_id uint, skill entities.Skill) error {
+func (r DBTeamRepository) AddSkill(team_id uint, skill entities.Skill) (*entities.Team, error) {
 	t, err := r.GetByID(team_id)
 	if err != nil {
-		return err
+		return nil, err
+	}
+	err = r.db.Model(&t).Association("Skills").Append(skill)
+	if err != nil {
+		return nil, err
 	}
 
-	// TODO: After the Member was added to team, he should get all skills from the team which he don't have
-	return r.db.Model(&t).Association("Skills").Append(skill)
+	t.Skills = append(t.Skills, skill)
+	return t, nil
 }
 
-func (r DBTeamRepository) RemoveSkill(team_id uint, skill entities.Skill) error {
+func (r DBTeamRepository) RemoveSkill(team_id uint, skill entities.Skill) (*entities.Team, error) {
 	t, err := r.GetByID(team_id)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	return r.db.Model(&t).Association("Skills").Delete(skill)
+	err = r.db.Model(&t).Association("Skills").Delete(skill)
+	if err != nil {
+		return nil, err
+	}
+	idx := 0
+	for i, m := range t.Skills {
+		if m.ID == skill.ID {
+			idx = i
+		}
+	}
+	t.Skills = append(t.Skills[:idx], t.Skills[idx+1:]...)
+	return t, nil
 }
