@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/pulsone21/powner/internal/errx"
 	"gorm.io/gorm"
 )
 
@@ -49,9 +50,50 @@ func (m Member) GetSkillRatingBySkill(id uint) *SkillRating {
 	return nil
 }
 
+func (m *Member) HasChanges(name string, age int) (*Member, bool) {
+	changes := false
+	if m.Name != name {
+		changes = true
+		m.Name = name
+	}
+
+	if m.Age != age {
+		changes = true
+		m.Age = age
+	}
+
+	return m, changes
+}
+
 type memberSort []Member
 
 func (s memberSort) Len() int           { return len(s) }
 func (s memberSort) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
-func (s memberSort) Less(i, j int) bool { return s[i].ID > s[i].ID }
+func (s memberSort) Less(i, j int) bool { return s[i].ID > s[j].ID }
 func (s memberSort) toMember() []Member { return []Member(s) }
+
+type MemberRequest struct {
+	Name   string   `json:"name"`
+	Age    int      `json:"age"`
+	Skills *[]Skill `json:"skills"`
+}
+
+func (m MemberRequest) ValidateFields() errx.ErrorMap {
+	return nil
+}
+
+func (m *MemberRequest) SkillsToRating() *[]SkillRating {
+	if m.Skills != nil {
+		var sR []SkillRating
+		for _, s := range *m.Skills {
+			sR = append(sR, SkillRating{
+				SkillID: int(s.ID),
+				Rating:  0,
+			})
+		}
+
+		return &sR
+
+	}
+	return nil
+}
