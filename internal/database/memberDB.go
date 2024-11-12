@@ -69,3 +69,17 @@ func (r DBMemberRepository) Update(newMem entities.Member) (*entities.Member, er
 func (r DBMemberRepository) Delete(id uint) error {
 	return r.db.Delete(&entities.Member{}, id).Error
 }
+
+func (r DBMemberRepository) AddSkill(mem_id uint, skill entities.Skill) (*entities.Member, error) {
+	m, err := r.GetByID(mem_id)
+	if err != nil {
+		return nil, err
+	}
+	err = r.db.Model(&m).Association("Skills").Append(skill)
+	if err != nil {
+		return nil, err
+	}
+
+	m.Skills = append(m.Skills, *entities.NewSkillRating(mem_id, skill))
+	return m, nil
+}
