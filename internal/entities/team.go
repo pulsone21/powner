@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"sort"
 
+	"github.com/pulsone21/powner/internal/errx"
 	"gorm.io/gorm"
 )
 
@@ -114,4 +115,24 @@ func (t Team) memberChanged(newM []Member) bool {
 		}
 	}
 	return false
+}
+
+type TeamRequest struct {
+	Name        string
+	Description string
+	Skills      *[]Skill
+	Members     *[]Member
+}
+
+func (t TeamRequest) ValidateFields() *errx.ErrorMap {
+	var validationErrors errx.ErrorMap
+	if len(t.Name) < 4 {
+		validationErrors.Set("name", fmt.Errorf("name musst be longer then 3 characters"))
+	}
+
+	if len(t.Description) < 10 {
+		validationErrors.Set("description", fmt.Errorf("description musst be longer then 10 characters"))
+	}
+
+	return &validationErrors
 }
