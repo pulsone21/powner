@@ -44,8 +44,14 @@ func (s Service) CreateMember(request entities.MemberRequest) (*entities.Member,
 }
 
 func (s Service) GetMembers() (*[]entities.Member, error) {
+	mems, err := s.MemberRepo.GetAll()
+	if err != nil {
+		return nil, errors.Join(InternalError, err)
+	}
+
 	// IDEA: Filter based on user Role? RBAC
-	return s.MemberRepo.GetAll()
+
+	return mems, nil
 }
 
 func (s Service) GetMemberByID(id string) (*entities.Member, error) {
