@@ -31,10 +31,12 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 
 	apiRouter := router.NewApiRouter(1, memHandler, skillHandler, teamHandler)
 
+	uiRouter := router.NewFrontendRouter(apiRouter, handler.NewUIHandler(*service))
+
 	s := http.Server{
 		Addr: fmt.Sprintf("%v:%v", url, port),
 		// TODO: Rewrite the middleware Stack, should look like this Middleware(log, auth...., getRoutes())
-		Handler: middleware.Logging(slog.Default(), apiRouter),
+		Handler: middleware.Logging(slog.Default(), uiRouter),
 	}
 
 	log.Println(s.Addr)
