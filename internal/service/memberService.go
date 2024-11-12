@@ -108,3 +108,37 @@ func (s Service) UpdateMember(id string, request entities.MemberRequest) (*entit
 	}
 	return nil, errors.Join(BadRequest, fmt.Errorf("No changes to Member: %v found.", id))
 }
+
+func (s Service) AddSkillToMember(mem_id, skill_id string, rating int) (*entities.Member, error) {
+	var validationErrors errx.ErrorMap
+	fid, err := strconv.Atoi(mem_id)
+	if err != nil {
+		validationErrors.Set("mem_id", err)
+	}
+
+	oldM, err := s.MemberRepo.GetByID(uint(fid))
+	if err != nil {
+		return nil, errors.Join(InternalError, err)
+	}
+
+	sk, err := s.GetSKillByID(skill_id)
+	if err != nil {
+		// INFO: error is already handled on service layer
+		return nil, err
+	}
+
+	if oldM.HasSkill(sk.ID) {
+		validationErrors.Set("skill_id", fmt.Sprintf("Member already has the skill with id: %v", skill_id))
+	}
+
+	if validationErrors != nil {
+		return nil, errors.Join(BadRequest, validationErrors)
+	}
+
+	m, err := s.MemberRepo.AddSkill(oldM.ID, *sk)
+	if err != nil {
+		return nil, errors.Join(InternalError, err)
+	}
+
+	return m, nil
+}

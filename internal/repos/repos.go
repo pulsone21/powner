@@ -20,6 +20,7 @@ type MemberRepository interface {
 	Create(newTeam entities.Member) (*entities.Member, error)
 	Update(newTeam entities.Member) (*entities.Member, error)
 	Delete(id uint) error
+	AddSkill(mem_id uint, skill entities.Skill) (*entities.Member, error)
 }
 
 type SkillRepository interface {
