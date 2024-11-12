@@ -23,3 +23,21 @@ func migrate(db *gorm.DB) {
 	db.AutoMigrate(&entities.Team{})
 	db.AutoMigrate(&entities.Skill{})
 }
+
+func NewTeamRepo(db *gorm.DB) *DBTeamRepository {
+	return &DBTeamRepository{
+		db: db,
+	}
+}
+
+func NewMemberRepo(db *gorm.DB) *DBMemberRepository {
+	return &DBMemberRepository{
+		db: db,
+	}
+}
+
+func NewSkillRepo(db *gorm.DB) *DBSkillRepository {
+	return &DBSkillRepository{
+		db: db,
+	}
+}
