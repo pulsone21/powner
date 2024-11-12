@@ -30,3 +30,9 @@ func NewTeamHandler(ser service.Service) TeamHandler {
 		service: ser,
 	}
 }
+
+func NewUIHandler(ser service.Service) UIHandler {
+	return UIHandler{
+		service: ser,
+	}
+}
