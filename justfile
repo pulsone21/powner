@@ -20,3 +20,5 @@ del_db:
   rm -rf ./db/test.db
   touch ./db/test.db
 
+test:
+  go test ./... -v

@@ -79,7 +79,12 @@ type MemberRequest struct {
 }
 
 func (m MemberRequest) ValidateFields() errx.ErrorMap {
-	return nil
+	var validationErr errx.ErrorMap
+	if m.Age < 16 {
+		validationErr.Set("age", "Age must be bigger then 16, no kids labor allowed in here...")
+	}
+
+	return validationErr
 }
 
 func (m *MemberRequest) SkillsToRating() *[]SkillRating {
