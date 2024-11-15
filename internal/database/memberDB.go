@@ -83,3 +83,8 @@ func (r DBMemberRepository) AddSkill(mem_id uint, skill entities.Skill) (*entiti
 	m.Skills = append(m.Skills, *entities.NewSkillRating(mem_id, skill))
 	return m, nil
 }
+
+func (r DBMemberRepository) UpdateSkillRating(skillrating_id uint, rating int) error {
+	res := r.db.Model(entities.SkillRating{}).Preload("Skill").Where("Id = ?", skillrating_id).Update("rating", rating)
+	return res.Error
+}
