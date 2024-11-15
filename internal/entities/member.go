@@ -73,9 +73,8 @@ func (s memberSort) Less(i, j int) bool { return s[i].ID > s[j].ID }
 func (s memberSort) toMember() []Member { return []Member(s) }
 
 type MemberRequest struct {
-	Name   string   `json:"name"`
-	Age    int      `json:"age"`
-	Skills *[]Skill `json:"skills"`
+	Name string `json:"name"`
+	Age  int    `json:"age"`
 }
 
 func (m MemberRequest) ValidateFields() errx.ErrorMap {
@@ -85,20 +84,4 @@ func (m MemberRequest) ValidateFields() errx.ErrorMap {
 	}
 
 	return validationErr
-}
-
-func (m *MemberRequest) SkillsToRating() *[]SkillRating {
-	if m.Skills != nil {
-		var sR []SkillRating
-		for _, s := range *m.Skills {
-			sR = append(sR, SkillRating{
-				SkillID: int(s.ID),
-				Rating:  0,
-			})
-		}
-
-		return &sR
-
-	}
-	return nil
 }
