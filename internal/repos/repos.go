@@ -17,16 +17,17 @@ type TeamRepository interface {
 type MemberRepository interface {
 	GetAll() (*[]entities.Member, error)
 	GetByID(id uint) (*entities.Member, error)
-	Create(newTeam entities.Member) (*entities.Member, error)
-	Update(newTeam entities.Member) (*entities.Member, error)
+	Create(newMember entities.Member) (*entities.Member, error)
+	Update(newMember entities.Member) (*entities.Member, error)
 	Delete(id uint) error
 	AddSkill(mem_id uint, skill entities.Skill) (*entities.Member, error)
+	UpdateSkillRating(skill_id uint, rating int) error
 }
 
 type SkillRepository interface {
 	GetAll() (*[]entities.Skill, error)
 	GetByID(id uint) (*entities.Skill, error)
-	Create(newTeam entities.Skill) (*entities.Skill, error)
-	Update(newTeam entities.Skill) (*entities.Skill, error)
+	Create(newSkill entities.Skill) (*entities.Skill, error)
+	Update(newSkill entities.Skill) (*entities.Skill, error)
 	Delete(id uint) error
 }
