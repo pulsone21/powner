@@ -4,16 +4,36 @@ import (
 	"github.com/pulsone21/powner/internal/repos"
 )
 
-type Service struct {
-	TeamRepo   repos.TeamRepository
-	MemberRepo repos.MemberRepository
-	SkillRepo  repos.SkillRepository
+func NewMemberService(mem repos.MemberRepository) *MemberService {
+	return &MemberService{
+		repo: mem,
+	}
 }
 
-func NewService(team repos.TeamRepository, member repos.MemberRepository, skill repos.SkillRepository) *Service {
-	return &Service{
-		TeamRepo:   team,
-		MemberRepo: member,
-		SkillRepo:  skill,
+func NewTeamService(team repos.TeamRepository) *TeamService {
+	return &TeamService{
+		repo: team,
+	}
+}
+
+func NewSkillService(skill repos.SkillRepository) *SkillService {
+	return &SkillService{
+		repo: skill,
+	}
+}
+
+func NewSkillManagement(mem repos.MemberRepository, team repos.TeamRepository, skill repos.SkillRepository) *SkillManagement {
+	return &SkillManagement{
+		memberRepo: mem,
+		teamRepo:   team,
+		skillRepo:  skill,
+	}
+}
+
+func NewMemberManagement(mem repos.MemberRepository, team repos.TeamRepository, skill repos.SkillRepository) *MemberManagementService {
+	return &MemberManagementService{
+		memberRepo: mem,
+		teamRepo:   team,
+		skillRepo:  skill,
 	}
 }

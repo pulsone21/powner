@@ -2,12 +2,10 @@ package handler
 
 import (
 	"net/http"
-
-	"github.com/pulsone21/powner/internal/service"
 )
 
 type UIHandler struct {
-	service service.Service
+	// service service.Service
 }
 
 // TODO: Implement the UI Routes correctly

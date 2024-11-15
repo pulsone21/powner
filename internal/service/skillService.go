@@ -7,12 +7,17 @@ import (
 
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/errx"
+	"github.com/pulsone21/powner/internal/repos"
 )
 
-func (s Service) ValidateSkillRequest(sR entities.SkillRequest) *errx.ErrorMap {
+type SkillService struct {
+	repo repos.SkillRepository
+}
+
+func (s SkillService) ValidateSkillRequest(sR entities.SkillRequest) *errx.ErrorMap {
 	validationErrors := sR.ValidateFields()
 
-	skills, err := s.SkillRepo.GetAll()
+	skills, err := s.repo.GetAll()
 	if err != nil {
 		validationErrors.Set("Skill", errors.Join(fmt.Errorf("could not fetch skills from repository"), err))
 	}
@@ -27,23 +32,23 @@ func (s Service) ValidateSkillRequest(sR entities.SkillRequest) *errx.ErrorMap {
 	return &validationErrors
 }
 
-func (s Service) CreateSkill(request entities.SkillRequest) (*entities.Skill, error) {
+func (s SkillService) CreateSkill(request entities.SkillRequest) (*entities.Skill, error) {
 	validationErrors := s.ValidateSkillRequest(request)
 	if validationErrors != nil {
 		return nil, errors.Join(BadRequest, validationErrors)
 	}
 
-	sR, err := s.SkillRepo.Create(*entities.NewSkill(request.Name, request.Description, entities.SkillType(request.Type), request.Importance))
+	sR, err := s.repo.Create(*entities.NewSkill(request.Name, request.Description, entities.SkillType(request.Type), request.Importance))
 	// TODO: Test if we can create the team directly with skill and meber do i need to add it afterwards
 	return sR, err
 }
 
-func (s Service) GetSkills() (*[]entities.Skill, error) {
+func (s SkillService) GetSkills() (*[]entities.Skill, error) {
 	// IDEA: Filter based on user Role? RBAC
-	return s.SkillRepo.GetAll()
+	return s.repo.GetAll()
 }
 
-func (s Service) GetSKillByID(id string) (*entities.Skill, error) {
+func (s SkillService) GetSKillByID(id string) (*entities.Skill, error) {
 	var validationErrors errx.ErrorMap
 	fid, err := strconv.Atoi(id)
 	if err != nil {
@@ -54,14 +59,14 @@ func (s Service) GetSKillByID(id string) (*entities.Skill, error) {
 		return nil, errors.Join(BadRequest, validationErrors)
 	}
 
-	m, err := s.SkillRepo.GetByID(uint(fid))
+	m, err := s.repo.GetByID(uint(fid))
 	if err != nil {
 		return nil, errors.Join(InternalError, err)
 	}
 	return m, nil
 }
 
-func (s Service) DeleteSkill(id string) error {
+func (s SkillService) DeleteSkill(id string) error {
 	var validationErrors errx.ErrorMap
 	fid, err := strconv.Atoi(id)
 	if err != nil {
@@ -71,7 +76,7 @@ func (s Service) DeleteSkill(id string) error {
 	if validationErrors != nil {
 		return errors.Join(BadRequest, validationErrors)
 	}
-	err = s.SkillRepo.Delete(uint(fid))
+	err = s.repo.Delete(uint(fid))
 	if err != nil {
 		return errors.Join(InternalError, err)
 	}
@@ -79,7 +84,7 @@ func (s Service) DeleteSkill(id string) error {
 	return nil
 }
 
-func (s Service) UpdateSkill(id string, req entities.SkillRequest) (*entities.Skill, error) {
+func (s SkillService) UpdateSkill(id string, req entities.SkillRequest) (*entities.Skill, error) {
 	validationErrors := s.ValidateSkillRequest(req)
 
 	fid, err := strconv.Atoi(id)
@@ -91,14 +96,14 @@ func (s Service) UpdateSkill(id string, req entities.SkillRequest) (*entities.Sk
 		return nil, errors.Join(BadRequest, validationErrors)
 	}
 
-	oldT, err := s.SkillRepo.GetByID(uint(fid))
+	oldT, err := s.repo.GetByID(uint(fid))
 	if err != nil {
 		return nil, errors.Join(InternalError, err)
 	}
 
 	nM, change := oldT.HasChanges(req.Name, req.Description, entities.SkillType(req.Type), req.Importance)
 	if change {
-		_, err = s.SkillRepo.Update(*nM)
+		_, err = s.repo.Update(*nM)
 		return nM, errors.Join(InternalError, err)
 	}
 

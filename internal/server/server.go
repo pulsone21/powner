@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/pulsone21/powner/internal/database"
-	"github.com/pulsone21/powner/internal/middleware"
 	"github.com/pulsone21/powner/internal/server/handler"
+	"github.com/pulsone21/powner/internal/server/middleware"
 	"github.com/pulsone21/powner/internal/server/router"
 	"github.com/pulsone21/powner/internal/service"
 )
@@ -24,19 +24,22 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	memRepo := database.NewMemberRepo(db)
 	sRepo := database.NewSkillRepo(db)
 
-	service := service.NewService(teamRepo, memRepo, sRepo)
-	memHandler := handler.NewMemberHandler(*service)
-	skillHandler := handler.NewSkillHandler(*service)
-	teamHandler := handler.NewTeamHandler(*service)
+	memHandler := handler.NewMemberHandler(*service.NewMemberService(memRepo))
+	skillHandler := handler.NewSkillHandler(*service.NewSkillService(sRepo))
+	teamHandler := handler.NewTeamHandler(*service.NewTeamService(teamRepo))
 
 	apiRouter := router.NewApiRouter(1, memHandler, skillHandler, teamHandler)
 
-	uiRouter := router.NewFrontendRouter(apiRouter, handler.NewUIHandler(*service))
+	uiRouter := router.NewFrontendRouter(handler.NewUIHandler(nil))
+
+	mux := http.NewServeMux()
+	mux.Handle("/api/", http.StripPrefix("/api", apiRouter))
+	mux.Handle("", uiRouter) // UI Router has already a / prefix
 
 	s := http.Server{
 		Addr: fmt.Sprintf("%v:%v", url, port),
 		// TODO: Rewrite the middleware Stack, should look like this Middleware(log, auth...., getRoutes())
-		Handler: middleware.Logging(slog.Default(), uiRouter),
+		Handler: middleware.Logging(slog.Default(), mux),
 	}
 
 	log.Println(s.Addr)

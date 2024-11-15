@@ -14,7 +14,7 @@ import (
 //
 // responsiblity of it is to transport the http data from the body and url params to the service layer.
 type SkillHandler struct {
-	service service.Service
+	service service.SkillService
 }
 
 func (h SkillHandler) GetSkills(w http.ResponseWriter, r *http.Request) response.IResponse {

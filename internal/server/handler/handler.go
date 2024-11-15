@@ -13,26 +13,27 @@ func setupApiHandler(fn response.ResponseFunc) http.HandlerFunc {
 	})
 }
 
-func NewMemberHandler(ser service.Service) MemberHandler {
+func NewMemberHandler(ser service.MemberService) MemberHandler {
 	return MemberHandler{
 		service: ser,
 	}
 }
 
-func NewSkillHandler(ser service.Service) SkillHandler {
+func NewSkillHandler(ser service.SkillService) SkillHandler {
 	return SkillHandler{
 		service: ser,
 	}
 }
 
-func NewTeamHandler(ser service.Service) TeamHandler {
+func NewTeamHandler(ser service.TeamService) TeamHandler {
 	return TeamHandler{
 		service: ser,
 	}
 }
 
-func NewUIHandler(ser service.Service) UIHandler {
+// TODO: Implement that correctly
+func NewUIHandler(in interface{}) UIHandler {
 	return UIHandler{
-		service: ser,
+		// service: ser,
 	}
 }
