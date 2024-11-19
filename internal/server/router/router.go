@@ -6,4 +6,5 @@ import (
 
 type IRouter interface {
 	GetRoutes() *http.ServeMux
+	GetPattern() string
 }
