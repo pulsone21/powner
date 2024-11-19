@@ -3,9 +3,9 @@ package response
 import (
 	"encoding/json"
 	"errors"
-	"log/slog"
 	"net/http"
 
+	"github.com/pulsone21/powner/internal/server/middleware"
 	"github.com/pulsone21/powner/internal/service"
 )
 
@@ -17,16 +17,17 @@ type ApiResponse struct {
 
 func (res ApiResponse) Respond(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(res.StatusCode)
+	log := middleware.GetLogger(r.Context())
 	if res.Error != nil {
 		w.Header().Set("Content-Type", "application/json")
-		slog.Error(res.Error.Error())
+		log.Error(res.Error.Error())
 		w.Write([]byte(res.Error.Error()))
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if res.Data == nil {
-		slog.Info("Nothing found for that request")
+		log.Info("Nothing found for that request")
 		json.NewEncoder(w).Encode(&empty{})
 		return
 	}
@@ -38,7 +39,7 @@ func NewApiResponse(data any, err error) *ApiResponse {
 	code := 200
 
 	if data == nil {
-		code = 404
+		code = 202
 	}
 
 	if err != nil {
