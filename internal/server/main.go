@@ -18,11 +18,11 @@ import (
 
 var errServerCreation = errors.New("Failed to create Server")
 
-//	@title			Powner API Documentation
-//	@version		1.0
-//	@description	This is the api documentation of the powner application.
+// @title			Powner API Documentation
+// @version		1.0
+// @description	This is the api documentation of the powner application.
 //
-//	@BasePath		/api/v1
+// @BasePath		/api/v1
 func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	var err error
 	db, err := database.CreateDB(dbPath)
@@ -32,6 +32,8 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 
 	envFile, _ := godotenv.Read(".env")
 
+	log.Println(envFile)
+
 	teamRepo := database.NewTeamRepo(db)
 	memRepo := database.NewMemberRepo(db)
 	sRepo := database.NewSkillRepo(db)
@@ -40,8 +42,14 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	skillHandler := handler.NewSkillHandler(*service.NewSkillService(sRepo))
 	teamHandler := handler.NewTeamHandler(*service.NewTeamService(teamRepo))
 	memMgmtHandler := handler.NewMemberManagementHandler(*service.NewMemberManagement(memRepo, teamRepo, sRepo))
+	skillMgmtHandler := handler.NewSkillManagmentHandler(*service.NewSkillManagement(memRepo, teamRepo, sRepo))
 
-	apiRouter := router.NewApiRouter(1, memHandler, skillHandler, teamHandler, memMgmtHandler)
+	apiRouter := router.NewApiRouter(1,
+		memHandler,
+		skillHandler,
+		teamHandler,
+		memMgmtHandler,
+		skillMgmtHandler)
 
 	//_ := router.NewFrontendRouter(handler.NewUIHandler(nil))
 
@@ -57,7 +65,7 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 		loggerMW,
 	)
 
-	mux.Handle("/api/", http.StripPrefix("/api", apiChain.Apply(apiRouter)))
+	mux.Handle("/api/", apiChain.Apply(http.StripPrefix("/api", apiRouter)))
 	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 	//	mux.Handle("", uiRouter) // UI Router has already a / prefix
 

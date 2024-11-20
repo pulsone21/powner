@@ -19,6 +19,12 @@ func NewMemberManagementHandler(ser service.MemberManagementService) MemberManag
 	}
 }
 
+func NewSkillManagmentHandler(ser service.SkillManagement) SkillManagementHandler {
+	return SkillManagementHandler{
+		service: ser,
+	}
+}
+
 func NewMemberHandler(ser service.MemberService) MemberHandler {
 	return MemberHandler{
 		service: ser,
