@@ -13,6 +13,12 @@ func setupApiHandler(fn response.ResponseFunc) http.HandlerFunc {
 	})
 }
 
+func NewMemberManagementHandler(ser service.MemberManagementService) MemberManagementHandler {
+	return MemberManagementHandler{
+		service: ser,
+	}
+}
+
 func NewMemberHandler(ser service.MemberService) MemberHandler {
 	return MemberHandler{
 		service: ser,
