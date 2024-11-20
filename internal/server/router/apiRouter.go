@@ -18,8 +18,9 @@ func NewApiRouter(version int, handler ...IRouter) *http.ServeMux {
 	t := http.NewServeMux()
 	for _, h := range handler {
 		h := h
-		t.Handle(h.GetPattern(), h.GetRoutes())
+		h.RegisterRoutes(t)
 	}
+
 	api.Handle(
 		apiRoute,
 		http.StripPrefix(apiRoute[:len(apiRoute)-1], t))
