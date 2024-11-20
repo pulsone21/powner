@@ -42,6 +42,8 @@ func (s MemberManagementService) AddMemberToTeam(team_id string, member_id strin
 		return nil, errors.Join(InternalError, err)
 	}
 
+	// TODO: Ensure that every skill which is present inside the team gets added to the member
+
 	return t, nil
 }
 
