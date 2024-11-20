@@ -13,3 +13,7 @@ type UIHandler struct {
 func (h UIHandler) GetRoutes() *http.ServeMux {
 	return nil
 }
+
+func (h UIHandler) GetPattern() string {
+	return ""
+}
