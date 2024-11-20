@@ -16,16 +16,15 @@ type ApiResponse struct {
 }
 
 func (res ApiResponse) Respond(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(res.StatusCode)
+	w.Header().Set("Content-Type", "application/json")
 	log := middleware.GetLogger(r.Context())
 	if res.Error != nil {
-		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(res.StatusCode)
 		log.Error(res.Error.Error())
 		w.Write([]byte(res.Error.Error()))
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	if res.Data == nil {
 		log.Info("Nothing found for that request")
 		json.NewEncoder(w).Encode(&empty{})
