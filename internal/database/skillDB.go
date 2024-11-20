@@ -3,7 +3,6 @@ package database
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/pulsone21/powner/internal/entities"
 	"gorm.io/gorm"
@@ -18,12 +17,10 @@ func (r DBSkillRepository) GetAll() (*[]entities.Skill, error) {
 	res := r.db.Find(&skills)
 
 	if res.Error != nil {
-		log.Printf("Error in db query %v\n", res.Error.Error())
 		return nil, res.Error
 	}
 
 	if res.RowsAffected == 0 {
-		log.Println("Nothing found")
 		return &[]entities.Skill{}, nil
 	}
 
