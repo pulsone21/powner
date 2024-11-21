@@ -9,6 +9,7 @@ import (
 
 func TestTeamHasChanges(t *testing.T) {
 	testCases := []struct {
+		Name           string
 		Team           Team
 		NewName        string
 		NewDescription string
@@ -17,6 +18,7 @@ func TestTeamHasChanges(t *testing.T) {
 		Expected       bool
 	}{
 		{
+			Name:           "No changes",
 			Team:           *NewTeam("TestTeam", "TestDesc"),
 			NewName:        "TestTeam",
 			NewDescription: "TestDesc",
@@ -25,6 +27,7 @@ func TestTeamHasChanges(t *testing.T) {
 			Expected:       false,
 		},
 		{
+			Name:           "Changes on description",
 			Team:           *NewTeam("TestTeam", "TestDesc"),
 			NewName:        "TestTeam",
 			NewDescription: "TestDesc1",
@@ -33,6 +36,7 @@ func TestTeamHasChanges(t *testing.T) {
 			Expected:       true,
 		},
 		{
+			Name:           "Changes on skills (added the first)",
 			Team:           *NewTeam("TestTeam", "TestDesc"),
 			NewName:        "TestTeam",
 			NewDescription: "TestDesc",
@@ -41,6 +45,7 @@ func TestTeamHasChanges(t *testing.T) {
 			Expected:       true,
 		},
 		{
+			Name:           "Changes on members",
 			Team:           *NewTeam("TestTeam", "TestDesc"),
 			NewName:        "TestTeam",
 			NewDescription: "TestDesc",
@@ -49,6 +54,7 @@ func TestTeamHasChanges(t *testing.T) {
 			Expected:       true,
 		},
 		{
+			Name: "Changes on skills (added a second)",
 			Team: Team{
 				Name:        "TestTeam",
 				Description: "TestDesc",
@@ -68,22 +74,26 @@ func TestTeamHasChanges(t *testing.T) {
 	}
 
 	for _, tC := range testCases {
-		nT, changes := tC.Team.HasChanges(tC.NewName, tC.NewDescription, &tC.NewSkills, &tC.NewMembers)
-		assert.Equal(t, tC.Expected, changes)
-		assert.Equal(t, tC.NewName, nT.Name)
-		assert.Equal(t, tC.NewDescription, nT.Description)
-		assert.Equal(t, tC.NewSkills, nT.Skills)
-		assert.Equal(t, tC.NewMembers, nT.Members)
+		t.Run(tC.Name, func(t *testing.T) {
+			nT, changes := tC.Team.HasChanges(tC.NewName, tC.NewDescription, &tC.NewSkills, &tC.NewMembers)
+			assert.Equal(t, tC.Expected, changes)
+			assert.Equal(t, tC.NewName, nT.Name)
+			assert.Equal(t, tC.NewDescription, nT.Description)
+			assert.Equal(t, tC.NewSkills, nT.Skills)
+			assert.Equal(t, tC.NewMembers, nT.Members)
+		})
 	}
 }
 
 func TestTeamHasMember(t *testing.T) {
 	testCases := []struct {
+		Name     string
 		Team     Team
 		MemberID uint
 		Expected bool
 	}{
 		{
+			Name: "Team has member",
 			Team: Team{
 				Members: []Member{
 					{
@@ -96,6 +106,7 @@ func TestTeamHasMember(t *testing.T) {
 			Expected: true,
 		},
 		{
+			Name:     "Team didn't has member",
 			Team:     *NewTeam("Test", "Test"),
 			MemberID: uint(1),
 			Expected: false,
@@ -103,6 +114,8 @@ func TestTeamHasMember(t *testing.T) {
 	}
 
 	for _, tC := range testCases {
-		assert.Equal(t, tC.Expected, tC.Team.HasMember(tC.MemberID))
+		t.Run(tC.Name, func(t *testing.T) {
+			assert.Equal(t, tC.Expected, tC.Team.HasMember(tC.MemberID))
+		})
 	}
 }

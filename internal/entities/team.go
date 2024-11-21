@@ -2,7 +2,6 @@ package entities
 
 import (
 	"fmt"
-	"log/slog"
 	"sort"
 
 	"github.com/pulsone21/powner/internal/errx"
@@ -29,7 +28,6 @@ func NewTeam(name, description string) *Team {
 func (t Team) HasSkill(skillID uint) bool {
 	for _, sR := range t.Skills {
 		if sR.ID == skillID {
-			slog.Info(fmt.Sprintf("Team: %v has the Skill: %v with id: %v\n", t.Name, sR.Name, fmt.Sprint(skillID)))
 			return true
 		}
 	}
