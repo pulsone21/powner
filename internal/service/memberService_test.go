@@ -185,7 +185,7 @@ func (s *MemberServiceTestSuite) TestUpdateMember() {
 			},
 		},
 		{
-			tcName:         "Successfull Update of Member",
+			tcName:         "Failed Updated of Member",
 			Name:           "Bar Foo",
 			Age:            45,
 			MemberID:       "250",
