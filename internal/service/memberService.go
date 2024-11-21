@@ -14,19 +14,18 @@ type MemberService struct {
 	repo repos.MemberRepository
 }
 
-func (s MemberService) validateMemberRequest(t entities.MemberRequest) *errx.ErrorMap {
-	validationErrors := t.ValidateFields()
-	return &validationErrors
-}
-
 func (s MemberService) CreateMember(request entities.MemberRequest) (*entities.Member, error) {
-	validationErrors := s.validateMemberRequest(request)
-	if validationErrors != nil {
+	validationErrors := request.ValidateFields()
+	if validationErrors.Error() != "<nil>" {
 		return nil, errors.Join(BadRequest, validationErrors)
 	}
 
-	t, err := s.repo.Create(*entities.NewMember(request.Name, request.Age))
-	return t, err
+	m, err := s.repo.Create(*entities.NewMember(request.Name, request.Age))
+	if err != nil {
+		return nil, errors.Join(InternalError, err)
+	}
+
+	return m, nil
 }
 
 func (s MemberService) GetMembers() (*[]entities.Member, error) {
@@ -77,7 +76,7 @@ func (s MemberService) DeleteMember(id string) error {
 }
 
 func (s MemberService) UpdateMember(id string, request entities.MemberRequest) (*entities.Member, error) {
-	validationErrors := s.validateMemberRequest(request)
+	validationErrors := request.ValidateFields()
 
 	fid, err := strconv.Atoi(id)
 	if err != nil {
@@ -93,10 +92,18 @@ func (s MemberService) UpdateMember(id string, request entities.MemberRequest) (
 		return nil, errors.Join(InternalError, err)
 	}
 
+	if oldT == nil {
+		return nil, errors.Join(BadRequest, fmt.Errorf("Member with id: %v not found", fid))
+	}
+
 	nM, change := oldT.HasChanges(request.Name, request.Age)
 	if change {
-		_, err = s.repo.Update(*nM)
-		return nM, errors.Join(InternalError, err)
+		m, err := s.repo.Update(*nM)
+		if err != nil {
+			return nil, errors.Join(InternalError, err)
+		}
+		return m, nil
 	}
+
 	return nil, errors.Join(BadRequest, fmt.Errorf("No changes to Member: %v found.", id))
 }

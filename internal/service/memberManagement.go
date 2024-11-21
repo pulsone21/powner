@@ -42,8 +42,23 @@ func (s MemberManagementService) AddMemberToTeam(team_id string, member_id strin
 		return nil, errors.Join(InternalError, err)
 	}
 
-	// TODO: Ensure that every skill which is present inside the team gets added to the member
+	var skillErrors errx.ErrorMap
+	for _, teamM := range t.Members {
+		for _, skill := range t.Skills {
+			if !teamM.HasSkill(skill.ID) {
+				_, err := s.memberRepo.AddSkill(teamM.ID, skill)
+				if err != nil {
+					skillErrors.Set(
+						fmt.Sprintf("Mem: %v - AddSkill", teamM.ID),
+						errors.Join(fmt.Errorf("Error in adding Skill: %v to Member: %v", skill.ID, teamM.ID), err))
+				}
+			}
+		}
+	}
 
+	if skillErrors != nil {
+		return nil, errors.Join(InternalError, skillErrors)
+	}
 	return t, nil
 }
 
