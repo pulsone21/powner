@@ -6,8 +6,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateDB(dbPath string) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+func CreateDB(dbPath string, conf *gorm.Config) (*gorm.DB, error) {
+	var db *gorm.DB
+	var err error
+	if conf == nil {
+		db, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+	} else {
+		db, err = gorm.Open(sqlite.Open(dbPath), conf)
+	}
 	if err != nil {
 		return nil, err
 	}

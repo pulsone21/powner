@@ -25,7 +25,7 @@ var errServerCreation = errors.New("Failed to create Server")
 // @BasePath		/api/v1
 func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	var err error
-	db, err := database.CreateDB(dbPath)
+	db, err := database.CreateDB(dbPath, nil)
 	if err != nil {
 		return nil, errors.Join(errServerCreation, err)
 	}
