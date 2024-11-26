@@ -70,18 +70,15 @@ func (r DBMemberRepository) Delete(id uint) error {
 	return r.db.Delete(&entities.Member{}, id).Error
 }
 
-func (r DBMemberRepository) AddSkill(mem_id uint, skill entities.Skill) (*entities.Member, error) {
-	m, err := r.GetByID(mem_id)
-	if err != nil {
-		return nil, err
-	}
-	err = r.db.Model(&m).Association("Skills").Append(skill)
+func (r DBMemberRepository) AddSkill(m entities.Member, skill entities.Skill) (*entities.Member, error) {
+	rating := *entities.NewSkillRating(m.ID, skill)
+	err := r.db.Model(&m).Association("Skills").Append(&rating)
 	if err != nil {
 		return nil, err
 	}
 
-	m.Skills = append(m.Skills, *entities.NewSkillRating(mem_id, skill))
-	return m, nil
+	m.Skills = append(m.Skills, rating)
+	return &m, nil
 }
 
 func (r DBMemberRepository) UpdateSkillRating(skillrating_id uint, rating int) error {

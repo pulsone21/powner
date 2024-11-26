@@ -1,9 +1,6 @@
 package entities
 
 import (
-	"fmt"
-	"log/slog"
-
 	"github.com/pulsone21/powner/internal/errx"
 	"gorm.io/gorm"
 )
@@ -26,7 +23,6 @@ func NewMember(name string, age int) *Member {
 func (m Member) HasSkill(skillID uint) bool {
 	for _, sR := range m.Skills {
 		if sR.Skill.ID == skillID {
-			slog.Info(fmt.Sprintf("Mem: %v has the Skill: %v with id: %v\n", m.Name, sR.Skill.Name, skillID))
 			return true
 		}
 	}

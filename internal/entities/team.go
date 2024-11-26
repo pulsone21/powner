@@ -43,6 +43,9 @@ func (t Team) GetID() uint {
 }
 
 func (t Team) HasMember(id uint) bool {
+	if len(t.Members) == 0 {
+		return false
+	}
 	for _, m := range t.Members {
 		if m.ID == id {
 			return true

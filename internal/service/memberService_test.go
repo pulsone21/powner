@@ -14,7 +14,6 @@ import (
 
 type MemberServiceTestSuite struct {
 	suite.Suite
-	db      *gorm.DB
 	service MemberService
 }
 
@@ -30,7 +29,6 @@ func (s *MemberServiceTestSuite) SetupSuite() {
 	if err != nil {
 		panic(err)
 	}
-	s.db = db
 	repo := database.NewMemberRepo(db)
 	repo.Create(*entities.NewMember("Jon Doe", 30))
 	repo.Create(*entities.NewMember("Foo Bar", 30))

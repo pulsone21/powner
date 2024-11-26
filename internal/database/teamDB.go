@@ -15,7 +15,7 @@ type DBTeamRepository struct {
 func (r DBTeamRepository) GetAll() (*[]entities.Team, error) {
 	teams := []entities.Team{}
 
-	res := r.db.Model(&entities.Team{}).Preload("Members").Preload("Skills").Find(&teams)
+	res := r.db.Model(&entities.Team{}).Preload("Members").Preload("Members.Skills").Preload("Members.Skills.Skill").Preload("Skills").Find(&teams)
 
 	if res.Error != nil {
 		return nil, res.Error
@@ -30,7 +30,7 @@ func (r DBTeamRepository) GetAll() (*[]entities.Team, error) {
 
 func (r DBTeamRepository) GetByID(id uint) (*entities.Team, error) {
 	var team entities.Team
-	res := r.db.Model(&entities.Team{}).Preload("Members").Preload("Skills").Where("Id = ?", id).First(&team)
+	res := r.db.Model(&entities.Team{}).Preload("Members").Preload("Members.Skills").Preload("Members.Skills.Skill").Preload("Skills").Where("Id = ?", id).First(&team)
 
 	if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
@@ -84,68 +84,66 @@ func (r DBTeamRepository) Delete(id uint) error {
 	return r.db.Delete(&entities.Team{}, id).Error
 }
 
-func (r DBTeamRepository) RemoveMember(team_id uint, mem entities.Member) (*entities.Team, error) {
-	t, err := r.GetByID(team_id)
+func (r DBTeamRepository) RemoveMember(t entities.Team, mem entities.Member) (*entities.Team, error) {
+	err := r.db.Model(&t).Association("Members").Delete(&mem)
 	if err != nil {
-		return nil, err
+		return &t, err
 	}
-	err = r.db.Model(&t).Association("Members").Delete(mem)
-	if err != nil {
-		return nil, err
-	}
+
 	idx := 0
 	for i, m := range t.Members {
 		if m.ID == mem.ID {
 			idx = i
 		}
 	}
+
+	if idx == 0 {
+		t.Members = []entities.Member{}
+		return &t, nil
+	}
+
 	t.Members = append(t.Members[:idx], t.Members[idx+1:]...)
-	return t, nil
+	return &t, nil
 }
 
-func (r DBTeamRepository) AddMember(team_id uint, mem entities.Member) (*entities.Team, error) {
-	t, err := r.GetByID(team_id)
-	if err != nil {
-		return nil, err
-	}
-	err = r.db.Model(&t).Association("Members").Append(mem)
+func (r DBTeamRepository) AddMember(t entities.Team, mem entities.Member) (*entities.Team, error) {
+	err := r.db.Model(&t).Association("Members").Append(&mem)
 	if err != nil {
 		return nil, err
 	}
 
 	t.Members = append(t.Members, mem)
-	return t, nil
+	return &t, nil
 }
 
-func (r DBTeamRepository) AddSkill(team_id uint, skill entities.Skill) (*entities.Team, error) {
-	t, err := r.GetByID(team_id)
-	if err != nil {
-		return nil, err
-	}
-	err = r.db.Model(&t).Association("Skills").Append(skill)
+func (r DBTeamRepository) AddSkill(t entities.Team, skill entities.Skill) (*entities.Team, error) {
+	err := r.db.Model(&t).Association("Skills").Append(&skill)
 	if err != nil {
 		return nil, err
 	}
 
 	t.Skills = append(t.Skills, skill)
-	return t, nil
+	return &t, nil
 }
 
-func (r DBTeamRepository) RemoveSkill(team_id uint, skill entities.Skill) (*entities.Team, error) {
-	t, err := r.GetByID(team_id)
+func (r DBTeamRepository) RemoveSkill(t entities.Team, skill entities.Skill) (*entities.Team, error) {
+	err := r.db.Model(&t).Association("Skills").Delete(skill)
 	if err != nil {
-		return nil, err
+		return &t, err
 	}
-	err = r.db.Model(&t).Association("Skills").Delete(skill)
-	if err != nil {
-		return nil, err
-	}
+
 	idx := 0
 	for i, m := range t.Skills {
 		if m.ID == skill.ID {
 			idx = i
 		}
 	}
+
+	if idx == 0 {
+		t.Skills = []entities.Skill{}
+		return &t, nil
+	}
+
 	t.Skills = append(t.Skills[:idx], t.Skills[idx+1:]...)
-	return t, nil
+	return &t, nil
 }
