@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/errx"
@@ -14,7 +15,7 @@ type SkillService struct {
 	repo repos.SkillRepository
 }
 
-func (s SkillService) ValidateSkillRequest(sR entities.SkillRequest) *errx.ErrorMap {
+func (s SkillService) ValidateSkillRequest(sR entities.SkillRequest) errx.ErrorMap {
 	validationErrors := sR.ValidateFields()
 
 	skills, err := s.repo.GetAll()
@@ -23,13 +24,13 @@ func (s SkillService) ValidateSkillRequest(sR entities.SkillRequest) *errx.Error
 	}
 
 	for _, sk := range *skills {
-		if sk.Name == sR.Name {
+		if strings.EqualFold(sk.Name, sR.Name) {
 			validationErrors.Set("name", fmt.Errorf("Name: %v already used", sR.Name))
 			break
 		}
 	}
 
-	return &validationErrors
+	return validationErrors
 }
 
 func (s SkillService) CreateSkill(request entities.SkillRequest) (*entities.Skill, error) {
@@ -39,6 +40,7 @@ func (s SkillService) CreateSkill(request entities.SkillRequest) (*entities.Skil
 	}
 
 	sR, err := s.repo.Create(*entities.NewSkill(request.Name, request.Description, entities.SkillType(request.Type), request.Importance))
+
 	// TODO: Test if we can create the team directly with skill and meber do i need to add it afterwards
 	return sR, err
 }
@@ -48,7 +50,7 @@ func (s SkillService) GetSkills() (*[]entities.Skill, error) {
 	return s.repo.GetAll()
 }
 
-func (s SkillService) GetSKillByID(id string) (*entities.Skill, error) {
+func (s SkillService) GetSkillByID(id string) (*entities.Skill, error) {
 	var validationErrors errx.ErrorMap
 	fid, err := strconv.Atoi(id)
 	if err != nil {
@@ -76,6 +78,16 @@ func (s SkillService) DeleteSkill(id string) error {
 	if validationErrors != nil {
 		return errors.Join(BadRequest, validationErrors)
 	}
+
+	sk, err := s.repo.GetByID(uint(fid))
+	if err != nil {
+		return errors.Join(InternalError, err)
+	}
+
+	if sk == nil {
+		return errors.Join(BadRequest, fmt.Errorf("Skill with id: %b, dose't exists", fid))
+	}
+
 	err = s.repo.Delete(uint(fid))
 	if err != nil {
 		return errors.Join(InternalError, err)
@@ -85,7 +97,8 @@ func (s SkillService) DeleteSkill(id string) error {
 }
 
 func (s SkillService) UpdateSkill(id string, req entities.SkillRequest) (*entities.Skill, error) {
-	validationErrors := s.ValidateSkillRequest(req)
+	// we don't want if name is already used - we know this
+	validationErrors := req.ValidateFields()
 
 	fid, err := strconv.Atoi(id)
 	if err != nil {
@@ -104,8 +117,11 @@ func (s SkillService) UpdateSkill(id string, req entities.SkillRequest) (*entiti
 	nM, change := oldT.HasChanges(req.Name, req.Description, entities.SkillType(req.Type), req.Importance)
 	if change {
 		_, err = s.repo.Update(*nM)
-		return nM, errors.Join(InternalError, err)
-	}
+		if err != nil {
+			return nil, errors.Join(InternalError, err)
+		}
+		return nM, nil
 
+	}
 	return nil, errors.Join(BadRequest, fmt.Errorf("No changes to Skill: %v found.", id))
 }

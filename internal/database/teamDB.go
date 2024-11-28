@@ -58,30 +58,27 @@ func (r DBTeamRepository) Create(newTeam entities.Team) (*entities.Team, error) 
 }
 
 func (r DBTeamRepository) Update(newTeam entities.Team) (*entities.Team, error) {
-	oldT, err := r.GetByID(newTeam.ID)
-	if err != nil {
-		return nil, err
+	s := r.db.Save(&newTeam)
+	if s.Error != nil {
+		fmt.Println("Error in updating team to db", s.Error.Error())
+		return nil, s.Error
 	}
-
-	oldT = &newTeam
-	return &newTeam, r.db.Save(&oldT).Error
+	return &newTeam, nil
 }
 
-func (r DBTeamRepository) Delete(id uint) error {
-	t, err := r.GetByID(id)
+func (r DBTeamRepository) Delete(t entities.Team) error {
+	err := r.db.Unscoped().Model(&t).Association("Members").Unscoped().Clear()
 	if err != nil {
-		return err
-	}
-	err = r.db.Unscoped().Model(&t).Association("Members").Unscoped().Clear()
-	if err != nil {
-		return err
+		return errors.Join(
+			fmt.Errorf("Could not clear member associations"), err)
 	}
 	err = r.db.Unscoped().Model(&t).Association("Skills").Unscoped().Clear()
 	if err != nil {
-		return err
+		return errors.Join(
+			fmt.Errorf("Could not clear skill associations"), err)
 	}
 
-	return r.db.Delete(&entities.Team{}, id).Error
+	return r.db.Delete(&entities.Team{}, t.ID).Error
 }
 
 func (r DBTeamRepository) RemoveMember(t entities.Team, mem entities.Member) (*entities.Team, error) {

@@ -80,7 +80,7 @@ func (h SkillHandler) CreateSkill(w http.ResponseWriter, r *http.Request) respon
 //	@Failure		500	{object}	response.ApiResponse
 //	@Router			/skill/{id} [get]
 func (h SkillHandler) GetSkillById(w http.ResponseWriter, r *http.Request) response.IResponse {
-	mem, err := h.service.GetSKillByID(r.PathValue("id"))
+	mem, err := h.service.GetSkillByID(r.PathValue("id"))
 	if err != nil {
 		return *response.NewApiResponse(nil, err)
 	}

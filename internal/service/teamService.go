@@ -14,7 +14,7 @@ type TeamService struct {
 	repo repos.TeamRepository
 }
 
-func (s TeamService) ValidateTeamRequest(t entities.TeamRequest) *errx.ErrorMap {
+func (s TeamService) ValidateTeamRequest(t entities.TeamRequest) errx.ErrorMap {
 	validationErrors := t.ValidateFields()
 	ts, err := s.repo.GetAll()
 	if err != nil {
@@ -73,7 +73,17 @@ func (s TeamService) DeleteTeam(id string) error {
 	if validationErrors != nil {
 		return errors.Join(BadRequest, validationErrors)
 	}
-	err = s.repo.Delete(uint(fid))
+
+	t, err := s.repo.GetByID(uint(fid))
+	if err != nil {
+		return errors.Join(InternalError, err)
+	}
+
+	if t == nil {
+		return errors.Join(BadRequest, fmt.Errorf("Team with id: %b dosen't exisits", fid))
+	}
+
+	err = s.repo.Delete(*t)
 	if err != nil {
 		return errors.Join(InternalError, err)
 	}
@@ -82,7 +92,7 @@ func (s TeamService) DeleteTeam(id string) error {
 }
 
 func (s TeamService) UpdateTeam(id string, request entities.TeamRequest) (*entities.Team, error) {
-	validationErrors := s.ValidateTeamRequest(request)
+	validationErrors := request.ValidateFields()
 
 	fid, err := strconv.Atoi(id)
 	if err != nil {
@@ -97,11 +107,17 @@ func (s TeamService) UpdateTeam(id string, request entities.TeamRequest) (*entit
 	if err != nil {
 		return nil, errors.Join(InternalError, err)
 	}
+	if oldT == nil {
+		return nil, errors.Join(BadRequest, fmt.Errorf("Team with id: %b doesn't exist", fid))
+	}
 
-	nT, change := oldT.HasChanges(request.Name, request.Description, request.Skills, request.Members)
+	nT, change := oldT.HasChanges(request.Name, request.Description, &oldT.Skills, &oldT.Members)
 	if change {
-		_, err = s.repo.Update(*nT)
-		return nT, errors.Join(InternalError, err)
+		newTeam, err := s.repo.Update(*nT)
+		if err != nil {
+			return nil, errors.Join(InternalError, err)
+		}
+		return newTeam, nil
 	}
 	return nil, errors.Join(BadRequest, fmt.Errorf("No changes to Team: %v found.", id))
 }

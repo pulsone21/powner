@@ -125,7 +125,7 @@ type TeamRequest struct {
 	Members     *[]Member
 }
 
-func (t TeamRequest) ValidateFields() *errx.ErrorMap {
+func (t TeamRequest) ValidateFields() errx.ErrorMap {
 	var validationErrors errx.ErrorMap
 	if len(t.Name) < 4 {
 		validationErrors.Set("name", fmt.Errorf("name musst be longer then 3 characters"))
@@ -135,5 +135,5 @@ func (t TeamRequest) ValidateFields() *errx.ErrorMap {
 		validationErrors.Set("description", fmt.Errorf("description musst be longer then 10 characters"))
 	}
 
-	return &validationErrors
+	return validationErrors
 }

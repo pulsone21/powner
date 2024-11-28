@@ -7,7 +7,7 @@ type TeamRepository interface {
 	GetByID(id uint) (*entities.Team, error)
 	Create(newTeam entities.Team) (*entities.Team, error)
 	Update(newTeam entities.Team) (*entities.Team, error)
-	Delete(id uint) error
+	Delete(team entities.Team) error
 	RemoveMember(team entities.Team, mem entities.Member) (*entities.Team, error)
 	AddMember(team entities.Team, mem entities.Member) (*entities.Team, error)
 	AddSkill(team entities.Team, skill entities.Skill) (*entities.Team, error)

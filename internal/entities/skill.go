@@ -81,7 +81,7 @@ func (sR SkillRequest) ValidateFields() errx.ErrorMap {
 	}
 
 	if sR.Type > int(Soft) {
-		validationErr.Set("type", fmt.Sprintf("SkillType is not valid, must be: %v", fmt.Sprint(Hard, Soft)))
+		validationErr.Set("type", fmt.Sprintf("SkillType is not valid, must be between: %b-%b", Hard, Soft))
 	}
 
 	if sR.Importance > 5 && sR.Importance < 1 {
