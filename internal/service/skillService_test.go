@@ -44,7 +44,7 @@ func TestSkillServiceSuite(t *testing.T) {
 	suite.Run(t, new(SkillServiceTestSuite))
 }
 
-func (s *SkillServiceTestSuite) TestCreateSkill() {
+func (s *SkillServiceTestSuite) Test1CreateSkill() {
 	testCases := []struct {
 		TestCaseName  string
 		Name          string
@@ -142,13 +142,14 @@ func (s *SkillServiceTestSuite) TestCreateSkill() {
 	}
 }
 
-func (s *SkillServiceTestSuite) TestGetAllSkills() {
+func (s *SkillServiceTestSuite) Test2GetAllSkills() {
 	m, err := s.service.GetSkills()
 	s.Nil(err, "Error should be nil, but is not")
-	s.Len(*m, 2, fmt.Sprintf("I should have 2 Skills in the database, but have: %b", len(*m)))
+	// - We pre creating 2 skills and the create skills runs first which also creates one
+	s.Len(*m, 3, fmt.Sprintf("I should have 3 Skills in the database, but have: %v", len(*m)))
 }
 
-func (s *SkillServiceTestSuite) TestGetSkillByID() {
+func (s *SkillServiceTestSuite) Test3GetSkillByID() {
 	testCases := []struct {
 		tcName        string
 		ExpectedError error
@@ -190,7 +191,7 @@ func (s *SkillServiceTestSuite) TestGetSkillByID() {
 	}
 }
 
-func (s *SkillServiceTestSuite) TestUpdateSkill() {
+func (s *SkillServiceTestSuite) Test4UpdateSkill() {
 	testCases := []struct {
 		tcName        string
 		SkillID       string
@@ -283,7 +284,7 @@ func (s *SkillServiceTestSuite) TestUpdateSkill() {
 	}
 }
 
-func (s *SkillServiceTestSuite) TestDeleteSkill() {
+func (s *SkillServiceTestSuite) Test5DeleteSkill() {
 	testCases := []struct {
 		Name          string
 		SkillID       string
