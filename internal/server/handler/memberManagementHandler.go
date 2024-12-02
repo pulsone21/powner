@@ -12,9 +12,15 @@ type MemberManagementHandler struct {
 	service service.MemberManagementService
 }
 
+func NewMemberManagementHandler(ser service.MemberManagementService) MemberManagementHandler {
+	return MemberManagementHandler{
+		service: ser,
+	}
+}
+
 func (h MemberManagementHandler) RegisterRoutes(t *http.ServeMux) {
-	t.HandleFunc("POST /team/{team_id}/member/{mem_id}", setupApiHandler(h.addMemberToTeam))
-	t.HandleFunc("DELETE /team/{team_id}/member/{mem_id}", setupApiHandler(h.removeMemberFromTeam))
+	t.HandleFunc("POST /team/{team_id}/member/{mem_id}", setupHandler(h.addMemberToTeam))
+	t.HandleFunc("DELETE /team/{team_id}/member/{mem_id}", setupHandler(h.removeMemberFromTeam))
 }
 
 // Add Member to Team add a new Member to Team

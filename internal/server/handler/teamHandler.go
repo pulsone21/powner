@@ -16,6 +16,12 @@ type TeamHandler struct {
 	service service.TeamService
 }
 
+func NewTeamHandler(ser service.TeamService) TeamHandler {
+	return TeamHandler{
+		service: ser,
+	}
+}
+
 // GetTeams Get all teams
 //
 //	@Summary		Get all teams
@@ -160,9 +166,9 @@ func (h TeamHandler) updateTeam(w http.ResponseWriter, r *http.Request) response
 }
 
 func (h TeamHandler) RegisterRoutes(t *http.ServeMux) {
-	t.HandleFunc("GET /team", setupApiHandler(h.getTeams))
-	t.HandleFunc("POST /team", setupApiHandler(h.createTeam))
-	t.HandleFunc("GET /team/{id}", setupApiHandler(h.getTeamById))
-	t.HandleFunc("DELTE /team/{id}", setupApiHandler(h.deleteTeam))
-	t.HandleFunc("POST /team/{id}", setupApiHandler(h.updateTeam))
+	t.HandleFunc("GET /team", setupHandler(h.getTeams))
+	t.HandleFunc("POST /team", setupHandler(h.createTeam))
+	t.HandleFunc("GET /team/{id}", setupHandler(h.getTeamById))
+	t.HandleFunc("DELTE /team/{id}", setupHandler(h.deleteTeam))
+	t.HandleFunc("POST /team/{id}", setupHandler(h.updateTeam))
 }

@@ -17,6 +17,12 @@ type SkillHandler struct {
 	service service.SkillService
 }
 
+func NewSkillHandler(ser service.SkillService) SkillHandler {
+	return SkillHandler{
+		service: ser,
+	}
+}
+
 // GetSkills Get all Skills
 //
 //	@Summary		Get all skill
@@ -131,9 +137,9 @@ func (h SkillHandler) UpdateSkill(w http.ResponseWriter, r *http.Request) respon
 }
 
 func (h SkillHandler) RegisterRoutes(t *http.ServeMux) {
-	t.HandleFunc("GET /skill", setupApiHandler(h.GetSkills))
-	t.HandleFunc("POST /skill", setupApiHandler(h.CreateSkill))
-	t.HandleFunc("GET /skill/{id}", setupApiHandler(h.GetSkillById))
-	t.HandleFunc("DELTE /skill/{id}", setupApiHandler(h.DeleteSkill))
-	t.HandleFunc("POST /skill/{id}", setupApiHandler(h.UpdateSkill))
+	t.HandleFunc("GET /skill", setupHandler(h.GetSkills))
+	t.HandleFunc("POST /skill", setupHandler(h.CreateSkill))
+	t.HandleFunc("GET /skill/{id}", setupHandler(h.GetSkillById))
+	t.HandleFunc("DELTE /skill/{id}", setupHandler(h.DeleteSkill))
+	t.HandleFunc("POST /skill/{id}", setupHandler(h.UpdateSkill))
 }

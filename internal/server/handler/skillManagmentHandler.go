@@ -13,11 +13,17 @@ type SkillManagementHandler struct {
 	service service.SkillManagement
 }
 
+func NewSkillManagmentHandler(ser service.SkillManagement) SkillManagementHandler {
+	return SkillManagementHandler{
+		service: ser,
+	}
+}
+
 func (h SkillManagementHandler) RegisterRoutes(t *http.ServeMux) {
-	t.HandleFunc("POST /member/{mem_id}/skill/{skill_id}", setupApiHandler(h.addSkillToMember))
-	t.HandleFunc("POST /member/{mem_id}/skill/{skill_id}/{rating}", setupApiHandler(h.updateSkillToMember))
-	t.HandleFunc("POST /team/{team_id}/skill/{skill_id}", setupApiHandler(h.addSkillToTeam))
-	t.HandleFunc("DELETE /team/{team_id}/skill/{skill_id}", setupApiHandler(h.removeSkillFromTeam))
+	t.HandleFunc("POST /member/{mem_id}/skill/{skill_id}", setupHandler(h.addSkillToMember))
+	t.HandleFunc("POST /member/{mem_id}/skill/{skill_id}/{rating}", setupHandler(h.updateSkillToMember))
+	t.HandleFunc("POST /team/{team_id}/skill/{skill_id}", setupHandler(h.addSkillToTeam))
+	t.HandleFunc("DELETE /team/{team_id}/skill/{skill_id}", setupHandler(h.removeSkillFromTeam))
 }
 
 // addSkillToTeam - add a skill to a team

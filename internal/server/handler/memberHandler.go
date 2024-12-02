@@ -18,6 +18,12 @@ type MemberHandler struct {
 	service service.MemberService
 }
 
+func NewMemberHandler(ser service.MemberService) MemberHandler {
+	return MemberHandler{
+		service: ser,
+	}
+}
+
 // GetMembers Get all Members
 //
 //	@Summary		Get all Members
@@ -139,9 +145,9 @@ func (h MemberHandler) updateMember(w http.ResponseWriter, r *http.Request) resp
 }
 
 func (h MemberHandler) RegisterRoutes(t *http.ServeMux) {
-	t.HandleFunc("GET /member", setupApiHandler(h.getMembers))
-	t.HandleFunc("POST /member", setupApiHandler(h.createMember))
-	t.HandleFunc("GET /member/{id}", setupApiHandler(h.getMemberById))
-	t.HandleFunc("DELTE /member/{id}", setupApiHandler(h.deleteMember))
-	t.HandleFunc("POST /member/{id}", setupApiHandler(h.updateMember))
+	t.HandleFunc("GET /member", setupHandler(h.getMembers))
+	t.HandleFunc("POST /member", setupHandler(h.createMember))
+	t.HandleFunc("GET /member/{id}", setupHandler(h.getMemberById))
+	t.HandleFunc("DELTE /member/{id}", setupHandler(h.deleteMember))
+	t.HandleFunc("POST /member/{id}", setupHandler(h.updateMember))
 }
