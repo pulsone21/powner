@@ -32,15 +32,33 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 
 	envFile, _ := godotenv.Read(".env")
 
-	log.Println(envFile)
+	loggerMW, err := mw.Logger(mw.NewLoggerConfig(envFile))
+	if err != nil {
+		return nil, errors.Join(errServerCreation, err)
+	}
 
 	teamRepo := database.NewTeamRepo(db)
 	memRepo := database.NewMemberRepo(db)
 	sRepo := database.NewSkillRepo(db)
 
-	memHandler := handler.NewMemberHandler(*service.NewMemberService(memRepo))
-	skillHandler := handler.NewSkillHandler(*service.NewSkillService(sRepo))
-	teamHandler := handler.NewTeamHandler(*service.NewTeamService(teamRepo))
+	apiChain := mw.New(
+		mw.RequestID(),
+		loggerMW,
+	)
+
+	uiChain := mw.New(
+		mw.RequestID(),
+		loggerMW,
+		mw.HtmxReqValidator(),
+	)
+
+	tServ := *service.NewTeamService(teamRepo)
+	sServ := *service.NewSkillService(sRepo)
+	mServ := *service.NewMemberService(memRepo)
+
+	memHandler := handler.NewMemberHandler(mServ)
+	skillHandler := handler.NewSkillHandler(sServ)
+	teamHandler := handler.NewTeamHandler(tServ)
 	memMgmtHandler := handler.NewMemberManagementHandler(*service.NewMemberManagement(memRepo, teamRepo, sRepo))
 	skillMgmtHandler := handler.NewSkillManagmentHandler(*service.NewSkillManagement(memRepo, teamRepo, sRepo))
 
@@ -51,23 +69,22 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 		memMgmtHandler,
 		skillMgmtHandler)
 
-	//_ := router.NewFrontendRouter(handler.NewUIHandler(nil))
+	generalPages := handler.NewGeneralPageHandler()
+	// teamPages := handler.NewTeamPageHandler(tServ)
+
+	partialsRouter := router.NewPartialsRouter(
+		handler.NewTeamPartialsHandler(tServ),
+	)
 
 	mux := http.NewServeMux()
 
-	loggerMW, err := mw.Logger(mw.NewLoggerConfig(envFile))
-	if err != nil {
-		return nil, errors.Join(errServerCreation, err)
-	}
-
-	apiChain := mw.New(
-		mw.RequestID(),
-		loggerMW,
-	)
-
 	mux.Handle("/api/", apiChain.Apply(http.StripPrefix("/api", apiRouter)))
 	mux.Handle("/swagger/", httpSwagger.WrapHandler)
-	//	mux.Handle("", uiRouter) // UI Router has already a / prefix
+	fs := http.FileServer(http.Dir("./public/static/"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	mux.Handle("/partials/", uiChain.Apply(http.StripPrefix("/partials", partialsRouter)))
+	//	mux.Handle("/teams/", uiChain.Apply(http.StripPrefix("/teams", teamPages.GetRoutes())))
+	mux.Handle("/", uiChain.Apply(generalPages.GetRoutes()))
 
 	s := http.Server{
 		Addr:    fmt.Sprintf("%v:%v", url, port),
