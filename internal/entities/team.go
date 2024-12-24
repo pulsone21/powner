@@ -121,8 +121,6 @@ func (t Team) memberChanged(newM []Member) bool {
 type TeamRequest struct {
 	Name        string
 	Description string
-	Skills      *[]Skill
-	Members     *[]Member
 }
 
 func (t TeamRequest) ValidateFields() errx.ErrorMap {

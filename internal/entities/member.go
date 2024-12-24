@@ -69,8 +69,8 @@ func (s memberSort) Less(i, j int) bool { return s[i].ID > s[j].ID }
 func (s memberSort) toMember() []Member { return []Member(s) }
 
 type MemberRequest struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+	Name string `json:"name" schema:"name"`
+	Age  int    `json:"age" schema:"age"`
 }
 
 func (m MemberRequest) ValidateFields() errx.ErrorMap {
