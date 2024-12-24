@@ -13,6 +13,7 @@ import (
 	mw "github.com/pulsone21/powner/internal/server/middleware"
 	"github.com/pulsone21/powner/internal/server/router"
 	"github.com/pulsone21/powner/internal/service"
+	"github.com/pulsone21/powner/internal/ui/pages"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
@@ -49,18 +50,25 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	uiChain := mw.New(
 		mw.RequestID(),
 		loggerMW,
+	)
+
+	htmxChain := mw.New(
+		mw.RequestID(),
+		loggerMW,
 		mw.HtmxReqValidator(),
 	)
 
 	tServ := *service.NewTeamService(teamRepo)
 	sServ := *service.NewSkillService(sRepo)
 	mServ := *service.NewMemberService(memRepo)
+	mgServ := *service.NewMemberManagement(memRepo, teamRepo, sRepo)
+	sgServ := *service.NewSkillManagement(memRepo, teamRepo, sRepo)
 
 	memHandler := handler.NewMemberHandler(mServ)
 	skillHandler := handler.NewSkillHandler(sServ)
 	teamHandler := handler.NewTeamHandler(tServ)
-	memMgmtHandler := handler.NewMemberManagementHandler(*service.NewMemberManagement(memRepo, teamRepo, sRepo))
-	skillMgmtHandler := handler.NewSkillManagmentHandler(*service.NewSkillManagement(memRepo, teamRepo, sRepo))
+	memMgmtHandler := handler.NewMemberManagementHandler(mgServ)
+	skillMgmtHandler := handler.NewSkillManagmentHandler(sgServ)
 
 	apiRouter := router.NewApiRouter(1,
 		memHandler,
@@ -70,10 +78,17 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 		skillMgmtHandler)
 
 	generalPages := handler.NewGeneralPageHandler()
-	// teamPages := handler.NewTeamPageHandler(tServ)
+	teamPages := handler.NewTeamPageHandler(tServ)
+	memPages := handler.NewMemberPageHandler(mServ)
 
 	partialsRouter := router.NewPartialsRouter(
 		handler.NewTeamPartialsHandler(tServ),
+		handler.NewMemberPartialsHandler(mServ),
+		handler.NewFormsHandler(mServ, sServ, tServ),
+	)
+
+	modalRouter := router.NewModalRouter(
+		handler.NewModalHandler(tServ, mServ, sServ, mgServ, sgServ),
 	)
 
 	mux := http.NewServeMux()
@@ -82,13 +97,26 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 	fs := http.FileServer(http.Dir("./public/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
-	mux.Handle("/partials/", uiChain.Apply(http.StripPrefix("/partials", partialsRouter)))
-	//	mux.Handle("/teams/", uiChain.Apply(http.StripPrefix("/teams", teamPages.GetRoutes())))
+	mux.Handle("/partials/", htmxChain.Apply(http.StripPrefix("/partials", partialsRouter)))
+	mux.Handle("/modals/", htmxChain.Apply(http.StripPrefix("/modals", modalRouter)))
+	mux.Handle("/teams/", uiChain.Apply(http.StripPrefix("/teams", teamPages.GetRoutes())))
+	mux.Handle("/members/", uiChain.Apply(http.StripPrefix("/members", memPages.GetRoutes())))
 	mux.Handle("/", uiChain.Apply(generalPages.GetRoutes()))
 
 	s := http.Server{
-		Addr:    fmt.Sprintf("%v:%v", url, port),
-		Handler: mux,
+		Addr: fmt.Sprintf("%v:%v", url, port),
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if _, pattern := mux.Handler(r); pattern != "" {
+				fmt.Printf("Pattern which exsists hit, acutal: %v", pattern)
+				mux.ServeHTTP(w, r)
+			} else {
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(404)
+					fmt.Println("404 handler triggered")
+					pages.NotFound().Render(r.Context(), w)
+				}).ServeHTTP(w, r)
+			}
+		}),
 	}
 
 	log.Println(s.Addr)
