@@ -129,15 +129,16 @@ func (s *MemberManagementTestSuite) TestAddMemberToTeam() {
 		s.Run(tC.Name, func() {
 			t, err := s.service.AddMemberToTeam(tC.TeamID, fmt.Sprint(tC.MemberID))
 
-			s.ErrorIs(err, tC.ExpectedErr)
-
 			if tC.ExpectedErr == nil {
+				s.Nil(err)
 				s.Equal(tC.HasMember, t.HasMember(tC.MemberID))
 				m, err := s.service.memberRepo.GetByID(tC.MemberID)
 				if err != nil {
 					panic(err)
 				}
 				s.Equal(tC.HasSkill, m.HasSkill(tC.SkillID))
+			} else {
+				s.ErrorContains(err, tC.ExpectedErr.Error())
 			}
 
 			if !tC.HasMember {
@@ -194,8 +195,13 @@ func (s *MemberManagementTestSuite) TestRemoveMemberFromTeam() {
 
 	for _, tC := range testCases {
 		s.Run(tC.Name, func() {
-			_, err := s.service.RemoveMemberToTeam(fmt.Sprint(tC.TeamID), fmt.Sprint(tC.MemberID))
-			s.ErrorIs(err, tC.ExpectedError)
+			_, serr := s.service.RemoveMemberToTeam(fmt.Sprint(tC.TeamID), fmt.Sprint(tC.MemberID))
+
+			if tC.ExpectedError != nil {
+				s.ErrorContains(serr, tC.ExpectedError.Error())
+			} else {
+				s.Nil(serr)
+			}
 
 			t, err := s.service.teamRepo.GetByID(tC.TeamID)
 			if err != nil {

@@ -119,7 +119,11 @@ func (s *SkillManagementTestSuite) TestAddSKillToTeam() {
 		s.Run(tC.Name, func() {
 			t, err := s.service.AddSkillToTeam(fmt.Sprint(tC.TeamID), fmt.Sprint(tC.SkillID))
 
-			s.ErrorIs(err, tC.ExpectedErr)
+			if tC.ExpectedErr != nil {
+				s.ErrorContains(err, tC.ExpectedErr.Error())
+			} else {
+				s.Nil(err)
+			}
 
 			if tC.ExpectedErr == nil {
 				s.Equal(tC.HasSkill, t.HasSkill(tC.SkillID))
@@ -192,7 +196,11 @@ func (s *SkillManagementTestSuite) TestRemoveSkillFromTeam() {
 	for _, tC := range testCases {
 		s.Run(tC.Name, func() {
 			t, err := s.service.RemoveSkillToTeam(fmt.Sprint(tC.TeamID), fmt.Sprint(tC.SkillID))
-			s.ErrorIs(err, tC.ExpectedError)
+			if tC.ExpectedError != nil {
+				s.ErrorContains(err, tC.ExpectedError.Error())
+			} else {
+				s.Nil(err)
+			}
 
 			if t != nil { // we have a testcase for a team which dosen't exists
 				s.Equal(tC.SkillLen, len(t.Skills))
@@ -239,7 +247,11 @@ func (s *SkillManagementTestSuite) TestAddSkillToMember() {
 		s.Run(tC.Name, func() {
 			m, err := s.service.AddSkillToMember(fmt.Sprint(tC.MemberID), fmt.Sprint(tC.SkillID), 1)
 
-			s.ErrorIs(err, tC.ExpectedError)
+			if tC.ExpectedError != nil {
+				s.ErrorContains(err, tC.ExpectedError.Error())
+			} else {
+				s.Nil(err)
+			}
 
 			if tC.ExpectedError == nil {
 				s.True(m.HasSkill(tC.SkillID))
@@ -306,7 +318,11 @@ func (s *SkillManagementTestSuite) TestUpdateSkillRating() {
 		s.Run(tC.Name, func() {
 			m, err := s.service.UpdateSkillRating(fmt.Sprint(tC.MemberID), fmt.Sprint(tC.SkillID), tC.Rating)
 
-			s.ErrorIs(err, tC.ExpectedError)
+			if tC.ExpectedError != nil {
+				s.ErrorContains(err, tC.ExpectedError.Error())
+			} else {
+				s.Nil(err)
+			}
 
 			if tC.ExpectedError == nil {
 				s.True(m.HasSkill(tC.SkillID))

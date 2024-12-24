@@ -16,7 +16,7 @@ type SkillManagement struct {
 	skillRepo  repos.SkillRepository
 }
 
-func (s SkillManagement) RemoveSkillToTeam(team_id, skill_id string) (*entities.Team, error) {
+func (s SkillManagement) RemoveSkillToTeam(team_id, skill_id string) (*entities.Team, *ServiceErrors) {
 	var validationErrors errx.ErrorMap
 	tID, err := strconv.Atoi(team_id)
 	if err != nil {
@@ -29,33 +29,33 @@ func (s SkillManagement) RemoveSkillToTeam(team_id, skill_id string) (*entities.
 	}
 
 	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	skill, err := s.skillRepo.GetByID(uint(sID))
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("DB Error"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("DB Error"), err)}
 	}
 
 	if skill == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("skill with id: %v not found", sID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("skill with id: %v not found", sID))}
 	}
 
 	oldT, err := s.teamRepo.GetByID(uint(tID))
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("DB Error"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("DB Error"), err)}
 	}
 	if oldT == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Team with id: %v not found", tID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Team with id: %v not found", tID))}
 	}
 
 	if !oldT.HasSkill(skill.ID) {
-		return nil, errors.Join(BadRequest, fmt.Errorf("team with id: %v didn't has the skill: %v", oldT.ID, skill.ID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("team with id: %v didn't has the skill: %v", oldT.ID, skill.ID))}
 	}
 
 	t, err := s.teamRepo.RemoveSkill(*oldT, *skill)
 	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 	}
 
 	return t, nil
@@ -70,11 +70,11 @@ func (s SkillManagement) AddSkillToMember(mem_id, skill_id string, rating int) (
 
 	oldM, err := s.memberRepo.GetByID(uint(fid))
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("DB Error"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("DB Error"), err)}
 	}
 
 	if oldM == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Member with ID: %v not found", fid))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Member with ID: %v not found", fid))}
 	}
 
 	sid, err := strconv.Atoi(skill_id)
@@ -83,16 +83,16 @@ func (s SkillManagement) AddSkillToMember(mem_id, skill_id string, rating int) (
 	}
 
 	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	sk, err := s.skillRepo.GetByID(uint(sid))
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("DB Error"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("DB Error"), err)}
 	}
 
 	if sk == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Skill with ID: %v not found", fid))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Skill with ID: %v not found", fid))}
 	}
 
 	if oldM.HasSkill(sk.ID) {
@@ -100,25 +100,25 @@ func (s SkillManagement) AddSkillToMember(mem_id, skill_id string, rating int) (
 	}
 
 	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	m, err := s.memberRepo.AddSkill(*oldM, *sk)
 	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 	}
 
 	if s.validRatingScore(rating) {
 		m, err = s.UpdateSkillRating(fmt.Sprint(m.ID), fmt.Sprint(sk.ID), rating)
 		if err != nil {
-			return nil, errors.Join(InternalError, err)
+			return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 		}
 	}
 
 	return m, nil
 }
 
-func (s SkillManagement) AddSkillToTeam(team_id, skill_id string) (*entities.Team, error) {
+func (s SkillManagement) AddSkillToTeam(team_id, skill_id string) (*entities.Team, *ServiceErrors) {
 	var validationErrors errx.ErrorMap
 	tID, err := strconv.Atoi(team_id)
 	if err != nil {
@@ -131,29 +131,29 @@ func (s SkillManagement) AddSkillToTeam(team_id, skill_id string) (*entities.Tea
 	}
 
 	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	skill, err := s.skillRepo.GetByID(uint(sID))
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("DB Error"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("DB Error"), err)}
 	}
 
 	if skill == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("skill with id: %v not found", sID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("skill with id: %v not found", sID))}
 	}
 
 	oldT, err := s.teamRepo.GetByID(uint(tID))
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("DB Error"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("DB Error"), err)}
 	}
 	if oldT == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Team with id: %v not found", tID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Team with id: %v not found", tID))}
 	}
 
 	t, err := s.teamRepo.AddSkill(*oldT, *skill)
 	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 	}
 
 	var memberUpdateErrs errx.ErrorMap
@@ -167,13 +167,18 @@ func (s SkillManagement) AddSkillToTeam(team_id, skill_id string) (*entities.Tea
 	}
 
 	if memberUpdateErrs != nil {
-		return nil, errors.Join(InternalError, memberUpdateErrs)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, memberUpdateErrs)}
 	}
 
-	return s.teamRepo.GetByID(t.ID)
+	nt, err := s.teamRepo.GetByID(t.ID)
+	if err != nil {
+		return nil, &ServiceErrors{err: err}
+	}
+
+	return nt, nil
 }
 
-func (s SkillManagement) UpdateSkillRating(mem_id, skill_id string, rating int) (*entities.Member, error) {
+func (s SkillManagement) UpdateSkillRating(mem_id, skill_id string, rating int) (*entities.Member, *ServiceErrors) {
 	var validationErrors errx.ErrorMap
 	fid, err := strconv.Atoi(mem_id)
 	if err != nil {
@@ -186,11 +191,11 @@ func (s SkillManagement) UpdateSkillRating(mem_id, skill_id string, rating int) 
 
 	oldM, err := s.memberRepo.GetByID(uint(fid))
 	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 	}
 
 	if oldM == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Member: %b dosn't exists", fid))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Member: %b dosn't exists", fid))}
 	}
 
 	sid, err := strconv.Atoi(skill_id)
@@ -204,17 +209,17 @@ func (s SkillManagement) UpdateSkillRating(mem_id, skill_id string, rating int) 
 	}
 
 	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	err = s.memberRepo.UpdateSkillRating(sRating.ID, rating)
 	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 	}
 
 	m, err := s.memberRepo.GetByID(uint(fid))
 	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 	}
 
 	return m, nil

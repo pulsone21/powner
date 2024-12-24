@@ -30,40 +30,30 @@ func (s TeamService) ValidateTeamRequest(t entities.TeamRequest) errx.ErrorMap {
 	return validationErrors
 }
 
-func (s TeamService) CreateTeam(request entities.TeamRequest) (*entities.Team, error) {
+func (s TeamService) CreateTeam(request entities.TeamRequest) (*entities.Team, *ServiceErrors) {
 	validationErrors := s.ValidateTeamRequest(request)
 	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	t, err := s.repo.Create(*entities.NewTeam(request.Name, request.Description))
 	// TODO: Test if we can create the team directly with skill and meber do i need to add it afterwards
-	return t, err
-}
-
-func (s TeamService) GetTeams() (*[]entities.Team, error) {
-	// IDEA: Filter based on user Role? RBAC
-	return s.repo.GetAll()
-}
-
-func (s TeamService) GetTeamByID(id string) (*entities.Team, error) {
-	var validationErrors errx.ErrorMap
-	fid, err := strconv.Atoi(id)
 	if err != nil {
-		validationErrors.Set("id", err)
-	}
-
-	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, validationErrors)
-	}
-	t, err := s.repo.GetByID(uint(fid))
-	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: err}
 	}
 	return t, nil
 }
 
-func (s TeamService) DeleteTeam(id string) error {
+func (s TeamService) GetTeams() (*[]entities.Team, *ServiceErrors) {
+	// IDEA: Filter based on user Role? RBAC
+	ts, err := s.repo.GetAll()
+	if err != nil {
+		return nil, &ServiceErrors{err: err}
+	}
+	return ts, nil
+}
+
+func (s TeamService) GetTeamByID(id string) (*entities.Team, *ServiceErrors) {
 	var validationErrors errx.ErrorMap
 	fid, err := strconv.Atoi(id)
 	if err != nil {
@@ -71,27 +61,44 @@ func (s TeamService) DeleteTeam(id string) error {
 	}
 
 	if validationErrors != nil {
-		return errors.Join(BadRequest, validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
+	}
+	t, err := s.repo.GetByID(uint(fid))
+	if err != nil {
+		return nil, &ServiceErrors{err: err}
+	}
+	return t, nil
+}
+
+func (s TeamService) DeleteTeam(id string) *ServiceErrors {
+	var validationErrors errx.ErrorMap
+	fid, err := strconv.Atoi(id)
+	if err != nil {
+		validationErrors.Set("id", err)
+	}
+
+	if validationErrors != nil {
+		return &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	t, err := s.repo.GetByID(uint(fid))
 	if err != nil {
-		return errors.Join(InternalError, err)
+		return &ServiceErrors{err: err}
 	}
 
 	if t == nil {
-		return errors.Join(BadRequest, fmt.Errorf("Team with id: %b dosen't exisits", fid))
+		return &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Team with id: %b dosen't exisits", fid))}
 	}
 
 	err = s.repo.Delete(*t)
 	if err != nil {
-		return errors.Join(InternalError, err)
+		return &ServiceErrors{err: err}
 	}
 
 	return nil
 }
 
-func (s TeamService) UpdateTeam(id string, request entities.TeamRequest) (*entities.Team, error) {
+func (s TeamService) UpdateTeam(id string, request entities.TeamRequest) (*entities.Team, *ServiceErrors) {
 	validationErrors := request.ValidateFields()
 
 	fid, err := strconv.Atoi(id)
@@ -100,24 +107,24 @@ func (s TeamService) UpdateTeam(id string, request entities.TeamRequest) (*entit
 	}
 
 	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	oldT, err := s.repo.GetByID(uint(fid))
 	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: err}
 	}
 	if oldT == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Team with id: %b doesn't exist", fid))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Team with id: %b doesn't exist", fid))}
 	}
 
 	nT, change := oldT.HasChanges(request.Name, request.Description, &oldT.Skills, &oldT.Members)
 	if change {
 		newTeam, err := s.repo.Update(*nT)
 		if err != nil {
-			return nil, errors.Join(InternalError, err)
+			return nil, &ServiceErrors{err: err}
 		}
 		return newTeam, nil
 	}
-	return nil, errors.Join(BadRequest, fmt.Errorf("No changes to Team: %v found.", id))
+	return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("No changes to Team: %v found.", id))}
 }

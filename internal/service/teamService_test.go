@@ -96,7 +96,7 @@ func (s *TeamServiceTestSuite) Test1CreateTeam() {
 			t, err := s.service.CreateTeam(req)
 
 			if tC.ExpectedErr != nil {
-				s.ErrorIs(err, tC.ExpectedErr)
+				s.ErrorContains(err, tC.ExpectedErr.Error())
 				s.Nil(t)
 			} else {
 				s.Nil(err)
@@ -142,7 +142,12 @@ func (s *TeamServiceTestSuite) Test3GetTeamByID() {
 		s.Run(tC.tcName, func() {
 			m, err := s.service.GetTeamByID(tC.ID)
 
-			s.ErrorIs(tC.ExpectedError, err)
+			if tC.ExpectedError != nil {
+				s.ErrorContains(err, tC.ExpectedError.Error())
+			} else {
+				s.Nil(err)
+			}
+
 			if tC.ExpectedTeam != nil {
 				s.Equal(tC.ExpectedTeam.Name, m.Name)
 				s.Equal(tC.ExpectedTeam.Description, m.Description)
@@ -207,7 +212,11 @@ func (s *TeamServiceTestSuite) Test4UpdateSkill() {
 			}
 
 			m, err := s.service.UpdateTeam(tc.TeamID, req)
-			s.ErrorIs(err, tc.ExpectedError, fmt.Sprintf("Error should be: %v but is actually: %v", tc.ExpectedError, err))
+			if tc.ExpectedError != nil {
+				s.ErrorContains(err, tc.ExpectedError.Error(), fmt.Sprintf("Error should be: %v but is actually: %v", tc.ExpectedError, err))
+			} else {
+				s.Nil(err)
+			}
 
 			if tc.ExpectedTeam != nil {
 				s.Equal(tc.ExpectedTeam.Name, m.Name)
@@ -240,7 +249,11 @@ func (s *TeamServiceTestSuite) Test5DeleteSkill() {
 	for _, tC := range testCases {
 		s.Run(tC.Name, func() {
 			err := s.service.DeleteTeam(tC.TeamID)
-			s.ErrorIs(err, tC.ExpectedError, fmt.Sprintf("Expected Error should be %v but is actually %v", tC.ExpectedError, err))
+			if tC.ExpectedError != nil {
+				s.ErrorContains(err, tC.ExpectedError.Error(), fmt.Sprintf("Expected Error should be %v but is actually %v", tC.ExpectedError, err))
+			} else {
+				s.Nil(err)
+			}
 		})
 	}
 }

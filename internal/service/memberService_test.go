@@ -82,7 +82,7 @@ func (s *MemberServiceTestSuite) TestCreateMember() {
 			req := entities.MemberRequest{Name: tC.Name, Age: tC.Age}
 			m, err := s.service.CreateMember(req)
 			if err != nil {
-				s.ErrorIs(err, tC.ExpectedErr)
+				s.ErrorContains(err, tC.ExpectedErr.Error())
 				s.Nil(m)
 			} else {
 				s.Nil(err)
@@ -114,7 +114,11 @@ func (s *MemberServiceTestSuite) TestDeleteMember() {
 	for _, tC := range testCases {
 		s.Run(tC.Name, func() {
 			err := s.service.DeleteMember(tC.MemberID)
-			s.ErrorIs(err, tC.ExpectedError, fmt.Sprintf("Expected Error should be %v but is actually %v", tC.ExpectedError, err))
+			if tC.ExpectedError != nil {
+				s.ErrorContains(err, tC.ExpectedError.Error(), fmt.Sprintf("Expected Error should be %v but is actually %v", tC.ExpectedError, err))
+			} else {
+				s.Nil(err)
+			}
 		})
 	}
 }
@@ -153,7 +157,11 @@ func (s *MemberServiceTestSuite) TestGetMemberByID() {
 		s.Run(tC.tcName, func() {
 			m, err := s.service.GetMemberByID(tC.ID)
 
-			s.ErrorIs(tC.ExpectedError, err)
+			if tC.ExpectedError != nil {
+				s.ErrorContains(err, tC.ExpectedError.Error())
+			} else {
+				s.Nil(err)
+			}
 			if tC.ExpectedMember != nil {
 				s.Equal(tC.ExpectedMember.Name, m.Name)
 				s.Equal(tC.ExpectedMember.Age, m.Age)
@@ -196,7 +204,12 @@ func (s *MemberServiceTestSuite) TestUpdateMember() {
 		s.Run(tc.tcName, func() {
 			req := entities.MemberRequest{Name: tc.Name, Age: tc.Age}
 			m, err := s.service.UpdateMember(tc.MemberID, req)
-			s.ErrorIs(err, tc.ExpectedError, fmt.Sprintf("Error should be: %v but is actually: %v", tc.ExpectedError, err))
+
+			if tc.ExpectedError != nil {
+				s.ErrorContains(err, tc.ExpectedError.Error(), fmt.Sprintf("Error should be: %v but is actually: %v", tc.ExpectedError, err))
+			} else {
+				s.Nil(err)
+			}
 			if tc.ExpectedMember != nil {
 				s.Equal(tc.ExpectedMember.Name, m.Name)
 				s.Equal(tc.ExpectedMember.Age, m.Age)

@@ -128,7 +128,7 @@ func (s *SkillServiceTestSuite) Test1CreateSkill() {
 			m, err := s.service.CreateSkill(req)
 
 			if tC.ExpectedErr != nil {
-				s.ErrorIs(err, tC.ExpectedErr)
+				s.ErrorContains(err, tC.ExpectedErr.Error())
 				s.Nil(m)
 			} else {
 				s.Nil(err)
@@ -179,7 +179,11 @@ func (s *SkillServiceTestSuite) Test3GetSkillByID() {
 		s.Run(tC.tcName, func() {
 			m, err := s.service.GetSkillByID(tC.ID)
 
-			s.ErrorIs(tC.ExpectedError, err)
+			if tC.ExpectedError != nil {
+				s.ErrorContains(err, tC.ExpectedError.Error())
+			} else {
+				s.Nil(err)
+			}
 			if tC.ExpectedSkill != nil {
 				s.Equal(tC.ExpectedSkill.Name, m.Name)
 				s.Equal(tC.ExpectedSkill.Description, m.Description)
@@ -272,7 +276,11 @@ func (s *SkillServiceTestSuite) Test4UpdateSkill() {
 			}
 
 			m, err := s.service.UpdateSkill(tc.SkillID, req)
-			s.ErrorIs(err, tc.ExpectedError, fmt.Sprintf("Error should be: %v but is actually: %v", tc.ExpectedError, err))
+			if tc.ExpectedError != nil {
+				s.ErrorContains(err, tc.ExpectedError.Error(), fmt.Sprintf("Error should be: %v but is actually: %v", tc.ExpectedError, err))
+			} else {
+				s.Nil(err)
+			}
 
 			if tc.ExpectedSkill != nil {
 				s.Equal(tc.ExpectedSkill.Name, m.Name)
@@ -305,7 +313,11 @@ func (s *SkillServiceTestSuite) Test5DeleteSkill() {
 	for _, tC := range testCases {
 		s.Run(tC.Name, func() {
 			err := s.service.DeleteSkill(tC.SkillID)
-			s.ErrorIs(err, tC.ExpectedError, fmt.Sprintf("Expected Error should be %v but is actually %v", tC.ExpectedError, err))
+			if tC.ExpectedError != nil {
+				s.ErrorContains(err, tC.ExpectedError.Error(), fmt.Sprintf("Expected Error should be %v but is actually %v", tC.ExpectedError, err))
+			} else {
+				s.Nil(err)
+			}
 		})
 	}
 }

@@ -16,7 +16,7 @@ type MemberManagementService struct {
 	skillRepo  repos.SkillRepository
 }
 
-func (s MemberManagementService) AddMemberToTeam(team_id string, member_id string) (*entities.Team, error) {
+func (s MemberManagementService) AddMemberToTeam(team_id string, member_id string) (*entities.Team, *ServiceErrors) {
 	var validationErrors errx.ErrorMap
 	tID, err := strconv.Atoi(team_id)
 	if err != nil {
@@ -29,29 +29,29 @@ func (s MemberManagementService) AddMemberToTeam(team_id string, member_id strin
 	}
 
 	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Validation Errors"), validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	m, err := s.memberRepo.GetByID(uint(mID))
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("DB Error"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("DB Error"), err)}
 	}
 
 	if m == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("member with id: %v not found", mID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("member with id: %v not found", mID))}
 	}
 
 	oldT, err := s.teamRepo.GetByID(uint(tID))
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("DB Error"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("DB Error"), err)}
 	}
 	if oldT == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Team with id: %v not found", tID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Team with id: %v not found", tID))}
 	}
 
 	t, err := s.teamRepo.AddMember(*oldT, *m)
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("Error on adding Member"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("Error on adding Member"), err)}
 	}
 
 	var skillErrors errx.ErrorMap
@@ -68,12 +68,12 @@ func (s MemberManagementService) AddMemberToTeam(team_id string, member_id strin
 	}
 
 	if skillErrors != nil {
-		return nil, errors.Join(InternalError, skillErrors)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, skillErrors)}
 	}
 	return t, nil
 }
 
-func (s MemberManagementService) RemoveMemberToTeam(team_id string, member_id string) (*entities.Team, error) {
+func (s MemberManagementService) RemoveMemberToTeam(team_id string, member_id string) (*entities.Team, *ServiceErrors) {
 	var validationErrors errx.ErrorMap
 	tID, err := strconv.Atoi(team_id)
 	if err != nil {
@@ -86,34 +86,34 @@ func (s MemberManagementService) RemoveMemberToTeam(team_id string, member_id st
 	}
 
 	if validationErrors != nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Validation Errors"), validationErrors)
+		return nil, &ServiceErrors{validationErrors: validationErrors}
 	}
 
 	m, err := s.memberRepo.GetByID(uint(mID))
 	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 	}
 
 	if m == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("member with id: %v not found", mID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("member with id: %v not found", mID))}
 	}
 
 	oldT, err := s.teamRepo.GetByID(uint(tID))
 	if err != nil {
-		return nil, errors.Join(InternalError, fmt.Errorf("DB Error"), err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, fmt.Errorf("DB Error"), err)}
 	}
 
 	if oldT == nil {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Team with id: %v not found", tID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Team with id: %v not found", tID))}
 	}
 
 	if !oldT.HasMember(m.ID) {
-		return nil, errors.Join(BadRequest, fmt.Errorf("Team: %v, dosen't have the Member: %v", tID, mID))
+		return nil, &ServiceErrors{err: errors.Join(BadRequest, fmt.Errorf("Team: %v, dosen't have the Member: %v", tID, mID))}
 	}
 
 	t, err := s.teamRepo.RemoveMember(*oldT, *m)
 	if err != nil {
-		return nil, errors.Join(InternalError, err)
+		return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 	}
 
 	return t, nil
