@@ -130,9 +130,13 @@ func (h TeamHandler) deleteTeam(w http.ResponseWriter, r *http.Request) response
 	log.Debug("Delete team hit")
 
 	err := h.service.DeleteTeam(r.PathValue("id"))
+	if err != nil {
+		return *response.NewApiResponse("ERROR", err)
+	}
 
 	log.Debug("delete team dispatched to service")
-	return *response.NewApiResponse("Done", err)
+
+	return *response.NewApiResponse("Done", nil)
 }
 
 // UpdateTeam Updates team by its id
@@ -162,6 +166,7 @@ func (h TeamHandler) updateTeam(w http.ResponseWriter, r *http.Request) response
 	newTeam, err := h.service.UpdateTeam(r.PathValue("id"), teamReq)
 
 	log.Debug("team update dispatched")
+
 	return *response.NewApiResponse(newTeam, err)
 }
 
