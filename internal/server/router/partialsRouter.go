@@ -10,6 +10,6 @@ func NewPartialsRouter(handler ...IRouter) *http.ServeMux {
 		h.RegisterRoutes(t)
 	}
 
-	// f.Handle("/", http.StripPrefix("/", t))
+	t.HandleFunc("GET /", serveNotFound())
 	return t
 }
