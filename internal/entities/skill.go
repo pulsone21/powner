@@ -56,12 +56,21 @@ const (
 	Soft SkillType = 1
 )
 
-type skillSort []Skill
+type Skills []Skill
 
-func (s skillSort) Len() int           { return len(s) }
-func (s skillSort) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
-func (s skillSort) Less(i, j int) bool { return s[i].ID > s[j].ID }
-func (s skillSort) toSkills() []Skill  { return []Skill(s) }
+func (s Skills) Len() int           { return len(s) }
+func (s Skills) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s Skills) Less(i, j int) bool { return s[i].ID > s[j].ID }
+func (s Skills) ToSkills() []Skill  { return []Skill(s) }
+func (sK Skills) FilterByHolder(t SkillHolder, has bool) Skills {
+	var final Skills
+	for _, s := range sK {
+		if t.HasSkill(s.ID) == has {
+			final = append(final, s)
+		}
+	}
+	return final
+}
 
 type SkillRequest struct {
 	Name        string `json:"name"`

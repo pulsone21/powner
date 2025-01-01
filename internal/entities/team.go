@@ -91,8 +91,8 @@ func (t Team) skillsChanged(newS []Skill) bool {
 		return true
 	}
 
-	sort.Sort(skillSort(newS))
-	sort.Sort(skillSort(t.Skills))
+	sort.Sort(Skills(newS))
+	sort.Sort(Skills(t.Skills))
 
 	for i, s := range t.Skills {
 		if s != newS[i] {
