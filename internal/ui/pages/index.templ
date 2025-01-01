@@ -9,14 +9,9 @@ import (
 templ Index() {
 	@shared.Base() {
 		<div class="bg-base flex flex-row max-w-full w-full h-full ">
-			<div class="w-20 mr-2 flex flex-col justify-between">
-				@partials.Logo()
-				@partials.Navbar()
-			</div>
-			<div class=" w-full flex flex-col justify-between">
-				<div id="content" class="h-full flex flex-col justify-between">
-					@subpage.MainDashboard()
-				</div>
+			@partials.SideBar()
+			<div id="content" class="h-full w-full flex flex-col justify-between">
+				@subpage.MainDashboard()
 			</div>
 		</div>
 	}

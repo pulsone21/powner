@@ -7,7 +7,6 @@ import (
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
 	"github.com/pulsone21/powner/internal/ui/pages"
-	"github.com/pulsone21/powner/internal/ui/subpage"
 )
 
 type TeamPageHandler struct {
@@ -32,7 +31,7 @@ func (h *TeamPageHandler) generalTeamPage(w http.ResponseWriter, r *http.Request
 	log.Debug("general team page requested")
 	t, err := h.teamService.GetTeams()
 	if err != nil {
-		return nil
+		return response.NewUIResponse(nil, err)
 	}
 
 	return response.NewUIResponse(pages.TeamsPage(t), nil)
@@ -43,8 +42,7 @@ func (h *TeamPageHandler) specificTeamPage(w http.ResponseWriter, r *http.Reques
 	log.Debug("specific team page requested")
 	t, err := h.teamService.GetTeamByID(r.PathValue("id"))
 	if err != nil {
-		// TODO: Create partials for Error responses
-		return nil
+		return response.NewUIResponse(nil, err)
 	}
-	return response.NewUIResponse(subpage.Team(*t), nil)
+	return response.NewUIResponse(pages.TeamPage(*t), nil)
 }

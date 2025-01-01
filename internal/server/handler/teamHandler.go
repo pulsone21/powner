@@ -104,8 +104,8 @@ func (h TeamHandler) createTeam(w http.ResponseWriter, r *http.Request) response
 
 	log.Debug("team request, parsed", "teamReq: ", fmt.Sprintf("%+v", teamReq))
 
-	mem, err := h.service.CreateTeam(teamReq)
-	if err != nil {
+	mem, sErr := h.service.CreateTeam(teamReq)
+	if sErr != nil {
 		return *response.NewApiResponse(nil, err)
 	}
 

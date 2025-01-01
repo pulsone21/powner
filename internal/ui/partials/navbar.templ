@@ -1,19 +1,51 @@
 package partials
 
+import "github.com/pulsone21/powner/internal/ui/shared"
+
 templ Navbar() {
-	<div class="flex flex-col bg-mantle h-full items-center rounded-b-lg">
-		<button
-			type="button"
-			class="htransition-color duration-200 hover:bg-rosewater/5 hover:text-rosewater items-center justify-center m-2 w-full h-14"
-			hx-get="/modal/newTeam"
-			hx-target="#modalContainer"
-		>
-			<span class="font-extrabold text-3xl inline-block align-middle">+</span>
-		</button>
-		<div
-			class="h-full items-center flex flex-col w-full px-1"
-			hx-get="/api/team"
-			hx-trigger="load, newTeam from:body"
-		></div>
+	<div class="flex flex-col bg-mantle h-full min-w-20 items-center rounded-b-lg p-1">
+		<div class="max-h-20 w-full flex items-center my-1">
+			@shared.IconButton("Teams", "", templ.Attributes{
+				"class":          "max-h-12",
+				"hx-get":         "/partials/teams/overview",
+				"hx-target":      "#content",
+				"hx-replace-url": "/teams/",
+				"hx-swap":        "innerHTML",
+			})
+		</div>
+		<div class="max-h-20 w-full flex items-center my-1">
+			@shared.IconButton("Members", "", templ.Attributes{
+				"class":          "max-h-12",
+				"hx-get":         "/partials/members/overview",
+				"hx-target":      "#content",
+				"hx-replace-url": "/members/",
+				"hx-swap":        "innerHTML",
+			})
+		</div>
+		<div class="max-h-20 w-full flex items-center my-1">
+			@shared.IconButton("Skills", "", templ.Attributes{
+				"class":     "max-h-12",
+				"hx-get":    "/partials/skills",
+				"hx-target": "#content",
+				"hx-swap":   "innerHTML",
+				//"hx-replace-url": "/skills/",
+			})
+		</div>
+		<div class="max-h-20 w-full flex items-center my-1">
+			@shared.IconButton("Settings", "", templ.Attributes{
+				"class":     "max-h-12",
+				"hx-get":    "/partials/settings",
+				"hx-target": "#content",
+				"hx-swap":   "innerHTML",
+				//"hx-replace-url": "/settings/",
+			})
+		</div>
+	</div>
+}
+
+templ SideBar() {
+	<div class="w-20 mr-2 flex flex-col justify-between">
+		@Logo()
+		@Navbar()
 	</div>
 }

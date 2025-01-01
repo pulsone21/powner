@@ -1,0 +1,40 @@
+package notifications
+
+templ Success(msg string, attr templ.Attributes) {
+	<div
+		class="bg-green p-1 border-2 border-green-900 rounded-lg flex flex-row justify-between opacity-75"
+	>
+		//_="on load wait 4s remove me"
+		<p class="text-green-900">{ msg }</p>
+		<p
+			class="cursor-pointer mr-2 text-green-900"
+			_="on click remove closest parent <div/>"
+		>{ "X" }</p>
+	</div>
+}
+
+templ Neutral(msg string, attr templ.Attributes) {
+	<div
+		class="bg-surface1 p-1 border-2 border-overlay0 rounded-lg flex flex-row justify-between opacity-75"
+		_="on load wait 4s remove me"
+	>
+		<p>{ msg }</p>
+		<p
+			class="cursor-pointer ml-6 mr-2 hover:text-surface2 transition-all"
+			_="on click remove closest parent <div/>"
+		>{ "X" }</p>
+	</div>
+}
+
+templ Error(msg string, attr templ.Attributes) {
+	<div
+		class="bg-red p-1 border-2 border-red-900 rounded-lg flex flex-row justify-between opacity-75"
+	>
+		//_="on load wait 4s remove me"
+		<p class="text-red-900">{ msg }</p>
+		<p
+			class="cursor-pointer ml-6 mr-2 text-red-900"
+			_="on click remove closest parent <div/>"
+		>{ "X" }</p>
+	</div>
+}

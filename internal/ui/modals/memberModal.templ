@@ -1,34 +1,46 @@
 package modals
 
 import (
-	"fmt"
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/ui/partials"
+	"github.com/pulsone21/powner/internal/ui/shared"
 )
 
 templ MemberModal(mems []entities.Member, t *entities.Team) {
-	@BaseModal() {
-		<div class="w-full h-full bg-base flex items-center justify-between flex-col p-3 rounded-lg opacity-100">
+	@baseModal() {
+		<div class="w-full h-full bg-base flex items-center justify-between flex-col p-2 rounded-lg opacity-100">
 			<div class="flex flex-row w-full h-[93%]">
-				<div class="w-1/2 bg-mantle rounded-lg mr-2 p-2" hx-get="/api/member" hx-target="this" hx-trigger="newMember from:body">
-					@partials.MemberList(mems, t, "No member found")
+				<div class="w-1/2 bg-mantle rounded-lg mr-2 p-2">
+					@partials.MemberAddTeamList(mems, t.ID)
 				</div>
 				<div class="w-1/2 bg-mantle rounded-lg p-2">
-					@partials.MemberForm()
+					@partials.MemberForm(nil)
 				</div>
 			</div>
-			<div class="flexify-between items-center w-3/5 h-10 bottom-0">
-				@partials.Button(partials.ButtonProps{Label: "Close",
-					Classes:     fmt.Sprintf("%v %v", partials.DefaultBtnClasses, "hover:text-red hover:bg-red/25"),
-					Hyperscript: "on click remove #modal",
-				})
+			<div class="mt-2 flex justify-between items-center w-3/5 h-10 bottom-0">
+				@shared.Button(
+					"Close",
+					"hover:text-red hover:bg-red/25",
+					templ.Attributes{
+						"_": "on click remove #modal",
+					})
 			</div>
 		</div>
 	}
 }
 
 templ MemberInfoModal(mem entities.Member) {
-	@BaseModal() {
+	@baseModal() {
 		@partials.MemberInfo(mem)
+	}
+}
+
+templ NewMemberModal() {
+	@baseModal() {
+		<div class="w-2/3 bg-base rounded-lg mr-2 p-2">
+			<div class="w-full bg-mantle mr-2 p-2">
+				@partials.MemberForm(nil)
+			</div>
+		</div>
 	}
 }

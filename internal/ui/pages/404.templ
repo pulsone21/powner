@@ -1,0 +1,12 @@
+package pages
+
+import "github.com/pulsone21/powner/internal/ui/shared"
+
+templ NotFound() {
+	@shared.Base() {
+		<div class="bg-base flex flex-col max-w-full w-full h-full justify-center items-center">
+			<h1 class="font-extrabold text-4xl">Page not Found...</h1>
+			<a class="hover:text-sapphire transition-colors text-green" href="/">back to Home</a>
+		</div>
+	}
+}

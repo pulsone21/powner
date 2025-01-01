@@ -82,8 +82,10 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	memPages := handler.NewMemberPageHandler(mServ)
 
 	partialsRouter := router.NewPartialsRouter(
-		handler.NewTeamPartialsHandler(tServ),
-		handler.NewMemberPartialsHandler(mServ),
+		handler.NewTeamPartialsHandler(tServ, mgServ),
+		handler.NewMemberPartialsHandler(mServ, tServ),
+		handler.NewSkillPartialsHandler(sServ),
+		handler.NewSkillMgmtPartialsHandler(sgServ),
 		handler.NewFormsHandler(mServ, sServ, tServ),
 	)
 
@@ -101,13 +103,13 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	mux.Handle("/modals/", htmxChain.Apply(http.StripPrefix("/modals", modalRouter)))
 	mux.Handle("/teams/", uiChain.Apply(http.StripPrefix("/teams", teamPages.GetRoutes())))
 	mux.Handle("/members/", uiChain.Apply(http.StripPrefix("/members", memPages.GetRoutes())))
+	mux.Handle("/skills/", uiChain.Apply(http.StripPrefix("/skills", memPages.GetRoutes())))
 	mux.Handle("/", uiChain.Apply(generalPages.GetRoutes()))
 
 	s := http.Server{
 		Addr: fmt.Sprintf("%v:%v", url, port),
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if _, pattern := mux.Handler(r); pattern != "" {
-				fmt.Printf("Pattern which exsists hit, acutal: %v", pattern)
 				mux.ServeHTTP(w, r)
 			} else {
 				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

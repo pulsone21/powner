@@ -13,10 +13,15 @@ templ Base() {
 			<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
 			<script src="/static/scripts/hyperscript.js"></script>
 		</head>
-		<body class="mocha flex text-text p-2 h-dv max-h-dvh bg-base ">
+		<body
+			class="mocha flex text-text p-2 h-dv max-h-dvh bg-base "
+			hx-ext="response-targets"
+			hx-target-404="#content"
+			hx-swap="innerHTML"
+		>
 			{ children... }
 			<div id="modalContainer"></div>
-			<div></div>
+			<div id="notificationContainer" class="z-[1000] absolute bottom-4 left-4 flex flex-col w-64 gap-1"></div>
 		</body>
 	</html>
 }

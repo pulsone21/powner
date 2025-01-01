@@ -1,4 +1,4 @@
-package partials
+package shared
 
 type InputOptions struct {
 	Label string

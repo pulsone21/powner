@@ -66,8 +66,8 @@ func (h SkillHandler) CreateSkill(w http.ResponseWriter, r *http.Request) respon
 		return *response.NewApiResponse(nil, errors.Join(service.BadRequest, err))
 	}
 
-	mem, err := h.service.CreateSkill(skReq)
-	if err != nil {
+	mem, sErr := h.service.CreateSkill(skReq)
+	if sErr != nil {
 		return *response.NewApiResponse(nil, err)
 	}
 

@@ -70,8 +70,8 @@ func (h MemberHandler) createMember(w http.ResponseWriter, r *http.Request) resp
 		return *response.NewApiResponse(nil, errors.Join(service.BadRequest, err))
 	}
 
-	mem, err := h.service.CreateMember(memReq)
-	if err != nil {
+	mem, sErr := h.service.CreateMember(memReq)
+	if sErr != nil {
 		return *response.NewApiResponse(nil, err)
 	}
 

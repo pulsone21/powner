@@ -1,0 +1,17 @@
+package components
+
+// INFO: Work for now... see https://github.com/a-h/templ/issues/975
+templ list(placeholder, url, trigger string) {
+	<div
+		hx-get={ url }
+		hx-swap="outerHTML"
+		hx-trigger={ trigger }
+	>
+		<ul role="list" class="scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2">
+			{ children... }
+		</ul>
+		//<p class="text-overlay1">
+		//	{ placeholder }
+		//</p>
+	</div>
+}

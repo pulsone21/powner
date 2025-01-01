@@ -109,7 +109,7 @@ func (s SkillManagement) AddSkillToMember(mem_id, skill_id string, rating int) (
 	}
 
 	if s.validRatingScore(rating) {
-		m, err = s.UpdateSkillRating(fmt.Sprint(m.ID), fmt.Sprint(sk.ID), rating)
+		_, err := s.UpdateSkillRating(fmt.Sprint(m.ID), fmt.Sprint(sk.ID), rating)
 		if err != nil {
 			return nil, &ServiceErrors{err: errors.Join(InternalError, err)}
 		}
