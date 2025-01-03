@@ -3,7 +3,7 @@ package modals
 import "github.com/pulsone21/powner/internal/ui/partials"
 
 templ NewTeamModal() {
-	@BaseModal() {
-		@partials.TeamForm()
+	@baseModal() {
+		@partials.TeamForm(nil)
 	}
 }

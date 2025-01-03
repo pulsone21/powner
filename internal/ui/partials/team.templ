@@ -3,9 +3,13 @@ package partials
 import (
 	"fmt"
 	"github.com/pulsone21/powner/internal/entities"
+	"github.com/pulsone21/powner/internal/errx"
+	"github.com/pulsone21/powner/internal/service"
+	"github.com/pulsone21/powner/internal/ui/components"
+	"github.com/pulsone21/powner/internal/ui/shared"
 )
 
-templ TeamForm() {
+templ TeamForm(errMap errx.ErrorMap) {
 	<div id="formContainer" class="h-full w-full p-2 bg-base rounded-lg ">
 		<div
 			class="bg-mantle h-full w-full flex flex-col items-center"
@@ -15,93 +19,88 @@ templ TeamForm() {
 				id="teamForm"
 				autocomplete="off"
 				class="flex h-full justify-between w-5/6 flex-col items-center"
-				hx-post="/api/team"
+				hx-post="/partials/forms/teams/add"
 				hx-target="#formContainer"
 				hx-swap="outerHTML"
 			>
 				<div class="w-full h-full">
-					@Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name"})
-					@Input(templ.Attributes{"placeholder": "Description", "id": "description", "name": "description"})
+					@shared.Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name"}, errMap.Get("name"))
+					@shared.Input(templ.Attributes{"placeholder": "Description", "id": "description", "name": "description"}, errMap.Get("description"))
 				</div>
 				<div class="h-12 w-full mt-2">
-					@Button(ButtonProps{Label: "Save team", Type: "submit"})
+					@shared.Button("Save team", "", templ.Attributes{"type": "submit"})
 				</div>
 			</form>
 		</div>
 	</div>
 }
 
-templ TeamNavbarList(teams []entities.Team) {
-	<div class="w-full">
-		for _,t := range teams {
-			<div class="w-full h-12 flex mb-2 items-center justify-center">
-				@Button(ButtonProps{
-					Label: teamNameToBtnName(t.Name),
-					HxAttr: &HXAttributes{
-						Method:     GET,
-						Target:     "#content",
-						Trigger:    "click",
-						ReplaceURL: fmt.Sprintf("/team/%v", t.ID),
-						Action:     fmt.Sprintf("/api/team/%v", t.ID),
-					},
-				})
-			</div>
+templ TeamList(teams []entities.Team, placeholder string, itemFunc components.TeamListAddon) {
+	<div
+		class="h-full"
+		hx-get="/partials/teams/list"
+		hx-swap="outerHTML"
+		hx-trigger={ fmt.Sprintf("%v from:body, %v from:body, every 600s", service.CreateTeamEvent, service.DeleteTeamEvent) }
+	>
+		if len(teams) > 0 {
+			<ul role="list" class="scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2">
+				for _, t := range teams {
+					@TeamListItem(t, itemFunc)
+				}
+			</ul>
+		} else {
+			<p class="text-overlay1">
+				{ placeholder }
+			</p>
 		}
 	</div>
 }
 
-templ TeamList(teams []entities.Team, memID uint, placeholder string) {
-	if len(teams) > 0 {
-		<div>
-			<ul role="list" class="scroll-smooth overflow-hidden h-full overflow-y-auto divide-y-2 divide-base">
-				for _, t := range teams {
-					@TeamListItem(t, fmt.Sprint(memID), t.HasMember(memID))
-				}
-			</ul>
+templ TeamListItem(t entities.Team, itemFunc components.TeamListAddon) {
+	<li
+		class="min-h-10 justify-between flex flex-row rounded-lg p-1 cursor-pointer hover:opacity-70 transition"
+	>
+		<div
+			class="flex flex-col max-w-1/2 flex-grow min-w-0"
+			hx-get={ fmt.Sprintf("/partials/teams/%v/details", t.ID) }
+			hx-target="#teamDetails"
+			hx-swap="innerHTML"
+			hx-replace-url={ fmt.Sprintf("/teams/%v", t.ID) }
+		>
+			<p
+				class="font-bold truncate min-w-0"
+				title={ t.Name }
+			>{ t.Name }</p>
+			<p
+				class="text-subtext0 truncate min-w-0"
+				title={ t.Description }
+			>{ t.Description }</p>
 		</div>
-	} else {
-		<p class="text-overlay1">
-			{ placeholder }
-		</p>
-	}
+		if itemFunc != nil {
+			<div class="flex flex-row justify-center ml-4 items-center">
+				@itemFunc(fmt.Sprint(t.ID))
+			</div>
+		}
+	</li>
 }
 
-templ TeamListItem(t entities.Team, memID string, add bool) {
-	<li class="min-h-12">
-		<div
-			class="flex flex-row justify-between rounded-lg p-1"
-		>
-			//hx-get={ fmt.Sprintf("/api/member/%v", mem.ID) }
-			<div class="flex flex-col w-1/2">
-				<span class="font-bold">{ t.Name }</span>
-				<span class="text-subtext0 truncate max-h-6">{ t.Description }</span>
-			</div>
-			if memID != "" || memID != "0" {
-				switch add {
-					case false:
-						<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
-							@AddButton(ButtonProps{
-								HxAttr: &HXAttributes{
-									Method: "POST",
-									Target: "closest li",
-									Swap:   "outerHTML",
-									Action: fmt.Sprintf("/api/member/%v/team/%v", memID, t.ID),
-								},
-							})
-						</div>
-					case true:
-						<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
-							@RemoveButton(ButtonProps{
-								HxAttr: &HXAttributes{
-									Method: "DELETE",
-									Target: "closest li",
-									Swap:   "outerHTML",
-									Action: fmt.Sprintf("/api/member/%v/team/%v", memID, t.ID),
-								},
-							})
-						</div>
+templ TeamMemberList(t entities.Team) {
+	<div
+		class="h-full"
+		hx-get={ fmt.Sprintf("/partials/teams/%v/members", t.ID) }
+		hx-trigger={ fmt.Sprintf("%v from:body", service.ChangeTeamEvent) }
+		hx-swap="outerHTML"
+	>
+		if len(t.Members) > 0 {
+			<ul role="list" class="scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2">
+				for _, m := range t.Members {
+					@MemberTeamListItem(m, t.ID, false)
 				}
-			}
-		</div>
-	</li>
+			</ul>
+		} else {
+			<p class="text-overlay1">
+				{ "Team has no members currently" }
+			</p>
+		}
+	</div>
 }

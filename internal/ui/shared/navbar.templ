@@ -1,0 +1,49 @@
+package shared
+
+templ Navbar() {
+	<div class="flex flex-col bg-mantle h-full min-w-20 items-center rounded-b-lg p-1">
+		<div class="max-h-20 w-full flex items-center my-1">
+			@IconButton("Teams", "", templ.Attributes{
+				"class":          "max-h-12",
+				"hx-get":         "/partials/teams/overview",
+				"hx-target":      "#content",
+				"hx-replace-url": "/teams/",
+				"hx-swap":        "innerHTML",
+			})
+		</div>
+		<div class="max-h-20 w-full flex items-center my-1">
+			@IconButton("Members", "", templ.Attributes{
+				"class":          "max-h-12",
+				"hx-get":         "/partials/members/overview",
+				"hx-target":      "#content",
+				"hx-replace-url": "/members/",
+				"hx-swap":        "innerHTML",
+			})
+		</div>
+		<div class="max-h-20 w-full flex items-center my-1">
+			@IconButton("Skills", "", templ.Attributes{
+				"class":          "max-h-12",
+				"hx-get":         "/partials/skills/overview",
+				"hx-target":      "#content",
+				"hx-swap":        "innerHTML",
+				"hx-replace-url": "/skills/",
+			})
+		</div>
+		<div class="max-h-20 w-full flex items-center my-1">
+			@IconButton("Settings", "", templ.Attributes{
+				"class":          "max-h-12",
+				"hx-get":         "/partials/settings/overview",
+				"hx-target":      "#content",
+				"hx-swap":        "innerHTML",
+				"hx-replace-url": "/settings/",
+			})
+		</div>
+	</div>
+}
+
+templ SideBar() {
+	<div class="w-20 flex flex-col justify-between">
+		@Logo()
+		@Navbar()
+	</div>
+}

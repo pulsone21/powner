@@ -1,4 +1,4 @@
-dev:
+dev: swag
   templ generate
   npx tailwindcss -i ./public/static/styles/input.css -o ./public/static/styles/base.css --minify
   go run ./cmd/main.go
@@ -20,3 +20,9 @@ del_db:
   rm -rf ./db/test.db
   touch ./db/test.db
 
+test:
+  go test ./... -v
+
+swag:
+  swag fmt --dir ./internal/server,./internal
+  swag init --dir ./internal/server,./internal,./internal/server/response --parseDependency --parseInternal

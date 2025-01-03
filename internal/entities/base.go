@@ -5,3 +5,7 @@ type SkillHolder interface {
 	GetType() string
 	GetID() uint
 }
+
+type Entity interface {
+	Member | Skill | SkillRating | Team
+}

@@ -3,21 +3,24 @@ package partials
 import (
 	"fmt"
 	"github.com/pulsone21/powner/internal/entities"
+	"github.com/pulsone21/powner/internal/errx"
+	"github.com/pulsone21/powner/internal/service"
+	"github.com/pulsone21/powner/internal/ui/shared"
 )
 
-templ SkillForm() {
+templ SkillForm(errMap errx.ErrorMap) {
 	<div id="formContainer" class="h-full flex flex-col items-center">
 		<h4 class="font-extrabold text-red text-2xl">New Skill</h4>
 		<form id="skillForm" autocomplete="off" class="flex h-full w-5/6 flex-col items-center justify-evenly" hx-post="/api/skill" hx-target="#formContainer" hx-swap="outerHTML">
-			@Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name"})
-			@Input(templ.Attributes{"placeholder": "Description", "id": "description", "name": "description"})
-			@Input(templ.Attributes{"placeholder": "Importance", "id": "importance", "name": "importance"})
-			@Selection("Type", []InputOptions{
-				InputOptions{Label: "Hard", Value: "0"},
-				InputOptions{Label: "Soft", Value: "1"},
+			@shared.Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name"}, errMap.Get("name"))
+			@shared.Input(templ.Attributes{"placeholder": "Description", "id": "description", "name": "description"}, errMap.Get("description"))
+			@shared.Input(templ.Attributes{"placeholder": "Importance", "id": "importance", "name": "importance"}, errMap.Get("importance"))
+			@shared.Selection("Type", []shared.InputOptions{
+				{Label: "Hard", Value: "0"},
+				{Label: "Soft", Value: "1"},
 			}, templ.Attributes{"placeholder": "Type", "id": "type", "name": "type"})
 			<div class="h-12 w-full">
-				@Button(ButtonProps{Label: "Save skill", Type: "submit"})
+				@shared.Button("Save Skill", "", templ.Attributes{"type": "submit"})
 			</div>
 		</form>
 	</div>
@@ -28,9 +31,13 @@ templ SkillList(skills []entities.Skill, ent entities.SkillHolder, placeholder s
 		<ul role="list" class="scroll-smooth overflow-hidden min-w-52 h-full overflow-y-auto divide-y-2 divide-base">
 			for _,s := range skills {
 				if ent != nil {
-					@SkillListItem(s, string(ent.GetID()), ent.GetType(), ent.HasSkill(s.ID))
+					@SkillListItem(s) {
+						@skillItemAssignButton(s.ID, ent.GetID(), ent.GetType(), ent.HasSkill(s.ID))
+					}
 				} else {
-					@SkillListItem(s, "", "", false)
+					@SkillListItem(s) {
+						@skillItemDeleteButton(s.ID)
+					}
 				}
 			}
 		</ul>
@@ -48,82 +55,94 @@ templ skillListHeader(name string, description string) {
 	</div>
 }
 
-templ SkillListItem(s entities.Skill, id string, dest string, add bool) {
-	<li class="min-h-12">
-		<div class="flex flex-row justify-between">
+templ SkillListItem(s entities.Skill) {
+	<li class="min-h-10 justify-between rounded-lg p-1 cursor-pointer hover:opacity-70 transition">
+		<div
+			class="flex flex-row justify-between"
+			hx-get={ fmt.Sprintf("/partials/skills/%v/details", s.ID) }
+			hx-target="#skillDetails"
+			hx-swap="innerHTML"
+			hx-replace-url={ fmt.Sprintf("/skills/%v", s.ID) }
+		>
 			@skillListHeader(s.Name, s.Description)
-			if id != "" && dest != "" {
-				<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
-					switch add {
-						case false:
-							@AddButton(ButtonProps{
-								HxAttr: &HXAttributes{
-									Trigger: "click",
-									Method:  "POST",
-									Target:  "closest li",
-									Swap:    "outerHTML",
-									Action:  fmt.Sprintf("/api/%v/%v/skill/%v", dest, id, s.ID),
-								},
-							})
-						case true:
-							@RemoveButton(ButtonProps{
-								HxAttr: &HXAttributes{
-									Trigger: "click",
-									Method:  "DELETE",
-									Target:  "closest li",
-									Swap:    "outerHTML",
-									Action:  fmt.Sprintf("/api/%v/%v/skill/%v", dest, id, s.ID),
-								},
-							})
-					}
-				</div>
-			}
+			{ children... }
 		</div>
 	</li>
+}
+
+templ skillItemDeleteButton(sID uint) {
+	<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
+		@shared.RemoveButton(templ.Attributes{
+			"hx-trigger": "click",
+			"hx-delete":  fmt.Sprintf("/partials/skills/%v", sID),
+			"hx-target":  "closest li",
+			"hx-swap":    "delete",
+		}, "", "")
+	</div>
+}
+
+templ skillItemAssignButton(sID, targetID uint, dest string, add bool) {
+	<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
+		switch add {
+			case false:
+				@shared.AddButton(templ.Attributes{
+					"hx-trigger": "click",
+					"hx-post":    fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
+					"hx-target":  "closest li",
+					"hx-swap":    "outerHTML",
+				}, "", "")
+			case true:
+				@shared.RemoveButton(templ.Attributes{
+					"hx-trigger": "click",
+					"hx-delete":  fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
+					"hx-target":  "closest li",
+					"hx-swap":    "outerHTML",
+				}, "", "")
+		}
+	</div>
 }
 
 templ SkillAdjustList(mem entities.Member) {
-	<ul
-		role="list"
-		class="p-1 divide-y-2 divide-base"
-	>
-		for _, s := range mem.Skills {
-			@SkillAddjustItem(fmt.Sprintf("%v", mem.ID), s)
-		}
-	</ul>
+	if len(mem.Skills) > 0 {
+		<ul
+			role="list"
+			class="scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2 min-w-56"
+			hx-get={ fmt.Sprintf("/partials/members/%v/skilllist", mem.ID) }
+			hx-trigger={ fmt.Sprintf("%v from:body", service.ChangeMemberEvent) }
+		>
+			for _, s := range mem.Skills {
+				@SkillListItem(s.Skill) {
+					@SkillAddjustItem(fmt.Sprintf("%v", mem.ID), s)
+				}
+			}
+		</ul>
+	} else {
+		<div class="p-2">
+			<p class="text-overlay1">This member has no skills yet</p>
+		</div>
+	}
 }
 
 templ SkillAddjustItem(memId string, s entities.SkillRating) {
-	<li id={ fmt.Sprintf("%v-%v", memId, s.ID) } class="py-1 px-2 flex flex-row justify-between">
-		<div
-			class="w-3/6"
-		>
-			@skillListHeader(s.Skill.Name, s.Skill.Description)
+	<div class="flex flex-row gap-1 w-fit  justify-start items-center">
+		<div class="w-9 h-9 flex items-center justify-center">
+			@shared.AddButton(templ.Attributes{
+				"disabled":  (s.Rating + 1) > 5,
+				"hx-post":   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating+1),
+				"hx-target": "closest li",
+				"hx-swap":   "outerHTML",
+			}, "", "+")
 		</div>
-		<div class="flex w-28 flex-row justify-around min-w-28">
-			<div class="w-10 h-10">
-				@AddButton(
-					ButtonProps{Label: "+",
-						HxAttr: &HXAttributes{
-							Method: "GET",
-							Action: fmt.Sprintf("/api/member/%v/skillrating/%v/%v", memId, s.ID, s.Rating+1),
-							Target: "closest li",
-							Swap:   "outerHTML",
-						}},
-				)
-			</div>
-			<span class="mx-2 text-center inline-flex justify-center items-center">{ fmt.Sprint(s.Rating) }</span>
-			<div class="w-10 h-10">
-				@RemoveButton(
-					ButtonProps{Label: "-",
-						HxAttr: &HXAttributes{
-							Method: "GET",
-							Action: fmt.Sprintf("/api/member/%s/skillrating/%v/%v", memId, s.ID, s.Rating-1),
-							Target: "closest li",
-							Swap:   "outerHTML",
-						}},
-				)
-			</div>
+		<div class="w-4 h-9 flex justify-center items-center">
+			<p class="">{ fmt.Sprint(s.Rating) }</p>
 		</div>
-	</li>
+		<div class="w-9 h-9 flex items-center justify-center">
+			@shared.RemoveButton(templ.Attributes{
+				"disabled":  (s.Rating - 1) < 1,
+				"hx-post":   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating-1),
+				"hx-target": "closest li",
+				"hx-swap":   "outerHTML",
+			}, "", "-")
+		</div>
+	</div>
 }

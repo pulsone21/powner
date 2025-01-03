@@ -1,10 +1,7 @@
 package entities
 
 import (
-	"errors"
-	"fmt"
-	"log/slog"
-
+	"github.com/pulsone21/powner/internal/errx"
 	"gorm.io/gorm"
 )
 
@@ -23,62 +20,9 @@ func NewMember(name string, age int) *Member {
 	}
 }
 
-func GetMembers(db *gorm.DB) (*[]Member, error) {
-	mems := []Member{}
-	res := db.Model(&Member{}).Preload("Skills").Preload("Skills.Skill").Find(&mems)
-
-	if res.Error != nil {
-		return nil, res.Error
-	}
-
-	if res.RowsAffected == 0 {
-		return &[]Member{}, nil
-	}
-
-	return &mems, nil
-}
-
-func GetMemberById(db *gorm.DB, id uint) (*Member, error) {
-	var member Member
-	res := db.Model(&Member{}).Preload("Skills").Preload("Skills.Skill").Where("Id = ?", id).First(&member)
-
-	if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-		return nil, nil
-	}
-
-	if res.Error != nil {
-		return nil, res.Error
-	}
-
-	return &member, nil
-}
-
-func CreateMember(db *gorm.DB, t Member) (*Member, error) {
-	res := db.Create(&t)
-
-	if res.Error != nil {
-		return nil, res.Error
-	}
-
-	if res.RowsAffected == 0 {
-		return nil, fmt.Errorf("couldn't create member.")
-	}
-
-	return &t, nil
-}
-
-func DeleteMember(db *gorm.DB, id uint) error {
-	return db.Delete(&Member{}, id).Error
-}
-
-func UpdateMember(db *gorm.DB, mem Member) error {
-	return db.Save(&mem).Error
-}
-
 func (m Member) HasSkill(skillID uint) bool {
 	for _, sR := range m.Skills {
 		if sR.Skill.ID == skillID {
-			slog.Info("Mem: %v has the Skill: %v with id: %v\n", m.Name, sR.Skill.Name, skillID)
 			return true
 		}
 	}
@@ -100,4 +44,43 @@ func (m Member) GetSkillRatingBySkill(id uint) *SkillRating {
 		}
 	}
 	return nil
+}
+
+func (m *Member) HasChanges(name string, age int) (*Member, bool) {
+	changes := false
+	if m.Name != name {
+		changes = true
+		m.Name = name
+	}
+
+	if m.Age != age {
+		changes = true
+		m.Age = age
+	}
+
+	return m, changes
+}
+
+type memberSort []Member
+
+func (s memberSort) Len() int           { return len(s) }
+func (s memberSort) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s memberSort) Less(i, j int) bool { return s[i].ID > s[j].ID }
+func (s memberSort) toMember() []Member { return []Member(s) }
+
+type MemberRequest struct {
+	Name string `json:"name" schema:"name"`
+	Age  int    `json:"age" schema:"age"`
+}
+
+func (m MemberRequest) ValidateFields() errx.ErrorMap {
+	var validationErr errx.ErrorMap
+	if m.Age < 16 {
+		validationErr.Set("age", "Age must be bigger then 16, no kids labor allowed in here...")
+	}
+
+	if len(m.Name) < 3 {
+		validationErr.Set("name", "Name must be >= 3 chars")
+	}
+	return validationErr
 }

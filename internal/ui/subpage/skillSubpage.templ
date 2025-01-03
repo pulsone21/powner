@@ -1,0 +1,48 @@
+package subpage
+
+import (
+	"github.com/pulsone21/powner/internal/entities"
+	"github.com/pulsone21/powner/internal/ui/partials"
+	"github.com/pulsone21/powner/internal/ui/shared"
+)
+
+templ SkillDetails(s entities.Skill) {
+	<div class="flex flex-col gap-1 h-full w-full">
+		<div class="w-full min-h-fit flex flex-row bg-mantle rounded-lg p-2">
+			<div class="flex-row w-1/3 h-full">
+				<div class="text-red font-extrabold text-3xl">{ s.Name } </div>
+				<div>{ s.Description } </div>
+			</div>
+		</div>
+		<div id="skillDetails-Content" class="gap-1 h-full  flex flex-row">
+			@shared.Container() {
+				Content
+			}
+		</div>
+	</div>
+}
+
+templ SkillOverview(skills []entities.Skill, active *entities.Skill) {
+	<div class="h-full w-full flex flex-row gap-1">
+		<div class="h-full w-1/3 max-w-sm min-w-fit">
+			@shared.Container() {
+				<div class="flex flex-row w-full justify-between mb-2">
+					@shared.AddButton(templ.Attributes{
+						"hx-get":    "/partials/forms/skill/add",
+						"hx-target": "#modalContainer",
+					}, "", "New Skill")
+				</div>
+				@partials.SkillList(skills, nil, "No Skills")
+			}
+		</div>
+		<div id="skillDetails" class="h-full min-w-2/3 w-full">
+			if active != nil {
+				@SkillDetails(*active)
+			} else {
+				@shared.Container() {
+					<p>Dashboards....</p>
+				}
+			}
+		</div>
+	</div>
+}

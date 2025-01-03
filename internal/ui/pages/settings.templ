@@ -1,0 +1,14 @@
+package pages
+
+import (
+	"github.com/pulsone21/powner/internal/ui/shared"
+	"github.com/pulsone21/powner/internal/ui/subpage"
+)
+
+templ Settings() {
+	@shared.Base() {
+		<div id="content" class="h-full w-full flex flex-col justify-between">
+			@subpage.SettingsSubpage()
+		</div>
+	}
+}

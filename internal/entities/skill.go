@@ -1,10 +1,9 @@
 package entities
 
 import (
-	"errors"
 	"fmt"
-	"log"
 
+	"github.com/pulsone21/powner/internal/errx"
 	"gorm.io/gorm"
 )
 
@@ -25,6 +24,31 @@ func NewSkill(name, description string, sType SkillType, importance int) *Skill 
 	}
 }
 
+func (s *Skill) HasChanges(name, description string, sT SkillType, importance int) (*Skill, bool) {
+	changes := false
+	if s.Name != name {
+		changes = true
+		s.Name = name
+	}
+
+	if s.Description != description {
+		changes = true
+		s.Description = description
+	}
+
+	if s.Type != int(sT) {
+		changes = true
+		s.Type = int(sT)
+	}
+
+	if s.Importance != importance {
+		changes = true
+		s.Importance = importance
+	}
+
+	return s, changes
+}
+
 type SkillType int
 
 const (
@@ -32,63 +56,46 @@ const (
 	Soft SkillType = 1
 )
 
-func GetSkills(db *gorm.DB) (*[]Skill, error) {
-	skills := []Skill{}
-	res := db.Find(&skills)
+type Skills []Skill
 
-	if res.Error != nil {
-		log.Printf("Error in db query %v\n", res.Error.Error())
-		return nil, res.Error
+func (s Skills) Len() int           { return len(s) }
+func (s Skills) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s Skills) Less(i, j int) bool { return s[i].ID > s[j].ID }
+func (s Skills) ToSkills() []Skill  { return []Skill(s) }
+func (sK Skills) FilterByHolder(t SkillHolder, has bool) Skills {
+	var final Skills
+	for _, s := range sK {
+		if t.HasSkill(s.ID) == has {
+			final = append(final, s)
+		}
 	}
-
-	if res.RowsAffected == 0 {
-		log.Println("Nothing found")
-		return &[]Skill{}, nil
-	}
-
-	return &skills, nil
+	return final
 }
 
-func GetSkillById(db *gorm.DB, id uint) (*Skill, error) {
-	var skill Skill
-	res := db.Where("Id = ?", id).First(&skill)
-
-	if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-		return nil, nil
-	}
-
-	if res.Error != nil {
-		return nil, res.Error
-	}
-
-	return &skill, nil
+type SkillRequest struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Type        int    `json:"type"`
+	Importance  int    `json:"importance"`
 }
 
-func CreateSkill(db *gorm.DB, t Skill) (*Skill, error) {
-	res := db.Create(&t)
-
-	if res.Error != nil {
-		return nil, res.Error
+func (sR SkillRequest) ValidateFields() errx.ErrorMap {
+	var validationErr errx.ErrorMap
+	if len(sR.Name) < 3 {
+		validationErr.Set("name", "Name must be longer then 3 characters")
 	}
 
-	if res.RowsAffected == 0 {
-		return nil, fmt.Errorf("couldn't create Skill.")
+	if len(sR.Description) < 10 {
+		validationErr.Set("description", "desciption must be longer then 10 characters")
 	}
 
-	return &t, nil
-}
-
-func DeleteSkill(db *gorm.DB, id uint) error {
-	return db.Delete(&Skill{}, id).Error
-}
-
-func UpdateSkill(db *gorm.DB, newS Skill) error {
-	oldS, err := GetSkillById(db, newS.ID)
-	if err != nil {
-		return err
+	if sR.Type > int(Soft) {
+		validationErr.Set("type", fmt.Sprintf("SkillType is not valid, must be between: %b-%b", Hard, Soft))
 	}
 
-	oldS = &newS
+	if sR.Importance > 5 && sR.Importance < 1 {
+		validationErr.Set("importance", "Importance needs to be between 1 and 5")
+	}
 
-	return db.Save(&oldS).Error
+	return validationErr
 }
