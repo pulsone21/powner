@@ -49,13 +49,15 @@ func main() {
 		panic(err)
 	}
 
-	log.Println("Starting Server:\n------------------\n\n\n")
+	log.Println("Starting Server:\n------------------")
+	log.Println("")
+	log.Println("")
 
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below
 	go func() {
 		if err := ser.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			log.Fatalf("listen failed: %s\n", err)
 		}
 	}()
 
