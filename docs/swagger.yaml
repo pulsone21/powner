@@ -1,0 +1,772 @@
+basePath: /api/v1
+definitions:
+  entities.Member:
+    properties:
+      age:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      skills:
+        items:
+          $ref: '#/definitions/entities.SkillRating'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  entities.MemberRequest:
+    properties:
+      age:
+        type: integer
+      name:
+        type: string
+    type: object
+  entities.Skill:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      importance:
+        type: integer
+      name:
+        type: string
+      type:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  entities.SkillRating:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      member_id:
+        type: integer
+      rating:
+        type: integer
+      skill:
+        $ref: '#/definitions/entities.Skill'
+      skill_id:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  entities.Team:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      members:
+        items:
+          $ref: '#/definitions/entities.Member'
+        type: array
+      name:
+        type: string
+      skills:
+        items:
+          $ref: '#/definitions/entities.Skill'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  entities.TeamRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  github_com_pulsone21_powner_internal_server_response.ApiResponse:
+    properties:
+      data: {}
+      error: {}
+      statusCode:
+        type: integer
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: This is the api documentation of the powner application.
+  title: Powner API Documentation
+  version: "1.0"
+paths:
+  /member:
+    get:
+      consumes:
+      - application/json
+      description: Gets all members which are saved in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Member'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Get all Members
+      tags:
+      - Member
+    post:
+      consumes:
+      - application/json
+      description: Get all Members
+      parameters:
+      - description: Member request
+        in: body
+        name: MemberRequest
+        required: true
+        schema:
+          $ref: '#/definitions/entities.MemberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Member'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Create a Member
+      tags:
+      - Member
+  /member/{id}:
+    delete:
+      description: Deletes a member by its id, which is the primary key in the database
+      parameters:
+      - description: Member Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Member'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Deletes member by its id
+      tags:
+      - Member
+    get:
+      description: gets a member by its id, which is the primary key in the database
+      parameters:
+      - description: Member Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Member'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: gets a member by its id
+      tags:
+      - Member
+    post:
+      description: Updates a member by its id, which is the primary key in the database
+      parameters:
+      - description: Member Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Member request
+        in: body
+        name: MemberRequest
+        required: true
+        schema:
+          $ref: '#/definitions/entities.MemberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Member'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Updates member by its id
+      tags:
+      - Member
+  /member/{member_id}/skill/{skill_id}:
+    post:
+      description: adds a skill by its id to the member by the member id, you can
+        set the rating directly with the query param rating
+      parameters:
+      - description: Skill Id
+        in: path
+        name: skill_id
+        required: true
+        type: integer
+      - description: Member Id
+        in: path
+        name: member_id
+        required: true
+        type: integer
+      - description: rating
+        in: query
+        name: rating
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Member'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: adds a skill to a member
+      tags:
+      - Member
+  /member/{member_id}/skill/{skill_id}/{rating}:
+    post:
+      description: updates the skillrating by the skill by the id from the member
+        by the member id
+      parameters:
+      - description: Skill Id
+        in: path
+        name: skill_id
+        required: true
+        type: integer
+      - description: Member Id
+        in: path
+        name: member_id
+        required: true
+        type: integer
+      - description: rating
+        in: path
+        name: rating
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Member'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: updates the skillrating from a member
+      tags:
+      - Member
+  /skill:
+    get:
+      consumes:
+      - application/json
+      description: Gets all kill which are saved in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Skill'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Get all skill
+      tags:
+      - Skill
+    post:
+      consumes:
+      - application/json
+      description: Get all Skills
+      parameters:
+      - description: Member request
+        in: body
+        name: SkillRequest
+        required: true
+        schema:
+          $ref: '#/definitions/entities.MemberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Skill'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Create a Skill
+      tags:
+      - Skill
+  /skill/{id}:
+    delete:
+      description: Deletes a Skill by its id, which is the primary key in the database
+      parameters:
+      - description: Skill Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Skill'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Deletes Skill by its id
+      tags:
+      - Skill
+    get:
+      description: gets a Skill by its id, which is the primary key in the database
+      parameters:
+      - description: Skill Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Skill'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: gets a Skill by its id
+      tags:
+      - Skill
+    post:
+      description: Updates a Skill by its id, which is the primary key in the database
+      parameters:
+      - description: Skill Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Member request
+        in: body
+        name: SkillRequest
+        required: true
+        schema:
+          $ref: '#/definitions/entities.MemberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Skill'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Updates Skill by its id
+      tags:
+      - Skill
+  /team:
+    get:
+      consumes:
+      - application/json
+      description: Gets all teams which are saved in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Get all teams
+      tags:
+      - Team
+    post:
+      consumes:
+      - application/json
+      description: Get all teams
+      parameters:
+      - description: Team request
+        in: body
+        name: teamRequest
+        required: true
+        schema:
+          $ref: '#/definitions/entities.TeamRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Create a team
+      tags:
+      - Team
+  /team/{id}:
+    delete:
+      description: Deletes a team by its id, which is the primary key in the database
+      parameters:
+      - description: team Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Deletes team by its id
+      tags:
+      - Team
+    get:
+      description: gets a team by its id, which is the primary key in the database
+      parameters:
+      - description: team Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: gets a team by its id
+      tags:
+      - Team
+    post:
+      description: Updates a team by its id, which is the primary key in the database
+      parameters:
+      - description: team Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Team request
+        in: body
+        name: teamRequest
+        required: true
+        schema:
+          $ref: '#/definitions/entities.TeamRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Updates team by its id
+      tags:
+      - Team
+  /team/{team_id}/member/{member_id}:
+    delete:
+      description: Removes a member by its id from the team given by the id.
+      parameters:
+      - description: Member Id
+        in: path
+        name: member_id
+        required: true
+        type: integer
+      - description: Team Id
+        in: path
+        name: team_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: remove a member from a team
+      tags:
+      - Team
+    post:
+      description: Updates a member by its id, which is the primary key in the database
+      parameters:
+      - description: Member Id
+        in: path
+        name: member_id
+        required: true
+        type: integer
+      - description: Team Id
+        in: path
+        name: team_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Adds a member to a team
+      tags:
+      - Team
+  /team/{team_id}/skill/{skill_id}:
+    delete:
+      description: removes a skill by its id from the team by the team id
+      parameters:
+      - description: Skill Id
+        in: path
+        name: skill_id
+        required: true
+        type: integer
+      - description: Team Id
+        in: path
+        name: team_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: removes a skill from a team
+      tags:
+      - Team
+    post:
+      description: Adds a skill by its id to the team by the team id
+      parameters:
+      - description: Skill Id
+        in: path
+        name: skill_id
+        required: true
+        type: integer
+      - description: Team Id
+        in: path
+        name: team_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_pulsone21_powner_internal_server_response.ApiResponse'
+      summary: Adds a skill to a team
+      tags:
+      - Team
+swagger: "2.0"
