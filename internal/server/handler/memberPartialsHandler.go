@@ -29,8 +29,9 @@ func NewMemberPartialsHandler(mServ service.MemberService, tServ service.TeamSer
 func (h *MemberPartialsHandler) RegisterRoutes(t *http.ServeMux) {
 	t.HandleFunc("GET /members/overview", setupHandler(h.serveMemberOverview))
 	t.HandleFunc("GET /members/list", setupHandler(h.serveMemberList))
-	t.HandleFunc("GET /members/details/{id}", setupHandler(h.serveMemberDetails))
 	t.HandleFunc("DELETE /members/{id}", setupHandler(h.deleteMemberRequest))
+	t.HandleFunc("GET /members/{id}/details", setupHandler(h.serveMemberDetails))
+	t.HandleFunc("GET /members/{id}/skilllist", setupHandler(h.serveMemberSkillList))
 }
 
 func (h *MemberPartialsHandler) serveMemberOverview(w http.ResponseWriter, r *http.Request) response.IResponse {
@@ -117,4 +118,17 @@ func (h *MemberPartialsHandler) serveMemberList(w http.ResponseWriter, r *http.R
 	}
 
 	return response.NewUIResponse(partials.MemberList(*mems, components.DeleteMemberButton), nil)
+}
+
+// Path: /partials/members/{id}/skilllist
+func (h *MemberPartialsHandler) serveMemberSkillList(w http.ResponseWriter, r *http.Request) response.IResponse {
+	log := middleware.GetLogger(r.Context())
+	log.Debug("member skill list requested")
+	id := r.PathValue("id")
+	m, err := h.mServ.GetMemberByID(id)
+	if err != nil {
+		return response.NewUIResponse(nil, err)
+	}
+
+	return response.NewUIResponse(partials.SkillAdjustList(*m), nil)
 }
