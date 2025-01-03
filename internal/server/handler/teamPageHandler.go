@@ -34,7 +34,7 @@ func (h *TeamPageHandler) generalTeamPage(w http.ResponseWriter, r *http.Request
 		return response.NewUIResponse(nil, err)
 	}
 
-	return response.NewUIResponse(pages.TeamsPage(t), nil)
+	return response.NewUIResponse(pages.TeamPage(t, nil), nil)
 }
 
 func (h *TeamPageHandler) specificTeamPage(w http.ResponseWriter, r *http.Request) response.IResponse {
@@ -44,5 +44,11 @@ func (h *TeamPageHandler) specificTeamPage(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		return response.NewUIResponse(nil, err)
 	}
-	return response.NewUIResponse(pages.TeamPage(*t), nil)
+
+	teams, err := h.teamService.GetTeams()
+	if err != nil {
+		return response.NewUIResponse(nil, err)
+	}
+
+	return response.NewUIResponse(pages.TeamPage(teams, t), nil)
 }

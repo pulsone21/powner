@@ -10,6 +10,7 @@ templ MemberToTeam(add bool, memID, teamID string) {
 		case false:
 			<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
 				@shared.AddButton(templ.Attributes{
+					// TODO: Wronge Route Here
 					"hx-post":   fmt.Sprintf("/api/member/%v/team/%v", memID, teamID),
 					"hx-target": "closest li",
 					"hx-swap":   "outerHTML",
@@ -18,6 +19,7 @@ templ MemberToTeam(add bool, memID, teamID string) {
 		case true:
 			<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
 				@shared.RemoveButton(templ.Attributes{
+					// TODO: Wronge Route Here
 					"hx-delete": fmt.Sprintf("/api/member/%v/team/%v", memID, teamID),
 					"hx-target": "closest li",
 					"hx-swap":   "outerHTML",
@@ -31,8 +33,8 @@ templ DeleteTeamButton(teamID string) {
 		@shared.RemoveButton(
 			templ.Attributes{
 				"hx-delete": fmt.Sprintf("/partials/teams/%v", teamID),
-				"hx-target": "#notificationContainer",
-				"hx-swap":   "afterbegin",
+				"hx-target": "closest li",
+				"hx-swap":   "delete",
 			}, "", "")
 	</div>
 }

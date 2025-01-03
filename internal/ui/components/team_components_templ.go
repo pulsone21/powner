@@ -41,6 +41,7 @@ func MemberToTeam(add bool, memID, teamID string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.AddButton(templ.Attributes{
+				// TODO: Wronge Route Here
 				"hx-post":   fmt.Sprintf("/api/member/%v/team/%v", memID, teamID),
 				"hx-target": "closest li",
 				"hx-swap":   "outerHTML",
@@ -58,6 +59,7 @@ func MemberToTeam(add bool, memID, teamID string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = shared.RemoveButton(templ.Attributes{
+				// TODO: Wronge Route Here
 				"hx-delete": fmt.Sprintf("/api/member/%v/team/%v", memID, teamID),
 				"hx-target": "closest li",
 				"hx-swap":   "outerHTML",
@@ -102,8 +104,8 @@ func DeleteTeamButton(teamID string) templ.Component {
 		templ_7745c5c3_Err = shared.RemoveButton(
 			templ.Attributes{
 				"hx-delete": fmt.Sprintf("/partials/teams/%v", teamID),
-				"hx-target": "#notificationContainer",
-				"hx-swap":   "afterbegin",
+				"hx-target": "closest li",
+				"hx-swap":   "delete",
 			}, "", "").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

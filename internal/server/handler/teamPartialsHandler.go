@@ -8,6 +8,7 @@ import (
 	"github.com/pulsone21/powner/internal/server/middleware"
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
+	"github.com/pulsone21/powner/internal/ui/components"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/subpage"
 )
@@ -26,6 +27,7 @@ func NewTeamPartialsHandler(tServ service.TeamService, mServ service.MemberManag
 
 func (h *TeamPartialsHandler) RegisterRoutes(t *http.ServeMux) {
 	t.HandleFunc("GET /teams/overview", setupHandler(h.serveTeamsOverview))
+	t.HandleFunc("GET /teams/list", setupHandler(h.serveTeamList))
 	t.HandleFunc("DELETE /teams/{id}", setupHandler(h.deleteTeamRequest))
 	t.HandleFunc("GET /teams/{id}/details", setupHandler(h.serveTeamsDetails))
 	t.HandleFunc("GET /teams/{id}/members", setupHandler(h.serveTeamMemberlist))
@@ -43,7 +45,7 @@ func (h *TeamPartialsHandler) serveTeamsOverview(w http.ResponseWriter, r *http.
 	}
 
 	log.Debug("found all teams")
-	return response.NewUIResponse(subpage.TeamsOverview(*t), nil)
+	return response.NewUIResponse(subpage.TeamsOverview(*t, nil), nil)
 }
 
 func (h *TeamPartialsHandler) serveTeamsDetails(w http.ResponseWriter, r *http.Request) response.IResponse {
@@ -57,7 +59,7 @@ func (h *TeamPartialsHandler) serveTeamsDetails(w http.ResponseWriter, r *http.R
 		return response.NewUIResponse(nil, fmt.Errorf("Couldn't find team with id: %v", id))
 	}
 
-	return response.NewUIResponse(subpage.Team(*t), nil)
+	return response.NewUIResponse(subpage.TeamDetails(*t), nil)
 }
 
 func (h *TeamPartialsHandler) deleteTeamRequest(w http.ResponseWriter, r *http.Request) response.IResponse {
@@ -105,4 +107,13 @@ func (h *TeamPartialsHandler) addMemberToTeam(w http.ResponseWriter, r *http.Req
 
 	w.Header().Add("HX-Trigger", service.ChangeTeamEvent)
 	return response.NewUIResponse(partials.TeamMemberList(*t), nil)
+}
+
+// Path: /partials/teams/list
+func (h *TeamPartialsHandler) serveTeamList(w http.ResponseWriter, r *http.Request) response.IResponse {
+	teams, err := h.tServ.GetTeams()
+	if err != nil {
+		return response.NewUIResponse(nil, err)
+	}
+	return response.NewUIResponse(partials.TeamList(*teams, "No teams found", components.DeleteTeamButton), nil)
 }

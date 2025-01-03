@@ -2,18 +2,14 @@ package pages
 
 import (
 	"github.com/pulsone21/powner/internal/entities"
-	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
 	"github.com/pulsone21/powner/internal/ui/subpage"
 )
 
 templ SkillPage(skills []entities.Skill, activeSkill *entities.Skill) {
 	@shared.Base() {
-		<div class="bg-base flex flex-row max-w-full w-full h-full ">
-			@partials.SideBar()
-			<div id="content" class="h-full w-full justify-between">
-				@subpage.SkillOverview(skills, activeSkill)
-			</div>
+		<div id="content" class="h-full w-full justify-between">
+			@subpage.SkillOverview(skills, activeSkill)
 		</div>
 	}
 }

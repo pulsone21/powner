@@ -7,7 +7,7 @@ templ Base() {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Powner</title>
 			<link href="/static/styles/base.css" rel="stylesheet"/>
-			<link href="/static/styles/icon_inverted.svg" rel="icon"/>
+			<link href="/static/favicon/favicon.ico" rel="icon"/>
 			<script src="/static/scripts/htmx.min.js"></script>
 			<script src="/static/scripts/htmx.response-target.js"></script>
 			<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
@@ -19,7 +19,10 @@ templ Base() {
 			hx-target-404="#content"
 			hx-swap="innerHTML"
 		>
-			{ children... }
+			<div class="bg-base flex flex-row gap-1 max-w-full w-full h-full ">
+				@SideBar()
+				{ children... }
+			</div>
 			<div id="modalContainer"></div>
 			<div id="notificationContainer" class="z-[1000] absolute bottom-4 left-4 flex flex-col w-64 gap-1"></div>
 			<div class="macchiato mocha frappe latte"></div>

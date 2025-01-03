@@ -1,11 +1,9 @@
-package partials
-
-import "github.com/pulsone21/powner/internal/ui/shared"
+package shared
 
 templ Navbar() {
 	<div class="flex flex-col bg-mantle h-full min-w-20 items-center rounded-b-lg p-1">
 		<div class="max-h-20 w-full flex items-center my-1">
-			@shared.IconButton("Teams", "", templ.Attributes{
+			@IconButton("Teams", "", templ.Attributes{
 				"class":          "max-h-12",
 				"hx-get":         "/partials/teams/overview",
 				"hx-target":      "#content",
@@ -14,7 +12,7 @@ templ Navbar() {
 			})
 		</div>
 		<div class="max-h-20 w-full flex items-center my-1">
-			@shared.IconButton("Members", "", templ.Attributes{
+			@IconButton("Members", "", templ.Attributes{
 				"class":          "max-h-12",
 				"hx-get":         "/partials/members/overview",
 				"hx-target":      "#content",
@@ -23,7 +21,7 @@ templ Navbar() {
 			})
 		</div>
 		<div class="max-h-20 w-full flex items-center my-1">
-			@shared.IconButton("Skills", "", templ.Attributes{
+			@IconButton("Skills", "", templ.Attributes{
 				"class":          "max-h-12",
 				"hx-get":         "/partials/skills/overview",
 				"hx-target":      "#content",
@@ -32,7 +30,7 @@ templ Navbar() {
 			})
 		</div>
 		<div class="max-h-20 w-full flex items-center my-1">
-			@shared.IconButton("Settings", "", templ.Attributes{
+			@IconButton("Settings", "", templ.Attributes{
 				"class":          "max-h-12",
 				"hx-get":         "/partials/settings",
 				"hx-target":      "#content",
@@ -44,7 +42,7 @@ templ Navbar() {
 }
 
 templ SideBar() {
-	<div class="w-20 mr-2 flex flex-col justify-between">
+	<div class="w-20 flex flex-col justify-between">
 		@Logo()
 		@Navbar()
 	</div>

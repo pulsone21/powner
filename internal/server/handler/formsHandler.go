@@ -69,13 +69,10 @@ func (h *FormsHandler) handleMemberFormRequest(w http.ResponseWriter, r *http.Re
 
 	_, sErr := h.mServ.CreateMember(req)
 	if sErr != nil {
-		if sErr.GetValidationErrors() != nil {
-			log.Error("Couldn't create Member", "ValidationErrors:", err)
-			return response.NewUIResponse(partials.MemberForm(*sErr.GetValidationErrors()), nil)
-		}
-		log.Error("Couldn't create Member", "Error", err)
-		return response.NewUIResponse(nil, errors.Join(fmt.Errorf("couldn't create member\n"), err))
+		log.Error("Couldn't create Member", "ValidationErrors:", err)
+		return response.NewUIResponse(partials.MemberForm(*sErr.GetValidationErrors()), nil)
 	}
+
 	log.Debug("Created new Member based on Request")
 	w.Header().Add("HX-Trigger", service.CreateMemberEvent)
 	return response.NewUIResponse(partials.MemberForm(nil), nil)
@@ -102,13 +99,10 @@ func (h *FormsHandler) handleTeamFormRequest(w http.ResponseWriter, r *http.Requ
 
 	_, sErr := h.tServ.CreateTeam(req)
 	if sErr != nil {
-		if sErr.GetValidationErrors() != nil {
-			log.Error("Couldn't create team", "ValidationErrors:", err)
-			return response.NewUIResponse(partials.TeamForm(*sErr.GetValidationErrors()), nil)
-		}
-		log.Error("Couldn't create team", "Error", err)
-		return response.NewUIResponse(nil, errors.Join(fmt.Errorf("couldn't create team\n"), err))
+		log.Error("Couldn't create team", "ValidationErrors:", err)
+		return response.NewUIResponse(partials.TeamForm(*sErr.GetValidationErrors()), nil)
 	}
+
 	log.Debug("Created new team based on Request")
 	w.Header().Add("HX-Trigger", service.CreateTeamEvent)
 	return response.NewUIResponse(partials.TeamForm(nil), nil)
@@ -135,13 +129,10 @@ func (h *FormsHandler) handleSkillFormRequest(w http.ResponseWriter, r *http.Req
 
 	_, sErr := h.sServ.CreateSkill(req)
 	if sErr != nil {
-		if sErr.GetValidationErrors() != nil {
-			log.Error("Couldn't create skill", "ValidationErrors:", err)
-			return response.NewUIResponse(partials.SkillForm(*sErr.GetValidationErrors()), nil)
-		}
-		log.Error("Couldn't create skill", "Error", err)
-		return response.NewUIResponse(nil, errors.Join(fmt.Errorf("couldn't create skill\n"), err))
+		log.Error("Couldn't create skill", "ValidationErrors:", err)
+		return response.NewUIResponse(partials.SkillForm(*sErr.GetValidationErrors()), nil)
 	}
+
 	log.Debug("Created new skill based on Request")
 	w.Header().Add("HX-Trigger", service.CreateSkillEvent)
 	return response.NewUIResponse(partials.SkillForm(nil), nil)
