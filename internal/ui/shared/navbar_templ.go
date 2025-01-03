@@ -77,7 +77,7 @@ func Navbar() templ.Component {
 		}
 		templ_7745c5c3_Err = IconButton("Settings", "", templ.Attributes{
 			"class":          "max-h-12",
-			"hx-get":         "/partials/settings",
+			"hx-get":         "/partials/settings/overview",
 			"hx-target":      "#content",
 			"hx-swap":        "innerHTML",
 			"hx-replace-url": "/settings/",

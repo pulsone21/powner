@@ -81,6 +81,7 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	teamPages := handler.NewTeamPageHandler(tServ)
 	memPages := handler.NewMemberPageHandler(mServ)
 	sPages := handler.NewSkillPageHandler(sServ)
+	sePages := handler.NewSettingsPageHandler()
 
 	partialsRouter := router.NewPartialsRouter(
 		handler.NewTeamPartialsHandler(tServ, mgServ),
@@ -88,6 +89,7 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 		handler.NewSkillPartialsHandler(sServ, tServ, mServ),
 		handler.NewSkillMgmtPartialsHandler(sgServ),
 		handler.NewFormsHandler(mServ, sServ, tServ),
+		handler.NewSettingsPartialsHandler(),
 	)
 
 	modalRouter := router.NewModalRouter(
@@ -105,6 +107,7 @@ func CreateServer(protocol, url, port, dbPath string) (*http.Server, error) {
 	mux.Handle("/teams/", uiChain.Apply(http.StripPrefix("/teams", teamPages.GetRoutes())))
 	mux.Handle("/members/", uiChain.Apply(http.StripPrefix("/members", memPages.GetRoutes())))
 	mux.Handle("/skills/", uiChain.Apply(http.StripPrefix("/skills", sPages.GetRoutes())))
+	mux.Handle("/settings/", uiChain.Apply(http.StripPrefix("/settings", sePages.GetRoutes())))
 	mux.Handle("/", uiChain.Apply(generalPages.GetRoutes()))
 
 	s := http.Server{
