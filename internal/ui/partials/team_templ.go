@@ -219,7 +219,7 @@ func TeamListItem(t entities.Team, itemFunc components.TeamListAddon) templ.Comp
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"min-h-10 justify-between flex flex-row rounded-lg p-1 cursor-pointer hover:bg-base transition\"><div class=\"flex flex-col max-w-1/2 flex-grow min-w-0\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"min-h-10 justify-between flex flex-row rounded-lg p-1 cursor-pointer hover:opacity-70 transition\"><div class=\"flex flex-col max-w-1/2 flex-grow min-w-0\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

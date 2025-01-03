@@ -29,7 +29,7 @@ func Base() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Powner</title><link href=\"/static/styles/base.css\" rel=\"stylesheet\"><link href=\"/static/styles/icon_inverted.svg\" rel=\"icon\"><script src=\"/static/scripts/htmx.min.js\"></script><script src=\"/static/scripts/htmx.response-target.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js\"></script><script src=\"/static/scripts/hyperscript.js\"></script></head><body class=\"mocha flex text-text p-2 h-dv max-h-dvh bg-base \" hx-ext=\"response-targets\" hx-target-404=\"#content\" hx-swap=\"innerHTML\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<html lang=\"en\" class=\"overflow-hidden\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Powner</title><link href=\"/static/styles/base.css\" rel=\"stylesheet\"><link href=\"/static/styles/icon_inverted.svg\" rel=\"icon\"><script src=\"/static/scripts/htmx.min.js\"></script><script src=\"/static/scripts/htmx.response-target.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js\"></script><script src=\"/static/scripts/hyperscript.js\"></script></head><body class=\"mocha flex text-text p-2 h-dv max-h-dvh bg-base \" hx-ext=\"response-targets\" hx-target-404=\"#content\" hx-swap=\"innerHTML\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -37,7 +37,44 @@ func Base() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modalContainer\"></div><div id=\"notificationContainer\" class=\"z-[1000] absolute bottom-4 left-4 flex flex-col w-64 gap-1\"></div></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modalContainer\"></div><div id=\"notificationContainer\" class=\"z-[1000] absolute bottom-4 left-4 flex flex-col w-64 gap-1\"></div><div class=\"macchiato mocha frappe latte\"></div></body></html>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func Container() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"h-full w-full bg-mantle rounded-lg p-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ_7745c5c3_Var2.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

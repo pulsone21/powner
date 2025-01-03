@@ -24,20 +24,20 @@ templ Navbar() {
 		</div>
 		<div class="max-h-20 w-full flex items-center my-1">
 			@shared.IconButton("Skills", "", templ.Attributes{
-				"class":     "max-h-12",
-				"hx-get":    "/partials/skills",
-				"hx-target": "#content",
-				"hx-swap":   "innerHTML",
-				//"hx-replace-url": "/skills/",
+				"class":          "max-h-12",
+				"hx-get":         "/partials/skills/overview",
+				"hx-target":      "#content",
+				"hx-swap":        "innerHTML",
+				"hx-replace-url": "/skills/",
 			})
 		</div>
 		<div class="max-h-20 w-full flex items-center my-1">
 			@shared.IconButton("Settings", "", templ.Attributes{
-				"class":     "max-h-12",
-				"hx-get":    "/partials/settings",
-				"hx-target": "#content",
-				"hx-swap":   "innerHTML",
-				//"hx-replace-url": "/settings/",
+				"class":          "max-h-12",
+				"hx-get":         "/partials/settings",
+				"hx-target":      "#content",
+				"hx-swap":        "innerHTML",
+				"hx-replace-url": "/settings/",
 			})
 		</div>
 	</div>

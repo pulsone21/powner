@@ -64,11 +64,11 @@ func Navbar() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.IconButton("Skills", "", templ.Attributes{
-			"class":     "max-h-12",
-			"hx-get":    "/partials/skills",
-			"hx-target": "#content",
-			"hx-swap":   "innerHTML",
-			//"hx-replace-url": "/skills/",
+			"class":          "max-h-12",
+			"hx-get":         "/partials/skills/overview",
+			"hx-target":      "#content",
+			"hx-swap":        "innerHTML",
+			"hx-replace-url": "/skills/",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -78,11 +78,11 @@ func Navbar() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = shared.IconButton("Settings", "", templ.Attributes{
-			"class":     "max-h-12",
-			"hx-get":    "/partials/settings",
-			"hx-target": "#content",
-			"hx-swap":   "innerHTML",
-			//"hx-replace-url": "/settings/",
+			"class":          "max-h-12",
+			"hx-get":         "/partials/settings",
+			"hx-target":      "#content",
+			"hx-swap":        "innerHTML",
+			"hx-replace-url": "/settings/",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

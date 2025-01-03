@@ -31,7 +31,7 @@ func Button(label, class string, attr templ.Attributes) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{fmt.Sprintf("%v %v", DefaultBtnClasses, class)}
+		var templ_7745c5c3_Var2 = []any{fmt.Sprintf("enabled:hover:bg-crust %v %v", DefaultBtnClasses, class)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -100,7 +100,7 @@ func AddButton(attr templ.Attributes, class, label string) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var6 = []any{fmt.Sprintf("%v hover:bg-green/25 hover:text-green %v", DefaultBtnClasses, class)}
+		var templ_7745c5c3_Var6 = []any{fmt.Sprintf("enabled:hover:bg-green/25 enabled:hover:text-green %v %v", DefaultBtnClasses, class)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -196,7 +196,7 @@ func RemoveButton(attr templ.Attributes, class, label string) templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var11 = []any{fmt.Sprintf("%v hover:bg-red/25 hover:text-red %v", DefaultBtnClasses, class)}
+		var templ_7745c5c3_Var11 = []any{fmt.Sprintf("enabled:hover:bg-red/25 enabled:hover:text-red %v %v", DefaultBtnClasses, class)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var11...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -292,7 +292,7 @@ func IconButton(iconName, class string, attr templ.Attributes) templ.Component {
 			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var16 = []any{fmt.Sprintf("w-full h-full fill-text inline-flex justify-center items-center rounded-md bg-base px-1 py-1 text-sm font-semibold  hover:bg-crust m-1 transition-colors duration-200 hover:ring-2 hover:ring-surface0 %v", class)}
+		var templ_7745c5c3_Var16 = []any{fmt.Sprintf("w-full h-full fill-text inline-flex justify-center items-center rounded-md bg-base px-1 py-1 text-sm font-semibold  enabled:hover:bg-crust m-1 transition-colors duration-200 enabled:hover:ring-2 enabled:hover:ring-surface0 %v", class)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var16...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

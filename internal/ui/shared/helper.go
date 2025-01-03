@@ -51,7 +51,7 @@ func TeamNameToBtnName(teamName string) string {
 }
 
 const (
-	DefaultBtnClasses string = "w-full h-full inline-flex justify-center items-center rounded-md bg-base px-3 py-2 text-sm font-semibold  hover:bg-crust m-1 transition-colors duration-200"
+	DefaultBtnClasses string = "w-full h-full inline-flex justify-center items-center rounded-md bg-base px-3 py-2 text-sm font-semibold m-1 transition-colors duration-200"
 )
 
 func CapitalizeFirst(in string) string {

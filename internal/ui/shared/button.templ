@@ -4,7 +4,7 @@ import "fmt"
 
 templ Button(label, class string, attr templ.Attributes) {
 	<button
-		class={ fmt.Sprintf("%v %v", DefaultBtnClasses, class) }
+		class={ fmt.Sprintf("enabled:hover:bg-crust %v %v", DefaultBtnClasses, class) }
 		{ attr... }
 	>
 		<span>{ label }</span>
@@ -14,7 +14,7 @@ templ Button(label, class string, attr templ.Attributes) {
 //w-full h-full inline-flex justify-center items-center rounded-md bg-base px-3 py-2 text-sm font-semibold  hover:bg-crust m-1 transition-colors duration-200
 templ AddButton(attr templ.Attributes, class, label string) {
 	<button
-		class={ fmt.Sprintf("%v hover:bg-green/25 hover:text-green %v", DefaultBtnClasses, class) }
+		class={ fmt.Sprintf("enabled:hover:bg-green/25 enabled:hover:text-green %v %v", DefaultBtnClasses, class) }
 		{ attr... }
 	>
 		if label != "" {
@@ -27,7 +27,7 @@ templ AddButton(attr templ.Attributes, class, label string) {
 
 templ RemoveButton(attr templ.Attributes, class, label string) {
 	<button
-		class={ fmt.Sprintf("%v hover:bg-red/25 hover:text-red %v", DefaultBtnClasses, class) }
+		class={ fmt.Sprintf("enabled:hover:bg-red/25 enabled:hover:text-red %v %v", DefaultBtnClasses, class) }
 		{ attr... }
 	>
 		if label != "" {
@@ -40,7 +40,7 @@ templ RemoveButton(attr templ.Attributes, class, label string) {
 
 templ IconButton(iconName, class string, attr templ.Attributes) {
 	<button
-		class={ fmt.Sprintf("w-full h-full fill-text inline-flex justify-center items-center rounded-md bg-base px-1 py-1 text-sm font-semibold  hover:bg-crust m-1 transition-colors duration-200 hover:ring-2 hover:ring-surface0 %v", class) }
+		class={ fmt.Sprintf("w-full h-full fill-text inline-flex justify-center items-center rounded-md bg-base px-1 py-1 text-sm font-semibold  enabled:hover:bg-crust m-1 transition-colors duration-200 enabled:hover:ring-2 enabled:hover:ring-surface0 %v", class) }
 		{ attr... }
 	>
 		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="fill-text w-2/3 h-2/3">
