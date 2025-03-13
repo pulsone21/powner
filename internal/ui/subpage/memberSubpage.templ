@@ -3,7 +3,6 @@ package subpage
 import (
 	"fmt"
 	"github.com/pulsone21/powner/internal/entities"
-	"github.com/pulsone21/powner/internal/ui/components"
 	"github.com/pulsone21/powner/internal/ui/icons"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
@@ -20,7 +19,7 @@ templ MembersOverview(members []entities.Member, activeMem *entities.Member) {
 					}, "", "New Member")
 				</div>
 				<div>
-					@partials.MemberList(members, components.DeleteMemberButton)
+					@partials.MemberList(members)
 				</div>
 			}
 		</div>

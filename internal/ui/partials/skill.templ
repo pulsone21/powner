@@ -5,6 +5,7 @@ import (
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/errx"
 	"github.com/pulsone21/powner/internal/service"
+	"github.com/pulsone21/powner/internal/ui/components"
 	"github.com/pulsone21/powner/internal/ui/shared"
 )
 
@@ -31,12 +32,12 @@ templ SkillList(skills []entities.Skill, ent entities.SkillHolder, placeholder s
 		<ul role="list" class="scroll-smooth overflow-hidden min-w-52 h-full overflow-y-auto divide-y-2 divide-base">
 			for _,s := range skills {
 				if ent != nil {
-					@SkillListItem(s) {
-						@skillItemAssignButton(s.ID, ent.GetID(), ent.GetType(), ent.HasSkill(s.ID))
+					@SkillListItem(s, false) {
+						@components.SkillItemAssignButton(s.ID, ent.GetID(), ent.GetType(), ent.HasSkill(s.ID))
 					}
 				} else {
-					@SkillListItem(s) {
-						@skillItemDeleteButton(s.ID)
+					@SkillListItem(s, true) {
+						@components.SkillItemDeleteButton(s.ID)
 					}
 				}
 			}
@@ -48,78 +49,51 @@ templ SkillList(skills []entities.Skill, ent entities.SkillHolder, placeholder s
 	}
 }
 
-templ skillListHeader(name string, description string) {
-	<div class="flex flex-col max-w-4/6">
-		<span class="font-bold">{ name }</span>
-		<span class="text-subtext0 truncate max-h-6">{ fmt.Sprint(description) }</span>
-	</div>
-}
-
-templ SkillListItem(s entities.Skill) {
-	<li class="min-h-10 justify-between rounded-lg p-1 cursor-pointer hover:opacity-70 transition">
-		<div
-			class="flex flex-row justify-between"
-			hx-get={ fmt.Sprintf("/partials/skills/%v/details", s.ID) }
-			hx-target="#skillDetails"
-			hx-swap="innerHTML"
-			hx-replace-url={ fmt.Sprintf("/skills/%v", s.ID) }
-		>
-			@skillListHeader(s.Name, s.Description)
+templ SkillListItem(s entities.Skill, selectable bool) {
+	if selectable {
+		@components.ListItem(
+			components.ListItemProps{
+				Header: s.Name,
+				Footer: s.Description,
+				ParentAttr: templ.Attributes{
+					"hx-get":         fmt.Sprintf("/partials/skills/%v/details", s.ID),
+					"hx-target":      "#skillDetails",
+					"hx-swap":        "innerHTML",
+					"hx-replace-url": fmt.Sprintf("/skills/%v", s.ID),
+				}},
+		) {
 			{ children... }
-		</div>
-	</li>
-}
-
-templ skillItemDeleteButton(sID uint) {
-	<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
-		@shared.RemoveButton(templ.Attributes{
-			"hx-trigger": "click",
-			"hx-delete":  fmt.Sprintf("/partials/skills/%v", sID),
-			"hx-target":  "closest li",
-			"hx-swap":    "delete",
-		}, "", "")
-	</div>
-}
-
-templ skillItemAssignButton(sID, targetID uint, dest string, add bool) {
-	<div class="flex justify-center items-center self-center min-w-12 h-9 w-20 mr-2">
-		switch add {
-			case false:
-				@shared.AddButton(templ.Attributes{
-					"hx-trigger": "click",
-					"hx-post":    fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
-					"hx-target":  "closest li",
-					"hx-swap":    "outerHTML",
-				}, "", "")
-			case true:
-				@shared.RemoveButton(templ.Attributes{
-					"hx-trigger": "click",
-					"hx-delete":  fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
-					"hx-target":  "closest li",
-					"hx-swap":    "outerHTML",
-				}, "", "")
 		}
-	</div>
+	} else {
+		@components.ListItem(
+			components.ListItemProps{
+				Header: s.Name,
+				Footer: s.Description,
+				Class:  "hover:opacity-100",
+			}) {
+			{ children... }
+		}
+	}
 }
 
 templ SkillAdjustList(mem entities.Member) {
-	if len(mem.Skills) > 0 {
-		<ul
-			role="list"
-			class="scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2 min-w-56"
-			hx-get={ fmt.Sprintf("/partials/members/%v/skilllist", mem.ID) }
-			hx-trigger={ fmt.Sprintf("%v from:body", service.ChangeMemberEvent) }
-		>
+	@components.List(
+		components.ListProps{
+			Class: "w-1/3 mr-1",
+			ListAttr: templ.Attributes{
+				"hx-get":     fmt.Sprintf("/partials/members/%v/skilllist", mem.ID),
+				"hx-trigger": fmt.Sprintf("%v from:body", service.ChangeMemberEvent),
+			},
+		}) {
+		if len(mem.Skills) > 0 {
 			for _, s := range mem.Skills {
-				@SkillListItem(s.Skill) {
+				@SkillListItem(s.Skill, false) {
 					@SkillAddjustItem(fmt.Sprintf("%v", mem.ID), s)
 				}
 			}
-		</ul>
-	} else {
-		<div class="p-2">
+		} else {
 			<p class="text-overlay1">This member has no skills yet</p>
-		</div>
+		}
 	}
 }
 

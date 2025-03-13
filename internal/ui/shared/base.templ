@@ -8,6 +8,7 @@ templ Base() {
 			<title>Powner</title>
 			<link href="/static/styles/base.css" rel="stylesheet"/>
 			<link href="/static/favicon/favicon.ico" rel="icon"/>
+			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 			<script src="/static/scripts/htmx.min.js"></script>
 			<script src="/static/scripts/htmx.response-target.js"></script>
 			<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
@@ -15,9 +16,6 @@ templ Base() {
 		</head>
 		<body
 			class="mocha flex text-text p-2 h-dv max-h-dvh bg-base "
-			hx-ext="response-targets"
-			hx-target-404="#content"
-			hx-swap="innerHTML"
 		>
 			<div class="bg-base flex flex-row gap-1 max-w-full w-full h-full ">
 				@SideBar()

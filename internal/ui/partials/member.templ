@@ -50,13 +50,7 @@ templ MemberInfo(mem entities.Member) {
 			class="w-full h-full mt-1 flex flex-row"
 		>
 			@shared.Container() {
-				<div
-					class="h-full w-1/3 mr-1 flex flex-col"
-					hx-get={ fmt.Sprintf("/api/member/%v/skill", mem.ID) }
-					hx-trigger="skillRatingChange from:body"
-				>
-					@SkillAdjustList(mem)
-				</div>
+				@SkillAdjustList(mem)
 			}
 			<div class="w-2/3 h-full flex gap-1 flex-row divide-x-2 divide-base">
 				@shared.Container() {
@@ -68,106 +62,72 @@ templ MemberInfo(mem entities.Member) {
 	</div>
 }
 
-templ MemberList(mems []entities.Member, itemFunc components.MemberItemAddon) {
-	<div
-		class="h-full"
-		hx-get="/partials/members/list"
-		hx-swap="outerHTML"
-		hx-trigger={ fmt.Sprintf("%v from:body, %v from:body, every 600s", service.CreateMemberEvent, service.DeleteMemberEvent) }
-	>
+templ MemberList(mems []entities.Member) {
+	@components.List(
+		components.ListProps{
+			ListAttr: templ.Attributes{
+				"hx-get":     "/partials/members/list",
+				"hx-swap":    "outerHTML",
+				"hx-trigger": fmt.Sprintf("%v from:body, %v from:body, every 600s", service.CreateMemberEvent, service.DeleteMemberEvent),
+			}}) {
 		if len(mems) > 0 {
-			<ul role="list" class="scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2">
-				for _, t := range mems {
-					@MemberListItem(t, itemFunc)
+			for _, t := range mems {
+				@MemberListItem(t, true) {
+					@components.DeleteMemberButton(t)
 				}
-			</ul>
-		} else {
-			<p class="text-overlay1">
-				{ "No members found" }
-			</p>
-		}
-	</div>
-}
-
-templ MemberListItem(m entities.Member, itemFunc components.MemberItemAddon) {
-	<li
-		class="min-h-10 justify-between flex flex-row rounded-lg p-1 cursor-pointer hover:opacity-70 transition"
-	>
-		<div
-			class="flex flex-col max-w-1/2 flex-grow min-w-0"
-			hx-get={ fmt.Sprintf("/partials/members/%v/details", m.ID) }
-			hx-target="#memebrDetails"
-			hx-swap="innerHTML"
-			hx-replace-url={ fmt.Sprintf("/members/%v", m.ID) }
-		>
-			<p
-				class="font-bold truncate min-w-0"
-				title={ m.Name }
-			>{ m.Name }</p>
-			<p
-				class="text-subtext0 truncate min-w-0"
-				title={ fmt.Sprint(m.Age) }
-			>{ fmt.Sprintf("Age: %v",m.Age) }</p>
-		</div>
-		if itemFunc != nil {
-			<div class="flex flex-row justify-center ml-4 items-center">
-				@itemFunc(m)
-			</div>
-		}
-	</li>
-}
-
-templ MemberTeamListItem(m entities.Member, teamID uint, add bool) {
-	<li
-		class="min-h-10 justify-between flex flex-row items-center rounded-lg p-1 hover:opacity-70 transition"
-	>
-		<div>
-			<p
-				class="font-bold truncate min-w-0"
-				title={ m.Name }
-			>{ m.Name }</p>
-			<p
-				class="text-subtext0 truncate min-w-0"
-				title={ fmt.Sprint(m.Age) }
-			>{ fmt.Sprintf("Age: %v",m.Age) }</p>
-		</div>
-		<div class="flex flex-row justify-center h-9 ml-4 items-center">
-			if add {
-				@shared.AddButton(templ.Attributes{
-					"hx-trigger": "click",
-					"hx-get":     fmt.Sprintf("/partials/teams/%v/members/%v", teamID, m.ID),
-					"hx-target":  "closest li",
-					"hx-swap":    "delete",
-				}, "", "Add")
-			} else {
-				@shared.RemoveButton(templ.Attributes{
-					"hx-trigger": "click",
-					"hx-delete":  fmt.Sprintf("/partials/teams/%v/members/%v", teamID, m.ID),
-					"hx-target":  "closest li",
-					"hx-swap":    "delete",
-				}, "", "Remove")
 			}
-		</div>
-	</li>
+		} else {
+			<p class="text-overlay1">No members found</p>
+		}
+	}
+}
+
+templ MemberListItem(m entities.Member, selectable bool) {
+	if selectable {
+		@components.ListItem(components.ListItemProps{
+			Header: m.Name,
+			Footer: fmt.Sprintf("Age: %v", m.Age),
+			ParentAttr: templ.Attributes{
+				"hx-get":         fmt.Sprintf("/partials/members/%v/details", m.ID),
+				"hx-target":      "#memebrDetails",
+				"hx-swap":        "innerHTML",
+				"hx-replace-url": fmt.Sprintf("/members/%v", m.ID),
+			}},
+		) {
+			{ children... }
+		}
+	} else {
+		@components.ListItem(components.ListItemProps{
+			Header: m.Name,
+			Footer: fmt.Sprintf("Age: %v", m.Age),
+		},
+		) {
+			{ children... }
+		}
+	}
 }
 
 templ MemberAddTeamList(mems []entities.Member, teamID uint) {
-	<div
-		class="h-full"
-		hx-get={ fmt.Sprintf("/partials/members/list?teamID=%v", teamID) }
-		hx-swap="outerHTML"
-		hx-trigger={ fmt.Sprintf("%v from:body,  %v from:body, every 600s", service.CreateMemberEvent, service.DeleteMemberEvent) }
-	>
+	@components.List(
+		components.ListProps{
+			ListAttr: templ.Attributes{
+				"hx-get":     fmt.Sprintf("/partials/members/list?teamID=%v", teamID),
+				"hx-swap":    "outerHTML",
+				"hx-trigger": fmt.Sprintf("%v from:body,  %v from:body, every 600s", service.CreateMemberEvent, service.DeleteMemberEvent),
+			}}) {
 		if len(mems) > 0 {
-			<ul role="list" class="scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2">
-				for _, m := range mems {
-					@MemberTeamListItem(m, teamID, true)
+			for _, m := range mems {
+				@MemberListItem(m, false) {
+					@shared.AddButton(templ.Attributes{
+						"hx-trigger": "click",
+						"hx-get":     fmt.Sprintf("/partials/teams/%v/members/%v", teamID, m.ID),
+						"hx-target":  "closest li",
+						"hx-swap":    "delete",
+					}, "", "Add")
 				}
-			</ul>
+			}
 		} else {
-			<p class="text-overlay1">
-				{ "No members found" }
-			</p>
+			<p class="text-overlay1">No members found</p>
 		}
-	</div>
+	}
 }

@@ -1,17 +1,37 @@
 package components
 
 // INFO: Work for now... see https://github.com/a-h/templ/issues/975
-templ list(placeholder, url, trigger string) {
-	<div
-		hx-get={ url }
-		hx-swap="outerHTML"
-		hx-trigger={ trigger }
+templ List(props ListProps) {
+	<ul
+		role="list"
+		{ props.ListAttr... }
+		class={ props.MergeClasses() }
 	>
-		<ul role="list" class="scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2">
+		{ children... }
+	</ul>
+}
+
+templ ListItem(props ListItemProps) {
+	<li
+		{ props.ParentAttr... }
+		class={ props.MergeClasses() }
+	>
+		<div
+			class="min-h-fit flex flex-col max-w-1/2 flex-grow"
+		>
+			<p
+				class="font-bold truncate min-w-fit"
+				title={ props.Header }
+			>{ props.Header }</p>
+			if len(props.Footer) > 0 {
+				<p
+					class="text-subtext0 truncate min-w-0"
+					title={ props.Footer }
+				>{ props.Footer }</p>
+			}
+		</div>
+		<div class="flex flex-row justify-center ml-4 items-center">
 			{ children... }
-		</ul>
-		//<p class="text-overlay1">
-		//	{ placeholder }
-		//</p>
-	</div>
+		</div>
+	</li>
 }

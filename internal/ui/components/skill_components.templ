@@ -1,0 +1,34 @@
+package components
+
+import (
+	"fmt"
+	"github.com/pulsone21/powner/internal/ui/shared"
+)
+
+templ SkillItemDeleteButton(sID uint) {
+	@shared.RemoveButton(templ.Attributes{
+		"hx-trigger": "click",
+		"hx-delete":  fmt.Sprintf("/partials/skills/%v", sID),
+		"hx-target":  "closest li",
+		"hx-swap":    "delete",
+	}, "", "")
+}
+
+templ SkillItemAssignButton(sID, targetID uint, dest string, add bool) {
+	switch add {
+		case false:
+			@shared.AddButton(templ.Attributes{
+				"hx-trigger": "click",
+				"hx-post":    fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
+				"hx-target":  "closest li",
+				"hx-swap":    "outerHTML",
+			}, "", "")
+		case true:
+			@shared.RemoveButton(templ.Attributes{
+				"hx-trigger": "click",
+				"hx-delete":  fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
+				"hx-target":  "closest li",
+				"hx-swap":    "outerHTML",
+			}, "", "")
+	}
+}

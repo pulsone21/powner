@@ -9,7 +9,6 @@ import (
 	"github.com/pulsone21/powner/internal/server/middleware"
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
-	"github.com/pulsone21/powner/internal/ui/components"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/subpage"
 )
@@ -117,7 +116,7 @@ func (h *MemberPartialsHandler) serveMemberList(w http.ResponseWriter, r *http.R
 		return response.NewUIResponse(partials.MemberAddTeamList(*mems, t.ID), nil)
 	}
 
-	return response.NewUIResponse(partials.MemberList(*mems, components.DeleteMemberButton), nil)
+	return response.NewUIResponse(partials.MemberList(*mems), nil)
 }
 
 // Path: /partials/members/{id}/skilllist

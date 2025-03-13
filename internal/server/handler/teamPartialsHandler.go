@@ -8,7 +8,6 @@ import (
 	"github.com/pulsone21/powner/internal/server/middleware"
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
-	"github.com/pulsone21/powner/internal/ui/components"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/subpage"
 )
@@ -31,6 +30,7 @@ func (h *TeamPartialsHandler) RegisterRoutes(t *http.ServeMux) {
 	t.HandleFunc("DELETE /teams/{id}", setupHandler(h.deleteTeamRequest))
 	t.HandleFunc("GET /teams/{id}/details", setupHandler(h.serveTeamsDetails))
 	t.HandleFunc("GET /teams/{id}/members", setupHandler(h.serveTeamMemberlist))
+	t.HandleFunc("GET /teams/{id}/skills", setupHandler(h.serveTeamSkills))
 	t.HandleFunc("DELETE /teams/{id}/members/{mID}", setupHandler(h.removeMemberFromTeam))
 	t.HandleFunc("GET /teams/{id}/members/{mID}", setupHandler(h.addMemberToTeam))
 }
@@ -115,5 +115,16 @@ func (h *TeamPartialsHandler) serveTeamList(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		return response.NewUIResponse(nil, err)
 	}
-	return response.NewUIResponse(partials.TeamList(*teams, "No teams found", components.DeleteTeamButton), nil)
+	return response.NewUIResponse(partials.TeamList(*teams), nil)
+}
+
+// Path: /partials/teams/{id}/skills
+func (h *TeamPartialsHandler) serveTeamSkills(w http.ResponseWriter, r *http.Request) response.IResponse {
+	id := r.PathValue("id")
+	t, err := h.tServ.GetTeamByID(id)
+	if err != nil {
+		return response.NewUIResponse(nil, err)
+	}
+
+	return response.NewUIResponse(partials.SkillList(t.Skills, t, "Team has no needed skills"), nil)
 }
