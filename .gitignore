@@ -4,5 +4,9 @@ node_modules/*
 */.DS_Store
 *.DS_Store
 .DS_Store
-bin*
+./bin/*
 powner.wiki*
+
+# don't versionise generated code.
+*_templ.txt
+*_templ.go
