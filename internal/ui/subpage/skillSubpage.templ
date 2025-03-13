@@ -1,7 +1,9 @@
 package subpage
 
 import (
+	"github.com/axzilla/templui/components"
 	"github.com/pulsone21/powner/internal/entities"
+	"github.com/pulsone21/powner/internal/ui/modals"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
 )
@@ -26,12 +28,13 @@ templ SkillOverview(skills []entities.Skill, active *entities.Skill) {
 	<div class="h-full w-full flex flex-row gap-1">
 		<div class="h-full w-1/3 max-w-sm min-w-fit">
 			@shared.Container() {
-				<div class="flex flex-row w-full justify-between mb-2">
-					@shared.AddButton(templ.Attributes{
-						"hx-get":    "/partials/forms/skill/add",
-						"hx-target": "#modalContainer",
-					}, "", "New Skill")
+				<div class="flex flex-row w-full justify-center mb-2">
+					@modals.NewSkillModal(nil)
 				</div>
+				@components.Separator(components.SeparatorProps{
+					Orientation: components.SeparatorOrientationHorizontal,
+					Class:       "mb-2",
+				})
 				@partials.SkillList(skills, nil, "No Skills")
 			}
 		</div>

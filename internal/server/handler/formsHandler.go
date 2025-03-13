@@ -9,6 +9,7 @@ import (
 	"github.com/pulsone21/powner/internal/server/middleware"
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
+	"github.com/pulsone21/powner/internal/ui/forms"
 	"github.com/pulsone21/powner/internal/ui/modals"
 	"github.com/pulsone21/powner/internal/ui/partials"
 )
@@ -37,15 +38,15 @@ func (h *FormsHandler) RegisterRoutes(t *http.ServeMux) {
 }
 
 func (h *FormsHandler) serveCreateTeamForm(w http.ResponseWriter, r *http.Request) response.IResponse {
-	return response.NewUIResponse(modals.NewTeamModal(), nil)
+	return response.NewUIResponse(modals.NewTeamModal(nil), nil)
 }
 
 func (h *FormsHandler) serveCreateMemberForm(w http.ResponseWriter, r *http.Request) response.IResponse {
-	return response.NewUIResponse(modals.NewMemberModal(), nil)
+	return response.NewUIResponse(modals.NewMemberModal(nil), nil)
 }
 
 func (h *FormsHandler) serveCreateSkillForm(w http.ResponseWriter, r *http.Request) response.IResponse {
-	return response.NewUIResponse(modals.NewSkillModal(), nil)
+	return response.NewUIResponse(modals.NewSkillModal(nil), nil)
 }
 
 func (h *FormsHandler) handleMemberFormRequest(w http.ResponseWriter, r *http.Request) response.IResponse {
@@ -70,12 +71,12 @@ func (h *FormsHandler) handleMemberFormRequest(w http.ResponseWriter, r *http.Re
 	_, sErr := h.mServ.CreateMember(req)
 	if sErr != nil {
 		log.Error("Couldn't create Member", "ValidationErrors:", err)
-		return response.NewUIResponse(partials.MemberForm(*sErr.GetValidationErrors()), nil)
+		return response.NewUIResponse(forms.MemberForm(*sErr.GetValidationErrors()), nil)
 	}
 
 	log.Debug("Created new Member based on Request")
 	w.Header().Add("HX-Trigger", service.CreateMemberEvent)
-	return response.NewUIResponse(partials.MemberForm(nil), nil)
+	return response.NewUIResponse(forms.MemberForm(nil), nil)
 }
 
 func (h *FormsHandler) handleTeamFormRequest(w http.ResponseWriter, r *http.Request) response.IResponse {

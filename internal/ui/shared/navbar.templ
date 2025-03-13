@@ -1,43 +1,63 @@
 package shared
 
+import "github.com/axzilla/templui/icons"
+
+import cmp "github.com/axzilla/templui/components"
+
 templ Navbar() {
-	<div class="flex flex-col bg-mantle h-full min-w-20 items-center rounded-b-lg p-1">
-		<div class="max-h-20 w-full flex items-center my-1">
-			@IconButton("Teams", "", templ.Attributes{
-				"class":          "max-h-12",
-				"hx-get":         "/partials/teams/overview",
-				"hx-target":      "#content",
-				"hx-replace-url": "/teams/",
-				"hx-swap":        "innerHTML",
-			})
-		</div>
-		<div class="max-h-20 w-full flex items-center my-1">
-			@IconButton("Members", "", templ.Attributes{
-				"class":          "max-h-12",
-				"hx-get":         "/partials/members/overview",
-				"hx-target":      "#content",
-				"hx-replace-url": "/members/",
-				"hx-swap":        "innerHTML",
-			})
-		</div>
-		<div class="max-h-20 w-full flex items-center my-1">
-			@IconButton("Skills", "", templ.Attributes{
-				"class":          "max-h-12",
-				"hx-get":         "/partials/skills/overview",
-				"hx-target":      "#content",
-				"hx-swap":        "innerHTML",
-				"hx-replace-url": "/skills/",
-			})
-		</div>
-		<div class="max-h-20 w-full flex items-center my-1">
-			@IconButton("Settings", "", templ.Attributes{
-				"class":          "max-h-12",
-				"hx-get":         "/partials/settings/overview",
-				"hx-target":      "#content",
-				"hx-swap":        "innerHTML",
-				"hx-replace-url": "/settings/",
-			})
-		</div>
+	<div class="flex flex-col bg-mantle h-full w-full gap-2 items-center rounded-b-lg p-1">
+		@cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.Users(icons.IconProps{Size: "24"}),
+				HxGet:      "/partials/teams/overview",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/teams/"},
+			}),
+			Content: templ.Raw("Teams"),
+			Side:    cmp.TooltipRight,
+		})
+		@cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.User(icons.IconProps{Size: "24"}),
+				HxGet:      "/partials/members/overview",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/members/"},
+			}),
+			Content: templ.Raw("Members"),
+			Side:    cmp.TooltipRight,
+		})
+		@cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.Book(icons.IconProps{Size: "24"}),
+				HxGet:      "/partials/skills/overview",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/skills/"},
+			}),
+			Content: templ.Raw("Skills"),
+			Side:    cmp.TooltipRight,
+		})
+		@cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.Settings(icons.IconProps{Size: "24"}),
+				HxGet:      "/partials/settings/overview",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/settings/"},
+			}),
+			Content: templ.Raw("Settings"),
+			Side:    cmp.TooltipRight,
+		})
 	</div>
 }
 

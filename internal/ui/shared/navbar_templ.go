@@ -8,6 +8,10 @@ package shared
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "github.com/axzilla/templui/icons"
+
+import cmp "github.com/axzilla/templui/components"
+
 func Navbar() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -29,63 +33,75 @@ func Navbar() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col bg-mantle h-full min-w-20 items-center rounded-b-lg p-1\"><div class=\"max-h-20 w-full flex items-center my-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col bg-mantle h-full w-full gap-2 items-center rounded-b-lg p-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = IconButton("Teams", "", templ.Attributes{
-			"class":          "max-h-12",
-			"hx-get":         "/partials/teams/overview",
-			"hx-target":      "#content",
-			"hx-replace-url": "/teams/",
-			"hx-swap":        "innerHTML",
+		templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.Users(icons.IconProps{Size: "24"}),
+				HxGet:      "/partials/teams/overview",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/teams/"},
+			}),
+			Content: templ.Raw("Teams"),
+			Side:    cmp.TooltipRight,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"max-h-20 w-full flex items-center my-1\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = IconButton("Members", "", templ.Attributes{
-			"class":          "max-h-12",
-			"hx-get":         "/partials/members/overview",
-			"hx-target":      "#content",
-			"hx-replace-url": "/members/",
-			"hx-swap":        "innerHTML",
+		templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.User(icons.IconProps{Size: "24"}),
+				HxGet:      "/partials/members/overview",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/members/"},
+			}),
+			Content: templ.Raw("Members"),
+			Side:    cmp.TooltipRight,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"max-h-20 w-full flex items-center my-1\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = IconButton("Skills", "", templ.Attributes{
-			"class":          "max-h-12",
-			"hx-get":         "/partials/skills/overview",
-			"hx-target":      "#content",
-			"hx-swap":        "innerHTML",
-			"hx-replace-url": "/skills/",
+		templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.Book(icons.IconProps{Size: "24"}),
+				HxGet:      "/partials/skills/overview",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/skills/"},
+			}),
+			Content: templ.Raw("Skills"),
+			Side:    cmp.TooltipRight,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"max-h-20 w-full flex items-center my-1\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = IconButton("Settings", "", templ.Attributes{
-			"class":          "max-h-12",
-			"hx-get":         "/partials/settings/overview",
-			"hx-target":      "#content",
-			"hx-swap":        "innerHTML",
-			"hx-replace-url": "/settings/",
+		templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.Settings(icons.IconProps{Size: "24"}),
+				HxGet:      "/partials/settings/overview",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/settings/"},
+			}),
+			Content: templ.Raw("Settings"),
+			Side:    cmp.TooltipRight,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -114,7 +130,7 @@ func SideBar() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"w-20 flex flex-col justify-between\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"w-20 flex flex-col justify-between\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -126,7 +142,7 @@ func SideBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -2,40 +2,12 @@ package partials
 
 import (
 	"fmt"
+	cmp "github.com/axzilla/templui/components"
 	"github.com/pulsone21/powner/internal/entities"
-	"github.com/pulsone21/powner/internal/errx"
 	"github.com/pulsone21/powner/internal/service"
 	"github.com/pulsone21/powner/internal/ui/components"
 	"github.com/pulsone21/powner/internal/ui/shared"
 )
-
-templ MemberForm(errMap errx.ErrorMap) {
-	<div id="formContainer">
-		@shared.Container() {
-			<div
-				class="h-full flex flex-col items-center"
-			>
-				<h4 class="font-extrabold text-red text-2xl">{ "New Member" }</h4>
-				<form
-					id="memberForm"
-					autocomplete="off"
-					class="flex h-full justify-between w-5/6 flex-col items-center"
-					hx-post="/partials/forms/members/add"
-					hx-target="#formContainer"
-					hx-swap="outerHTML"
-				>
-					<div class="w-full h-full">
-						@shared.Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name", "type": "text"}, errMap.Get("name"))
-						@shared.Input(templ.Attributes{"placeholder": "Age", "id": "age", "name": "age", "type": "number"}, errMap.Get("age"))
-					</div>
-					<div class="h-12 w-full mt-2">
-						@shared.Button("Save member", "", templ.Attributes{"type": "submit"})
-					</div>
-				</form>
-			</div>
-		}
-	</div>
-}
 
 templ MemberInfo(mem entities.Member) {
 	//TODO: Form Post route is wrong (old one)
@@ -82,20 +54,44 @@ templ MemberList(mems []entities.Member) {
 	}
 }
 
+templ MemberCard(m entities.Member) {
+	@cmp.Card(cmp.CardProps{Class: "max-h-fit max-w-sm"}) {
+		@cmp.CardHeader() {
+			@cmp.CardTitle() {
+				@cmp.Avatar(cmp.AvatarProps{
+					// TODO: add route for Avatar Images
+					Name:  m.Name,
+					Class: "mr-4"})
+				{ m.Name }
+			}
+			@cmp.CardDescription() {
+				{ fmt.Sprintf("Age: %v",m.Age) }
+			}
+		}
+		@cmp.CardContent() {
+			<p>Card Content</p>
+		}
+		@cmp.CardFooter() {
+			@cmp.Button(cmp.ButtonProps{Text: "Delete", Variant: cmp.ButtonVariantDestructive})
+		}
+	}
+}
+
 templ MemberListItem(m entities.Member, selectable bool) {
 	if selectable {
-		@components.ListItem(components.ListItemProps{
-			Header: m.Name,
-			Footer: fmt.Sprintf("Age: %v", m.Age),
-			ParentAttr: templ.Attributes{
-				"hx-get":         fmt.Sprintf("/partials/members/%v/details", m.ID),
-				"hx-target":      "#memebrDetails",
-				"hx-swap":        "innerHTML",
-				"hx-replace-url": fmt.Sprintf("/members/%v", m.ID),
-			}},
-		) {
-			{ children... }
-		}
+		@MemberCard(m)
+		// @components.ListItem(components.ListItemProps{
+		// 	Header: m.Name,
+		// 	Footer: fmt.Sprintf("Age: %v", m.Age),
+		// 	ParentAttr: templ.Attributes{
+		// 		"hx-get":         fmt.Sprintf("/partials/members/%v/details", m.ID),
+		// 		"hx-target":      "#memebrDetails",
+		// 		"hx-swap":        "innerHTML",
+		// 		"hx-replace-url": fmt.Sprintf("/members/%v", m.ID),
+		// 	}},
+		// ) {
+		// 	{ children... }
+		// }
 	} else {
 		@components.ListItem(components.ListItemProps{
 			Header: m.Name,
@@ -118,12 +114,12 @@ templ MemberAddTeamList(mems []entities.Member, teamID uint) {
 		if len(mems) > 0 {
 			for _, m := range mems {
 				@MemberListItem(m, false) {
-					@shared.AddButton(templ.Attributes{
-						"hx-trigger": "click",
-						"hx-get":     fmt.Sprintf("/partials/teams/%v/members/%v", teamID, m.ID),
-						"hx-target":  "closest li",
-						"hx-swap":    "delete",
-					}, "", "Add")
+					@cmp.Button(cmp.ButtonProps{
+						Text:     "Add",
+						HxGet:    fmt.Sprintf("/partials/teams/%v/members/%v", teamID, m.ID),
+						HxTarget: "closest li",
+						HxSwap:   "delete",
+					})
 				}
 			}
 		} else {

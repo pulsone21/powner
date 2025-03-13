@@ -1,0 +1,37 @@
+package components
+
+import "fmt"
+
+import cmp "github.com/axzilla/templui/components"
+
+type TextInputProps struct {
+	ID           string        // ID from the FormField for label & input field mapping
+	Label        string        // Label of the field
+	Placeholder  string        // Placeholder of the field
+	Name         string        // name of the key from the payload
+	Type         cmp.InputType // What kind of input type it is
+	HasError     bool          // if the field has an error
+	Required     bool          // if the field is required
+	ErrorMessage string        // what is the error message
+}
+
+templ TextInput(props TextInputProps) {
+	@cmp.FormItem(cmp.FormItemProps{}) {
+		@cmp.FormLabel(cmp.FormLabelProps{
+			Text: props.Label,
+			For:  fmt.Sprintf("%s-form", props.ID),
+		})
+		@cmp.Input(cmp.InputProps{
+			ID:          fmt.Sprintf("%s-form", props.ID),
+			Type:        props.Type,
+			Name:        props.Name,
+			Placeholder: props.Placeholder,
+			HasError:    props.HasError,
+			Required:    props.Required,
+		})
+		@cmp.FormMessage(cmp.FormMessageProps{
+			Message: props.ErrorMessage,
+			Type:    "error",
+		})
+	}
+}

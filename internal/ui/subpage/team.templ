@@ -2,9 +2,10 @@ package subpage
 
 import (
 	"fmt"
+	"github.com/axzilla/templui/components"
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/service"
-	"github.com/pulsone21/powner/internal/ui/charts"
+	"github.com/pulsone21/powner/internal/ui/modals"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
 )
@@ -13,12 +14,13 @@ templ TeamsOverview(teams []entities.Team, active *entities.Team) {
 	<div class="h-full w-full flex flex-row gap-1">
 		<div class="h-full w-1/3 max-w-96 flex flex-col">
 			@shared.Container() {
-				<div class="flex flex-row w-full justify-between mb-2">
-					@shared.AddButton(templ.Attributes{
-						"hx-get":    "/partials/forms/teams/add",
-						"hx-target": "#modalContainer",
-					}, "", "New Team")
+				<div class="flex flex-row w-full justify-center mb-2">
+					@modals.NewTeamModal(nil)
 				</div>
+				@components.Separator(components.SeparatorProps{
+					Orientation: components.SeparatorOrientationHorizontal,
+					Class:       "mb-2",
+				})
 				@partials.TeamList(teams)
 			}
 		</div>
@@ -27,7 +29,31 @@ templ TeamsOverview(teams []entities.Team, active *entities.Team) {
 				@TeamDetails(*active)
 			} else {
 				@shared.Container() {
-					<p>Dashboards....</p>
+					<div class="space-y-2 w-full max-w-sm">
+						@components.Skeleton(components.SkeletonProps{Class: "h-4 w-full"})
+						@components.Skeleton(components.SkeletonProps{Class: "h-4 w-2/3"})
+						@components.Skeleton(components.SkeletonProps{Class: "h-4 w-1/3"})
+					</div>
+					<div>
+						<div class="grid gap-6 md:grid-cols-3">
+							<!-- Stats cards -->
+							for i := 0; i < 3; i++ {
+								<div class="p-4">
+									@components.Skeleton(components.SkeletonProps{Class: "h-4 w-20 mb-2"})
+									@components.Skeleton(components.SkeletonProps{Class: "h-8 w-24 mb-4"})
+									<div class="flex items-center gap-2">
+										@components.Skeleton(components.SkeletonProps{Class: "h-4 w-12"})
+										@components.Skeleton(components.SkeletonProps{Class: "h-4 w-4"})
+									</div>
+								</div>
+							}
+						</div>
+						<!-- Chart -->
+						<div class="mt-4 p-4">
+							@components.Skeleton(components.SkeletonProps{Class: "h-5 w-1/3 mb-6"})
+							@components.Skeleton(components.SkeletonProps{Class: "h-[240px] w-full rounded-md"})
+						</div>
+					</div>
 				}
 			}
 		</div>
@@ -58,16 +84,13 @@ templ TeamDetails(t entities.Team) {
 						>
 							<span class="content-center font-semibold text-xl">Current member</span>
 							<div class="w-10 h-10 mx-2">
-								@shared.IconButton("MemberAdd", "",
-									templ.Attributes{
-										"title":      "add member",
-										"hx-get":     fmt.Sprintf("/modals/members?team=%v", t.ID),
-										"hx-swap":    "innerHTML",
-										"hx-trigger": "click",
-										"hx-target":  "#modalContainer",
-									})
+								@modals.MemberModal(&t)
 							</div>
 						</div>
+						@components.Separator(components.SeparatorProps{
+							Orientation: components.SeparatorOrientationHorizontal,
+							Class:       "mb-2",
+						})
 						@partials.TeamMemberList(t)
 					}
 				</div>
@@ -105,7 +128,7 @@ templ TeamDetails(t entities.Team) {
 				hx-get={ fmt.Sprintf("/api/team/%v/diagrams", t.ID) }
 				hx-trigger="skillChange from:body"
 			>
-				@charts.DiagramList(t)
+				//				@charts.DiagramList(t)
 			</div>
 		</div>
 	</div>

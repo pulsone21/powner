@@ -1,5 +1,20 @@
 package subpage
 
+import "github.com/axzilla/templui/components"
+
 templ SettingsSubpage() {
-	<div>So much WoW ... Settings page</div>
+	<div class="h-full w-full justify-center flex">
+		<div class="p-4 w-full max-w-2/3">
+			<!-- Image placeholder -->
+			@components.Skeleton(components.SkeletonProps{Class: "h-[200px] w-full rounded-md mb-4"})
+			<!-- Title and content -->
+			<div class="space-y-2">
+				@components.Skeleton(components.SkeletonProps{Class: "h-5 w-2/3"})
+				@components.Skeleton(components.SkeletonProps{Class: "h-4 w-full"})
+				@components.Skeleton(components.SkeletonProps{Class: "h-4 w-full"})
+				@components.Skeleton(components.SkeletonProps{Class: "h-4 w-3/4"})
+				<!-- Footer with actions -->
+			</div>
+		</div>
+	</div>
 }

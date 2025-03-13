@@ -1,5 +1,8 @@
 package shared
 
+import "github.com/axzilla/templui/helpers"
+import "github.com/axzilla/templui/components"
+
 templ Base() {
 	<html lang="en" class="overflow-hidden">
 		<head>
@@ -13,17 +16,21 @@ templ Base() {
 			<script src="/static/scripts/htmx.response-target.js"></script>
 			<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
 			<script src="/static/scripts/hyperscript.js"></script>
+			@helpers.ComponentScripts()
 		</head>
 		<body
-			class="mocha flex text-text p-2 h-dv max-h-dvh bg-base "
+			class="dark flex text-text p-2 h-dv max-h-dvh bg-base "
 		>
 			<div class="bg-base flex flex-row gap-1 max-w-full w-full h-full ">
 				@SideBar()
+				@components.Separator(components.SeparatorProps{
+					Orientation: components.SeparatorOrientationVertical,
+					Class:       "mx-0",
+				})
 				{ children... }
 			</div>
 			<div id="modalContainer"></div>
 			<div id="notificationContainer" class="z-[1000] absolute bottom-4 left-4 flex flex-col w-64 gap-1"></div>
-			<div class="macchiato mocha frappe latte"></div>
 		</body>
 	</html>
 }

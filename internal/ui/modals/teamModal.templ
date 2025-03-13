@@ -1,9 +1,26 @@
 package modals
 
-import "github.com/pulsone21/powner/internal/ui/partials"
+import (
+	cmp "github.com/axzilla/templui/components"
+	"github.com/pulsone21/powner/internal/errx"
+	"github.com/pulsone21/powner/internal/ui/forms"
+)
 
-templ NewTeamModal() {
-	@baseModal() {
-		@partials.TeamForm(nil)
+templ NewTeamModal(err errx.ErrorMap) {
+	@modalTrigger("new-team-modal", "") {
+		@cmp.Button(cmp.ButtonProps{
+			Class: "w-full h-full",
+			Text:  "New Team",
+		})
+	}
+	@cmp.Modal(cmp.ModalProps{ID: "new-team-modal", Class: "max-w-md max-h-2/3"}) {
+		@cmp.ModalHeader() {
+			Create a new Team
+		}
+		@cmp.ModalBody() {
+			@forms.TeamForm(err)
+		}
+		@cmp.ModalFooter() {
+		}
 	}
 }

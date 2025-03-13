@@ -2,36 +2,49 @@ package subpage
 
 import (
 	"fmt"
+	"github.com/axzilla/templui/components"
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/ui/icons"
+	"github.com/pulsone21/powner/internal/ui/modals"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
 )
 
 templ MembersOverview(members []entities.Member, activeMem *entities.Member) {
-	<div class="h-full w-full flex flex-row gap-1">
-		<div class="h-full w-1/3 max-w-96 flex flex-col">
-			@shared.Container() {
-				<div class="flex flex-row w-full justify-between mb-2">
-					@shared.AddButton(templ.Attributes{
-						"hx-get":    "/partials/forms/members/add",
-						"hx-target": "#modalContainer",
-					}, "", "New Member")
-				</div>
-				<div>
-					@partials.MemberList(members)
-				</div>
-			}
+	<div class="w-full flex flex-row justify-between gap-2 p-2">
+		@components.Breadcrumb(components.BreadcrumbProps{
+			Items: []components.BreadcrumbItem{
+				{
+					Label: "Home",
+					Href:  "/",
+				},
+				{
+					Label:   "Members",
+					Href:    "/members",
+					Current: true,
+				},
+			},
+		})
+		<div class="flex flex-row w-24 justify-center mb-2">
+			@modals.NewMemberModal(nil)
 		</div>
-		<div id="memebrDetails" class="h-full min-w-2/3 w-full">
-			if activeMem != nil {
-				@	MemberDetails(*activeMem)
-			} else {
-				@shared.Container() {
-					<p>Dashboards....</p>
+	</div>
+	@components.Separator(components.SeparatorProps{
+		Orientation: components.SeparatorOrientationHorizontal,
+		Class:       "mb-2",
+	})
+	<div class="h-full w-full">
+		if activeMem != nil {
+			<div id="memebrDetails" class="h-full min-w-2/3 w-full">
+				@MemberDetails(*activeMem)
+			</div>
+		} else {
+			<div class="h-full w-full flex flex-row justify-center align-top content-start flex-wrap gap-2">
+				for _, m := range members {
+					@partials.MemberCard(m)
 				}
-			}
-		</div>
+			</div>
+		}
 	</div>
 }
 

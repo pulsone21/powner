@@ -1,0 +1,53 @@
+package forms
+
+import (
+	cmp "github.com/axzilla/templui/components"
+	"github.com/pulsone21/powner/internal/errx"
+	"github.com/pulsone21/powner/internal/ui/components"
+	"github.com/pulsone21/powner/internal/ui/shared"
+)
+
+templ MemberForm(errMap errx.ErrorMap) {
+	<div id="formContainer">
+		@shared.Container() {
+			<div
+				class="h-full flex flex-col items-center"
+			>
+				<form
+					id="memberForm"
+					autocomplete="off"
+					class="flex h-full justify-between w-5/6 flex-col items-center"
+					hx-post="/partials/forms/members/add"
+					hx-target="#formContainer"
+					hx-swap="outerHTML"
+				>
+					<div class="w-full h-full">
+						@components.TextInput(components.TextInputProps{
+							ID:           "name",
+							Label:        "Name of the Member",
+							Name:         "name",
+							Placeholder:  "Member name",
+							HasError:     errMap.Has("name"),
+							Type:         cmp.InputTypeText,
+							ErrorMessage: errMap.Get("name"),
+						})
+						@components.TextInput(components.TextInputProps{
+							ID:           "age",
+							Name:         "age",
+							Label:        "Age of the Member",
+							Placeholder:  "18",
+							HasError:     errMap.Has("age"),
+							Type:         cmp.InputTypeNumber,
+							ErrorMessage: errMap.Get("age"),
+						})
+					</div>
+					@cmp.Button(cmp.ButtonProps{
+						Class: "mt-2 w-full h-full",
+						Text:  "Save Member",
+						Type:  "submit",
+					})
+				</form>
+			</div>
+		}
+	</div>
+}

@@ -66,7 +66,7 @@ func (h *ModalHandler) serveMemberAssignModal(w http.ResponseWriter, r *http.Req
 	log.Debug("filtered out member which are already on the team")
 	fmt.Println(finalM)
 
-	return response.NewUIResponse(modals.MemberModal(finalM, t), nil)
+	return response.NewUIResponse(modals.MemberModal(t), nil)
 }
 
 // Path: /modals/skills.

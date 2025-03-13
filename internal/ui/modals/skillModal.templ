@@ -2,7 +2,9 @@ package modals
 
 import (
 	"fmt"
+	cmp "github.com/axzilla/templui/components"
 	"github.com/pulsone21/powner/internal/entities"
+	"github.com/pulsone21/powner/internal/errx"
 	"github.com/pulsone21/powner/internal/service"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
@@ -35,12 +37,21 @@ templ SkillModal(skills []entities.Skill, t entities.SkillHolder) {
 	}
 }
 
-templ NewSkillModal() {
-	@baseModal() {
-		<div class="w-2/3 bg-base rounded-lg mr-2 p-2">
-			<div class="w-full bg-mantle mr-2 p-2">
-				@partials.SkillForm(nil)
-			</div>
-		</div>
+templ NewSkillModal(err errx.ErrorMap) {
+	@modalTrigger("new-skill-modal", "") {
+		@cmp.Button(cmp.ButtonProps{
+			Class: "w-full h-full",
+			Text:  "New Skill",
+		})
+	}
+	@cmp.Modal(cmp.ModalProps{ID: "new-skill-modal", Class: "max-w-md max-h-2/3"}) {
+		@cmp.ModalHeader() {
+			Create a new Skill
+		}
+		@cmp.ModalBody() {
+			@partials.SkillForm(err)
+		}
+		@cmp.ModalFooter() {
+		}
 	}
 }
