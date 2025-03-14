@@ -2,33 +2,51 @@ package components
 
 import (
 	"fmt"
-	"github.com/pulsone21/powner/internal/ui/shared"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
 )
 
 templ SkillItemDeleteButton(sID uint) {
-	@shared.RemoveButton(templ.Attributes{
-		"hx-trigger": "click",
-		"hx-delete":  fmt.Sprintf("/partials/skills/%v", sID),
-		"hx-target":  "closest li",
-		"hx-swap":    "delete",
-	}, "", "")
+	@cmp.Tooltip(cmp.TooltipProps{
+		Trigger: cmp.Button(cmp.ButtonProps{
+			HxDelete: fmt.Sprintf("/partials/skills/%v", sID),
+			HxTarget: "closest li",
+			HxSwap:   "delete",
+			IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
+			Variant:  cmp.ButtonVariantDestructive,
+		}),
+		Content: templ.Raw("Remove Skill"),
+		Side:    cmp.TooltipTop,
+		Variant: cmp.TooltipDestructive,
+	})
 }
 
 templ SkillItemAssignButton(sID, targetID uint, dest string, add bool) {
 	switch add {
 		case false:
-			@shared.AddButton(templ.Attributes{
-				"hx-trigger": "click",
-				"hx-post":    fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
-				"hx-target":  "closest li",
-				"hx-swap":    "outerHTML",
-			}, "", "")
+			@cmp.Tooltip(cmp.TooltipProps{
+				Trigger: cmp.Button(cmp.ButtonProps{
+					HxPost:   fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
+					HxTarget: "closest li",
+					HxSwap:   "outerHTML",
+					IconLeft: icons.Plus(icons.IconProps{Size: "16"}),
+					Variant:  cmp.ButtonVariantGhost,
+				}),
+				Content: templ.Raw("Add Skill"),
+				Side:    cmp.TooltipTop,
+			})
 		case true:
-			@shared.RemoveButton(templ.Attributes{
-				"hx-trigger": "click",
-				"hx-delete":  fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
-				"hx-target":  "closest li",
-				"hx-swap":    "outerHTML",
-			}, "", "")
+			@cmp.Tooltip(cmp.TooltipProps{
+				Trigger: cmp.Button(cmp.ButtonProps{
+					HxDelete: fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
+					HxTarget: "closest li",
+					HxSwap:   "outerHTML",
+					IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
+					Variant:  cmp.ButtonVariantDestructive,
+				}),
+				Content: templ.Raw("Remove Skill"),
+				Side:    cmp.TooltipTop,
+				Variant: cmp.TooltipDestructive,
+			})
 	}
 }

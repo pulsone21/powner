@@ -1,9 +1,12 @@
 package shared
 
-import "github.com/axzilla/templui/helpers"
-import "github.com/axzilla/templui/components"
+import (
+	"github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/helpers"
+	"github.com/axzilla/templui/icons"
+)
 
-templ Base() {
+templ Base(topbar templ.Component) {
 	<html lang="en" class="overflow-hidden">
 		<head>
 			<meta charset="UTF-8"/>
@@ -27,7 +30,30 @@ templ Base() {
 					Orientation: components.SeparatorOrientationVertical,
 					Class:       "mx-0",
 				})
-				{ children... }
+				<div class="w-full h-full flex flex-col">
+					if topbar != nil {
+						@topbar
+					} else {
+						@TopBar(components.Breadcrumb(components.BreadcrumbProps{
+							Attributes: templ.Attributes{"id": "breadcrumbs"},
+							Items: []components.BreadcrumbItem{
+								{
+									Label:   "Home",
+									Href:    "/",
+									Icon:    icons.House(icons.IconProps{Size: "14"}),
+									Current: true,
+								},
+							},
+						}))
+					}
+					@components.Separator(components.SeparatorProps{
+						Orientation: components.SeparatorOrientationHorizontal,
+						Class:       "mb-2",
+					})
+					<div id="content" class="h-full w-full flex flex-col justify-between">
+						{ children... }
+					</div>
+				</div>
 			</div>
 			<div id="modalContainer"></div>
 			<div id="notificationContainer" class="z-[1000] absolute bottom-4 left-4 flex flex-col w-64 gap-1"></div>
@@ -38,5 +64,14 @@ templ Base() {
 templ Container() {
 	<div class="h-full w-full bg-mantle rounded-lg p-2">
 		{ children... }
+	</div>
+}
+
+templ TopBar(breadcrumps templ.Component) {
+	<div id="topbar" hx-swap-oob="true" class="w-full min-h-14 flex flex-row justify-between gap-2 p-2">
+		@breadcrumps
+		<div class="flex flex-row w-24 justify-center mb-2">
+			{ children... }
+		</div>
 	</div>
 }

@@ -10,6 +10,8 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/errx"
 	"github.com/pulsone21/powner/internal/service"
@@ -164,7 +166,7 @@ func SkillList(skills []entities.Skill, ent entities.SkillHolder, placeholder st
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(placeholder)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/partials/skill.templ`, Line: 47, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/partials/skill.templ`, Line: 49, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -372,12 +374,18 @@ func SkillAddjustItem(memId string, s entities.SkillRating) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.AddButton(templ.Attributes{
-			"disabled":  (s.Rating + 1) > 5,
-			"hx-post":   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating+1),
-			"hx-target": "closest li",
-			"hx-swap":   "outerHTML",
-		}, "", "+").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Disabled: (s.Rating + 1) > 5,
+				HxPost:   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating+1),
+				HxTarget: "closest li",
+				HxSwap:   "outerHTML",
+				IconLeft: icons.Plus(icons.IconProps{Size: "16"}),
+				Variant:  cmp.ButtonVariantGhost,
+			}),
+			Content: templ.Raw("Increase Skill"),
+			Side:    cmp.TooltipTop,
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -388,7 +396,7 @@ func SkillAddjustItem(memId string, s entities.SkillRating) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(s.Rating))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/partials/skill.templ`, Line: 111, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/partials/skill.templ`, Line: 119, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -398,12 +406,18 @@ func SkillAddjustItem(memId string, s entities.SkillRating) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.RemoveButton(templ.Attributes{
-			"disabled":  (s.Rating - 1) < 1,
-			"hx-post":   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating-1),
-			"hx-target": "closest li",
-			"hx-swap":   "outerHTML",
-		}, "", "-").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Disabled: (s.Rating - 1) < 1,
+				HxPost:   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating-1),
+				HxTarget: "closest li",
+				HxSwap:   "outerHTML",
+				IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
+				Variant:  cmp.ButtonVariantGhost,
+			}),
+			Content: templ.Raw("Decrease Skill"),
+			Side:    cmp.TooltipTop,
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

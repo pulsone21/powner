@@ -2,14 +2,21 @@ package components
 
 import (
 	"fmt"
-	"github.com/pulsone21/powner/internal/ui/shared"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
 )
 
 templ DeleteTeamButton(teamID string) {
-	@shared.RemoveButton(
-		templ.Attributes{
-			"hx-delete": fmt.Sprintf("/partials/teams/%v", teamID),
-			"hx-target": "closest li",
-			"hx-swap":   "delete",
-		}, "", "")
+	@cmp.Tooltip(cmp.TooltipProps{
+		Trigger: cmp.Button(cmp.ButtonProps{
+			HxDelete: fmt.Sprintf("/partials/teams/%v", teamID),
+			HxTarget: "closest li",
+			HxSwap:   "delete",
+			IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
+			Variant:  cmp.ButtonVariantDestructive,
+		}),
+		Content: templ.Raw("Delete Team"),
+		Side:    cmp.TooltipTop,
+		Variant: cmp.TooltipDestructive,
+	})
 }

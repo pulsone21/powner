@@ -2,6 +2,8 @@ package partials
 
 import (
 	"fmt"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/errx"
 	"github.com/pulsone21/powner/internal/service"
@@ -100,23 +102,35 @@ templ SkillAdjustList(mem entities.Member) {
 templ SkillAddjustItem(memId string, s entities.SkillRating) {
 	<div class="flex flex-row gap-1 w-fit  justify-start items-center">
 		<div class="w-9 h-9 flex items-center justify-center">
-			@shared.AddButton(templ.Attributes{
-				"disabled":  (s.Rating + 1) > 5,
-				"hx-post":   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating+1),
-				"hx-target": "closest li",
-				"hx-swap":   "outerHTML",
-			}, "", "+")
+			@cmp.Tooltip(cmp.TooltipProps{
+				Trigger: cmp.Button(cmp.ButtonProps{
+					Disabled: (s.Rating + 1) > 5,
+					HxPost:   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating+1),
+					HxTarget: "closest li",
+					HxSwap:   "outerHTML",
+					IconLeft: icons.Plus(icons.IconProps{Size: "16"}),
+					Variant:  cmp.ButtonVariantGhost,
+				}),
+				Content: templ.Raw("Increase Skill"),
+				Side:    cmp.TooltipTop,
+			})
 		</div>
 		<div class="w-4 h-9 flex justify-center items-center">
 			<p class="">{ fmt.Sprint(s.Rating) }</p>
 		</div>
 		<div class="w-9 h-9 flex items-center justify-center">
-			@shared.RemoveButton(templ.Attributes{
-				"disabled":  (s.Rating - 1) < 1,
-				"hx-post":   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating-1),
-				"hx-target": "closest li",
-				"hx-swap":   "outerHTML",
-			}, "", "-")
+			@cmp.Tooltip(cmp.TooltipProps{
+				Trigger: cmp.Button(cmp.ButtonProps{
+					Disabled: (s.Rating - 1) < 1,
+					HxPost:   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating-1),
+					HxTarget: "closest li",
+					HxSwap:   "outerHTML",
+					IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
+					Variant:  cmp.ButtonVariantGhost,
+				}),
+				Content: templ.Raw("Decrease Skill"),
+				Side:    cmp.TooltipTop,
+			})
 		</div>
 	</div>
 }

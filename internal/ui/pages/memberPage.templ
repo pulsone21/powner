@@ -6,10 +6,14 @@ import (
 	"github.com/pulsone21/powner/internal/ui/subpage"
 )
 
-templ MembersPage(members *[]entities.Member, activeMem *entities.Member) {
-	@shared.Base() {
-		<div id="content" class="h-full w-full flex flex-col justify-between">
-			@subpage.MembersOverview(*members, activeMem)
-		</div>
+templ MembersOverviewPage(members []entities.Member) {
+	@shared.Base(subpage.MemberOverviewTopbar()) {
+		@subpage.MembersOverview(members, false)
+	}
+}
+
+templ MemberDetailsPage(m entities.Member) {
+	@shared.Base(subpage.MemberDetailsTopbar(m)) {
+		@subpage.MemberDetails(m, false)
 	}
 }

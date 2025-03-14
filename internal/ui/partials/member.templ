@@ -54,8 +54,23 @@ templ MemberList(mems []entities.Member) {
 	}
 }
 
+templ MemberCards(mems []entities.Member) {
+	<div
+		class="h-full w-full flex flex-row justify-start content-start flex-wrap gap-2 px-2"
+		hx-get="/partials/members/cards"
+		hx-swap="outerHTML"
+		hx-trigger={ fmt.Sprintf("%v from:body, %v from:body, every 600s", service.CreateMemberEvent, service.DeleteMemberEvent) }
+	>
+		for _, m := range mems {
+			@MemberCard(m)
+		}
+	</div>
+}
+
 templ MemberCard(m entities.Member) {
-	@cmp.Card(cmp.CardProps{Class: "max-h-fit max-w-sm"}) {
+	@cmp.Card(cmp.CardProps{
+		Class:      "max-h-fit max-w-sm",
+		Attributes: templ.Attributes{"id": fmt.Sprintf("mem-%v", m.ID)}}) {
 		@cmp.CardHeader() {
 			@cmp.CardTitle() {
 				@cmp.Avatar(cmp.AvatarProps{
@@ -72,7 +87,16 @@ templ MemberCard(m entities.Member) {
 			<p>Card Content</p>
 		}
 		@cmp.CardFooter() {
-			@cmp.Button(cmp.ButtonProps{Text: "Delete", Variant: cmp.ButtonVariantDestructive})
+			<div class="flex justify-between w-full">
+				@cmp.Button(cmp.ButtonProps{
+					Text:         "Open",
+					HxGet:        fmt.Sprintf("/members/%v", m.ID),
+					HxTarget:     "#Content",
+					HxSwap:       "innerHTML",
+					HxReplaceUrl: fmt.Sprintf("/members/%v", m.ID),
+				})
+				@components.DeleteMemberButton(m)
+			</div>
 		}
 	}
 }
@@ -80,18 +104,6 @@ templ MemberCard(m entities.Member) {
 templ MemberListItem(m entities.Member, selectable bool) {
 	if selectable {
 		@MemberCard(m)
-		// @components.ListItem(components.ListItemProps{
-		// 	Header: m.Name,
-		// 	Footer: fmt.Sprintf("Age: %v", m.Age),
-		// 	ParentAttr: templ.Attributes{
-		// 		"hx-get":         fmt.Sprintf("/partials/members/%v/details", m.ID),
-		// 		"hx-target":      "#memebrDetails",
-		// 		"hx-swap":        "innerHTML",
-		// 		"hx-replace-url": fmt.Sprintf("/members/%v", m.ID),
-		// 	}},
-		// ) {
-		// 	{ children... }
-		// }
 	} else {
 		@components.ListItem(components.ListItemProps{
 			Header: m.Name,

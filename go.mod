@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	github.com/a-h/templ v0.3.833
+	github.com/axzilla/templui v0.39.0
 	github.com/gorilla/schema v1.4.1
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.9.0
@@ -17,7 +18,6 @@ require (
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/Oudwins/tailwind-merge-go v0.2.1 // indirect
-	github.com/axzilla/templui v0.38.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect

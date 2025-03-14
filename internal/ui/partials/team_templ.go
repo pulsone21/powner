@@ -10,6 +10,8 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/errx"
 	"github.com/pulsone21/powner/internal/service"
@@ -277,12 +279,18 @@ func TeamMemberList(t entities.Team) templ.Component {
 							}()
 						}
 						ctx = templ.InitializeContext(ctx)
-						templ_7745c5c3_Err = shared.RemoveButton(templ.Attributes{
-							"hx-trigger": "click",
-							"hx-delete":  fmt.Sprintf("/partials/teams/%v/members/%v", t.ID, m.ID),
-							"hx-target":  "closest li",
-							"hx-swap":    "delete",
-						}, "", "Remove").Render(ctx, templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
+							Trigger: cmp.Button(cmp.ButtonProps{
+								HxDelete: fmt.Sprintf("/partials/teams/%v/members/%v", t.ID, m.ID),
+								HxTarget: "closest li",
+								HxSwap:   "delete",
+								IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
+								Variant:  cmp.ButtonVariantDestructive,
+							}),
+							Content: templ.Raw("Remove Member"),
+							Side:    cmp.TooltipTop,
+							Variant: cmp.TooltipDestructive,
+						}).Render(ctx, templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

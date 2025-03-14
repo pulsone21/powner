@@ -3,52 +3,44 @@ package subpage
 import (
 	"fmt"
 	"github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
-	"github.com/pulsone21/powner/internal/ui/icons"
+	ic "github.com/pulsone21/powner/internal/ui/icons"
 	"github.com/pulsone21/powner/internal/ui/modals"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
 )
 
-templ MembersOverview(members []entities.Member, activeMem *entities.Member) {
-	<div class="w-full flex flex-row justify-between gap-2 p-2">
-		@components.Breadcrumb(components.BreadcrumbProps{
+templ MembersOverview(members []entities.Member, topbar bool) {
+	@partials.MemberCards(members)
+	if topbar {
+		@MemberOverviewTopbar()
+	}
+}
+
+templ MemberOverviewTopbar() {
+	@shared.TopBar(
+		components.Breadcrumb(components.BreadcrumbProps{
+			Attributes: templ.Attributes{"id": "breadcrumbs"},
 			Items: []components.BreadcrumbItem{
 				{
 					Label: "Home",
 					Href:  "/",
+					Icon:  icons.House(icons.IconProps{Size: "14"}),
 				},
 				{
 					Label:   "Members",
 					Href:    "/members",
+					Icon:    icons.Users(icons.IconProps{Size: "14"}),
 					Current: true,
 				},
 			},
-		})
-		<div class="flex flex-row w-24 justify-center mb-2">
-			@modals.NewMemberModal(nil)
-		</div>
-	</div>
-	@components.Separator(components.SeparatorProps{
-		Orientation: components.SeparatorOrientationHorizontal,
-		Class:       "mb-2",
-	})
-	<div class="h-full w-full">
-		if activeMem != nil {
-			<div id="memebrDetails" class="h-full min-w-2/3 w-full">
-				@MemberDetails(*activeMem)
-			</div>
-		} else {
-			<div class="h-full w-full flex flex-row justify-center align-top content-start flex-wrap gap-2">
-				for _, m := range members {
-					@partials.MemberCard(m)
-				}
-			</div>
-		}
-	</div>
+		})) {
+		@modals.NewMemberModal(nil)
+	}
 }
 
-templ MemberDetails(m entities.Member) {
+templ MemberDetails(m entities.Member, topbar bool) {
 	<div class="flex flex-col gap-1 h-full w-full">
 		<div class="w-full min-h-fit">
 			@shared.Container() {
@@ -64,7 +56,7 @@ templ MemberDetails(m entities.Member) {
 					<div class="flex flex-row justify-between mb-2">
 						<p class="content-center font-bold text-lg">Skills</p>
 						<div class="h-10 w-10 mx-2">
-							@shared.IconButton(icons.SkillAdd, "", templ.Attributes{
+							@shared.IconButton(ic.SkillAdd, "", templ.Attributes{
 								"title":     "add skill",
 								"hx-get":    fmt.Sprintf("/modals/skills?member=%v", m.ID),
 								"hx-target": "#modalContainer",
@@ -81,4 +73,34 @@ templ MemberDetails(m entities.Member) {
 			</div>
 		</div>
 	</div>
+	if topbar {
+		@MemberDetailsTopbar(m)
+	}
+}
+
+templ MemberDetailsTopbar(m entities.Member) {
+	@shared.TopBar(components.Breadcrumb(components.BreadcrumbProps{
+		Attributes: templ.Attributes{
+			"id": "breadcrumbs"},
+		Items: []components.BreadcrumbItem{
+			{
+				Label: "Home",
+				Href:  "/",
+				Icon:  icons.House(icons.IconProps{Size: "14"}),
+			},
+			{
+				Label: "Members",
+				Href:  "/members",
+				Icon:  icons.Users(icons.IconProps{Size: "14"}),
+			},
+			{
+				Label:   m.Name,
+				Href:    fmt.Sprintf("/members/%v", m.ID),
+				Icon:    icons.User(icons.IconProps{Size: "14"}),
+				Current: true,
+			},
+		},
+	})) {
+		@modals.NewMemberModal(nil)
+	}
 }

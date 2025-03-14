@@ -10,7 +10,8 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
-	"github.com/pulsone21/powner/internal/ui/shared"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
 )
 
 func DeleteTeamButton(teamID string) templ.Component {
@@ -34,12 +35,18 @@ func DeleteTeamButton(teamID string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = shared.RemoveButton(
-			templ.Attributes{
-				"hx-delete": fmt.Sprintf("/partials/teams/%v", teamID),
-				"hx-target": "closest li",
-				"hx-swap":   "delete",
-			}, "", "").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				HxDelete: fmt.Sprintf("/partials/teams/%v", teamID),
+				HxTarget: "closest li",
+				HxSwap:   "delete",
+				IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
+				Variant:  cmp.ButtonVariantDestructive,
+			}),
+			Content: templ.Raw("Delete Team"),
+			Side:    cmp.TooltipTop,
+			Variant: cmp.TooltipDestructive,
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
