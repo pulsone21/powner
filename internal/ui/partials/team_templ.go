@@ -141,7 +141,7 @@ func TeamListItem(t entities.Team, selectable bool) templ.Component {
 				Footer: t.Description,
 				ParentAttr: templ.Attributes{
 					"hx-get":         fmt.Sprintf("/teams/%v", t.ID),
-					"hx-target":      "#Content",
+					"hx-target":      "#TeamDetails",
 					"hx-swap":        "innerHTML",
 					"hx-replace-url": fmt.Sprintf("/teams/%v", t.ID),
 				}},

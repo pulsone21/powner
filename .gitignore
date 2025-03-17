@@ -6,7 +6,7 @@ node_modules/*
 .DS_Store
 bin
 powner.wiki*
-./tmp/*
+tmp/*
 
 # don't versionise generated code.
 *_templ.txt
