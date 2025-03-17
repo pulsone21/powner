@@ -165,7 +165,7 @@ func SkillListItem(s entities.Skill, selectable bool) templ.Component {
 					Footer: s.Description,
 					ParentAttr: templ.Attributes{
 						"hx-get":         fmt.Sprintf("/skills/%v", s.ID),
-						"hx-target":      "#TeamDetails",
+						"hx-target":      "#Details",
 						"hx-swap":        "innerHTML",
 						"hx-replace-url": fmt.Sprintf("/skills/%v", s.ID),
 					}},

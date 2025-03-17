@@ -30,6 +30,7 @@ func (h SkillPageHandler) GetRoutes() *http.ServeMux {
 func (h *SkillPageHandler) generalSkillPage(w http.ResponseWriter, r *http.Request) response.IResponse {
 	log := middleware.GetLogger(r.Context())
 	log.Debug("general skill page requested")
+
 	skills, err := h.sServ.GetSkills()
 	if err != nil {
 		return response.NewUIResponse(nil, err)
@@ -55,5 +56,10 @@ func (h *SkillPageHandler) specificSkillPage(w http.ResponseWriter, r *http.Requ
 		return response.NewUIResponse(subpage.SkillDetails(*s, true), nil)
 	}
 
-	return response.NewUIResponse(pages.SkillDetailPage(*s), nil)
+	skills, err := h.sServ.GetSkills()
+	if err != nil {
+		return response.NewUIResponse(nil, err)
+	}
+
+	return response.NewUIResponse(pages.SkillDetailPage(*s, *skills), nil)
 }

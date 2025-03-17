@@ -80,7 +80,7 @@ func (h *MemberPartialsHandler) serveMemberList(w http.ResponseWriter, r *http.R
 		if in {
 			return response.NewUIResponse(partials.TeamMemberList(*t), nil)
 		}
-		return response.NewUIResponse(partials.MemberAddTeamList(*mems, t.ID), nil)
+		return response.NewUIResponse(partials.MemberAddTeamList(*&finalM, t.ID), nil)
 	}
 
 	return response.NewUIResponse(partials.MemberList(*mems), nil)

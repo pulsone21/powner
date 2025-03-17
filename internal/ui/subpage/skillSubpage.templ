@@ -6,9 +6,17 @@ import (
 	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
 	"github.com/pulsone21/powner/internal/ui/modals"
-	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
 )
+
+templ SkillOverview(skills []entities.Skill, topbar bool) {
+	@generalOverview(overviewProps{
+		Skills: &skills,
+	})
+	if topbar {
+		@SkillOverviewTopbar()
+	}
+}
 
 templ SkillDetails(s entities.Skill, topbar bool) {
 	<div class="flex flex-col gap-1 h-full w-full">
@@ -26,29 +34,6 @@ templ SkillDetails(s entities.Skill, topbar bool) {
 	</div>
 	if topbar {
 		@SkillDetailsTopbar(s)
-	}
-}
-
-templ SkillOverview(skills []entities.Skill, topbar bool) {
-	<div class="h-full w-full flex flex-row gap-1">
-		<div class="h-full w-1/3 max-w-sm min-w-fit">
-			@partials.SkillList(skills, nil, "No Skills")
-		</div>
-		<div class="h-full w-full">
-			<!-- Image placeholder -->
-			@components.Skeleton(components.SkeletonProps{Class: "h-[200px] w-full rounded-md mb-4"})
-			<!-- Title and content -->
-			<div class="space-y-2">
-				@components.Skeleton(components.SkeletonProps{Class: "h-5 w-2/3"})
-				@components.Skeleton(components.SkeletonProps{Class: "h-4 w-full"})
-				@components.Skeleton(components.SkeletonProps{Class: "h-4 w-full"})
-				@components.Skeleton(components.SkeletonProps{Class: "h-4 w-3/4"})
-				<!-- Footer with actions -->
-			</div>
-		</div>
-	</div>
-	if topbar {
-		@SkillOverviewTopbar()
 	}
 }
 
