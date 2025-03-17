@@ -35,7 +35,7 @@ func Base(topbar templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<html lang=\"en\" class=\"overflow-hidden\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Powner</title><link href=\"/static/styles/base.css\" rel=\"stylesheet\"><link href=\"/static/favicon/favicon.ico\" rel=\"icon\"><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\"></script><script src=\"/static/scripts/htmx.min.js\"></script><script src=\"/static/scripts/htmx.response-target.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js\"></script><script src=\"/static/scripts/hyperscript.js\"></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<html lang=\"en\" class=\"overflow-hidden dark\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Powner</title><link href=\"/static/styles/base.css\" rel=\"stylesheet\"><link href=\"/static/favicon/favicon.ico\" rel=\"icon\"><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\"></script><script src=\"/static/scripts/htmx.min.js\"></script><script src=\"/static/scripts/htmx.response-target.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js\"></script><script src=\"/static/scripts/hyperscript.js\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -43,7 +43,7 @@ func Base(topbar templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</head><body class=\"dark flex text-text p-2 h-dv max-h-dvh bg-base \"><div class=\"bg-base flex flex-row gap-1 max-w-full w-full h-full \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</head><body class=\"flex text-text p-2 h-dv max-h-dvh bg-base \"><div class=\"bg-base flex flex-row gap-1 max-w-full w-full h-full \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

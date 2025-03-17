@@ -135,7 +135,7 @@ func SideBar() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"w-20 flex flex-col justify-between\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex flex-col h-full\"><div class=\"w-20 flex flex-col h-full justify-between\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -147,7 +147,23 @@ func SideBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"w-20 bottom-0 mb-2 flex justify-center items-center\"><div class=\"w-10 h-10 flex group\"><script>\n\t\t\t\t\tdocument.addEventListener('alpine:init', () => {\n\t\t\t\t\t\tAlpine.store('darkMode',{\n\t\t\t\t\t\t\t\tdark: true,\n\n\t\t\t\t\t\t\t\ttoogle() {\n\t\t\t\t\t\t\t\t\tthis.dark = !this.dark\n\t\t\t\t\t\t\t\t\tdocument.documentElement.classList.toggle('dark', this.dark);\n\t\t\t\t\t\t\t\t\t//document.dispatchEvent(new CustomEvent('theme-changed'));\n\t\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t})\n\t\t\t\t\t})\n\t\t\t\t</script><div class=\"absolute bg-muted-foreground blur-md rounded-3xl w-10 h-10 opacity-0  group-hover:opacity-70 transition\"></div><div class=\"relative cursor-pointer w-10 h-10 rounded-3xl flex justify-center items-center\" x-data @click=\"$store.darkMode.toogle()\"><div x-show=\"$store.darkMode.dark\" transition>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Moon(icons.IconProps{Size: "24"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div x-show=\"!$store.darkMode.dark\" transition>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = icons.Sun(icons.IconProps{Size: "24"}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

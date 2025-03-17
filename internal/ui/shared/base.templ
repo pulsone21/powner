@@ -7,7 +7,7 @@ import (
 )
 
 templ Base(topbar templ.Component) {
-	<html lang="en" class="overflow-hidden">
+	<html lang="en" class="overflow-hidden dark">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -22,7 +22,7 @@ templ Base(topbar templ.Component) {
 			@helpers.ComponentScripts()
 		</head>
 		<body
-			class="dark flex text-text p-2 h-dv max-h-dvh bg-base "
+			class="flex text-text p-2 h-dv max-h-dvh bg-base "
 		>
 			<div class="bg-base flex flex-row gap-1 max-w-full w-full h-full ">
 				@SideBar()

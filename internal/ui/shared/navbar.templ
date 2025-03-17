@@ -67,8 +67,41 @@ templ Navbar() {
 }
 
 templ SideBar() {
-	<div class="w-20 flex flex-col justify-between">
-		@Logo()
-		@Navbar()
+	<div class="flex flex-col h-full">
+		<div class="w-20 flex flex-col h-full justify-between">
+			@Logo()
+			@Navbar()
+		</div>
+		<div class="w-20 bottom-0 mb-2 flex justify-center items-center">
+			<div class="w-10 h-10 flex group">
+				<script>
+					document.addEventListener('alpine:init', () => {
+						Alpine.store('darkMode',{
+								dark: true,
+
+								toogle() {
+									this.dark = !this.dark
+									document.documentElement.classList.toggle('dark', this.dark);
+									//document.dispatchEvent(new CustomEvent('theme-changed'));
+									}
+
+							})
+					})
+				</script>
+				<div class="absolute bg-muted-foreground blur-md rounded-3xl w-10 h-10 opacity-0  group-hover:opacity-70 transition"></div>
+				<div
+					class="relative cursor-pointer w-10 h-10 rounded-3xl flex justify-center items-center"
+					x-data
+					@click="$store.darkMode.toogle()"
+				>
+					<div x-show="$store.darkMode.dark" transition>
+						@icons.Moon(icons.IconProps{Size: "24"})
+					</div>
+					<div x-show="!$store.darkMode.dark" transition>
+						@icons.Sun(icons.IconProps{Size: "24"})
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 }
