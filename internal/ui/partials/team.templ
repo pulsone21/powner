@@ -5,37 +5,9 @@ import (
 	cmp "github.com/axzilla/templui/components"
 	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
-	"github.com/pulsone21/powner/internal/errx"
 	"github.com/pulsone21/powner/internal/service"
 	"github.com/pulsone21/powner/internal/ui/components"
-	"github.com/pulsone21/powner/internal/ui/shared"
 )
-
-templ TeamForm(errMap errx.ErrorMap) {
-	<div id="formContainer" class="h-full w-full p-2 bg-base rounded-lg ">
-		<div
-			class="bg-mantle h-full w-full flex flex-col items-center"
-		>
-			<h4 class="font-extrabold text-red mt-2 text-2xl">New Tean</h4>
-			<form
-				id="teamForm"
-				autocomplete="off"
-				class="flex h-full justify-between w-5/6 flex-col items-center"
-				hx-post="/partials/forms/teams/add"
-				hx-target="#formContainer"
-				hx-swap="outerHTML"
-			>
-				<div class="w-full h-full">
-					@shared.Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name"}, errMap.Get("name"))
-					@shared.Input(templ.Attributes{"placeholder": "Description", "id": "description", "name": "description"}, errMap.Get("description"))
-				</div>
-				<div class="h-12 w-full mt-2">
-					@shared.Button("Save team", "", templ.Attributes{"type": "submit"})
-				</div>
-			</form>
-		</div>
-	</div>
-}
 
 templ TeamList(teams []entities.Team) {
 	@components.List(
@@ -62,8 +34,8 @@ templ TeamListItem(t entities.Team, selectable bool) {
 			Header: t.Name,
 			Footer: t.Description,
 			ParentAttr: templ.Attributes{
-				"hx-get":         fmt.Sprintf("/partials/teams/%v/details", t.ID),
-				"hx-target":      "#teamDetails",
+				"hx-get":         fmt.Sprintf("/teams/%v", t.ID),
+				"hx-target":      "#Content",
 				"hx-swap":        "innerHTML",
 				"hx-replace-url": fmt.Sprintf("/teams/%v", t.ID),
 			}},
@@ -91,7 +63,7 @@ templ TeamMemberList(t entities.Team) {
 		if len(t.Members) > 0 {
 			for _, m := range t.Members {
 				@MemberListItem(m, false) {
-					@cmp.Tooltip(cmp.TooltipProps{
+					@components.TTooltip(components.TooltipProps{
 						Trigger: cmp.Button(cmp.ButtonProps{
 							HxDelete: fmt.Sprintf("/partials/teams/%v/members/%v", t.ID, m.ID),
 							HxTarget: "closest li",
@@ -99,8 +71,8 @@ templ TeamMemberList(t entities.Team) {
 							IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
 							Variant:  cmp.ButtonVariantDestructive,
 						}),
-						Content: templ.Raw("Remove Member"),
-						Side:    cmp.TooltipTop,
+						Text:    "Remove Member",
+						Side:    cmp.TooltipLeft,
 						Variant: cmp.TooltipDestructive,
 					})
 				}

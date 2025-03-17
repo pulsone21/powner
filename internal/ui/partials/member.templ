@@ -126,11 +126,15 @@ templ MemberAddTeamList(mems []entities.Member, teamID uint) {
 		if len(mems) > 0 {
 			for _, m := range mems {
 				@MemberListItem(m, false) {
-					@cmp.Button(cmp.ButtonProps{
-						Text:     "Add",
-						HxGet:    fmt.Sprintf("/partials/teams/%v/members/%v", teamID, m.ID),
-						HxTarget: "closest li",
-						HxSwap:   "delete",
+					@components.TTooltip(components.TooltipProps{
+						Trigger: cmp.Button(cmp.ButtonProps{
+							Text:     "Add",
+							HxGet:    fmt.Sprintf("/partials/teams/%v/members/%v", teamID, m.ID),
+							HxTarget: "closest li",
+							HxSwap:   "delete",
+						}),
+						Text: "Add member to team",
+						Side: cmp.TooltipLeft,
 					})
 				}
 			}

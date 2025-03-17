@@ -6,37 +6,21 @@ import (
 	"github.com/axzilla/templui/icons"
 )
 
-templ SkillItemDeleteButton(sID uint) {
-	@cmp.Tooltip(cmp.TooltipProps{
-		Trigger: cmp.Button(cmp.ButtonProps{
-			HxDelete: fmt.Sprintf("/partials/skills/%v", sID),
-			HxTarget: "closest li",
-			HxSwap:   "delete",
-			IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
-			Variant:  cmp.ButtonVariantDestructive,
-		}),
-		Content: templ.Raw("Remove Skill"),
-		Side:    cmp.TooltipTop,
-		Variant: cmp.TooltipDestructive,
-	})
-}
-
 templ SkillItemAssignButton(sID, targetID uint, dest string, add bool) {
 	switch add {
 		case false:
-			@cmp.Tooltip(cmp.TooltipProps{
+			@TTooltip(TooltipProps{
 				Trigger: cmp.Button(cmp.ButtonProps{
 					HxPost:   fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
 					HxTarget: "closest li",
 					HxSwap:   "outerHTML",
 					IconLeft: icons.Plus(icons.IconProps{Size: "16"}),
-					Variant:  cmp.ButtonVariantGhost,
 				}),
-				Content: templ.Raw("Add Skill"),
-				Side:    cmp.TooltipTop,
+				Text: "Add Skill",
+				Side: cmp.TooltipLeft,
 			})
 		case true:
-			@cmp.Tooltip(cmp.TooltipProps{
+			@TTooltip(TooltipProps{
 				Trigger: cmp.Button(cmp.ButtonProps{
 					HxDelete: fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
 					HxTarget: "closest li",
@@ -44,8 +28,8 @@ templ SkillItemAssignButton(sID, targetID uint, dest string, add bool) {
 					IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
 					Variant:  cmp.ButtonVariantDestructive,
 				}),
-				Content: templ.Raw("Remove Skill"),
-				Side:    cmp.TooltipTop,
+				Text:    "Remove Skill",
+				Side:    cmp.TooltipLeft,
 				Variant: cmp.TooltipDestructive,
 			})
 	}

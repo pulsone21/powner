@@ -31,7 +31,7 @@ templ MemberOverviewTopbar() {
 				{
 					Label:   "Members",
 					Href:    "/members",
-					Icon:    icons.Users(icons.IconProps{Size: "14"}),
+					Icon:    icons.User(icons.IconProps{Size: "14"}),
 					Current: true,
 				},
 			},
@@ -91,7 +91,7 @@ templ MemberDetailsTopbar(m entities.Member) {
 			{
 				Label: "Members",
 				Href:  "/members",
-				Icon:  icons.Users(icons.IconProps{Size: "14"}),
+				Icon:  icons.User(icons.IconProps{Size: "14"}),
 			},
 			{
 				Label:   m.Name,

@@ -15,7 +15,7 @@ templ modalTrigger(id, class string) {
 	<span
 		x-data="modalTriggers"
 		data-modal-id={ id }
-		class={ utils.TwMerge("h-full w-full", class) }
+		class={ utils.TwMerge("h-fit w-fit", class) }
 		@click="openModal"
 	>
 		{ children... }

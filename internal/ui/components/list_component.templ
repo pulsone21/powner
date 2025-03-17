@@ -1,11 +1,25 @@
 package components
 
+import "github.com/axzilla/templui/utils"
+
+type ListItemProps struct {
+	Class      string
+	Header     string
+	Footer     string
+	ParentAttr templ.Attributes
+}
+
+type ListProps struct {
+	Class    string
+	ListAttr templ.Attributes
+}
+
 // INFO: Work for now... see https://github.com/a-h/templ/issues/975
 templ List(props ListProps) {
 	<ul
 		role="list"
 		{ props.ListAttr... }
-		class={ props.MergeClasses() }
+		class={ utils.TwMerge("w-full scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2", props.Class) }
 	>
 		{ children... }
 	</ul>
@@ -14,7 +28,10 @@ templ List(props ListProps) {
 templ ListItem(props ListItemProps) {
 	<li
 		{ props.ParentAttr... }
-		class={ props.MergeClasses() }
+		class={ utils.TwMerge(
+		"min-h-10 justify-between flex flex-row items-center rounded-lg p-1 hover:bg-accent transition", 
+		"cursor-pointer",
+		props.Class) }
 	>
 		<div
 			class="min-h-fit flex flex-col max-w-1/2 flex-grow"

@@ -5,33 +5,13 @@ import (
 	cmp "github.com/axzilla/templui/components"
 	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
-	"github.com/pulsone21/powner/internal/errx"
 	"github.com/pulsone21/powner/internal/service"
 	"github.com/pulsone21/powner/internal/ui/components"
-	"github.com/pulsone21/powner/internal/ui/shared"
 )
-
-templ SkillForm(errMap errx.ErrorMap) {
-	<div id="formContainer" class="h-full flex flex-col items-center">
-		<h4 class="font-extrabold text-red text-2xl">New Skill</h4>
-		<form id="skillForm" autocomplete="off" class="flex h-full w-5/6 flex-col items-center justify-evenly" hx-post="/api/skill" hx-target="#formContainer" hx-swap="outerHTML">
-			@shared.Input(templ.Attributes{"placeholder": "Name", "id": "name", "name": "name"}, errMap.Get("name"))
-			@shared.Input(templ.Attributes{"placeholder": "Description", "id": "description", "name": "description"}, errMap.Get("description"))
-			@shared.Input(templ.Attributes{"placeholder": "Importance", "id": "importance", "name": "importance"}, errMap.Get("importance"))
-			@shared.Selection("Type", []shared.InputOptions{
-				{Label: "Hard", Value: "0"},
-				{Label: "Soft", Value: "1"},
-			}, templ.Attributes{"placeholder": "Type", "id": "type", "name": "type"})
-			<div class="h-12 w-full">
-				@shared.Button("Save Skill", "", templ.Attributes{"type": "submit"})
-			</div>
-		</form>
-	</div>
-}
 
 templ SkillList(skills []entities.Skill, ent entities.SkillHolder, placeholder string) {
 	if len(skills) > 0 {
-		<ul role="list" class="scroll-smooth overflow-hidden min-w-52 h-full overflow-y-auto divide-y-2 divide-base">
+		<ul role="list" class="scroll-smooth min-w-52 h-full overflow-y-auto divide-y-2 divide-base">
 			for _,s := range skills {
 				if ent != nil {
 					@SkillListItem(s, false) {
@@ -58,8 +38,8 @@ templ SkillListItem(s entities.Skill, selectable bool) {
 				Header: s.Name,
 				Footer: s.Description,
 				ParentAttr: templ.Attributes{
-					"hx-get":         fmt.Sprintf("/partials/skills/%v/details", s.ID),
-					"hx-target":      "#skillDetails",
+					"hx-get":         fmt.Sprintf("/skills/%v", s.ID),
+					"hx-target":      "#TeamDetails",
 					"hx-swap":        "innerHTML",
 					"hx-replace-url": fmt.Sprintf("/skills/%v", s.ID),
 				}},

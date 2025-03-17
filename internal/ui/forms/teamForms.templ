@@ -3,7 +3,6 @@ package forms
 import (
 	cmp "github.com/axzilla/templui/components"
 	"github.com/pulsone21/powner/internal/errx"
-	"github.com/pulsone21/powner/internal/ui/components"
 )
 
 templ TeamForm(errMap errx.ErrorMap) {
@@ -19,26 +18,7 @@ templ TeamForm(errMap errx.ErrorMap) {
 			hx-target="#formContainer"
 			hx-swap="outerHTML"
 		>
-			<div class="w-full">
-				@components.TextInput(components.TextInputProps{
-					ID:           "name",
-					Label:        "Name of the Team",
-					Name:         "name",
-					Placeholder:  "Teamname",
-					HasError:     errMap.Has("name"),
-					Type:         cmp.InputTypeText,
-					ErrorMessage: errMap.Get("name"),
-				})
-				@components.TextInput(components.TextInputProps{
-					ID:           "desc",
-					Name:         "description",
-					Label:        "Description of the Team",
-					Placeholder:  "Team description",
-					HasError:     errMap.Has("description"),
-					Type:         cmp.InputTypeText,
-					ErrorMessage: errMap.Get("description"),
-				})
-			</div>
+			<div class="w-full"></div>
 			@cmp.Button(cmp.ButtonProps{
 				Class: "mt-2 w-full h-full",
 				Text:  "Save Team",

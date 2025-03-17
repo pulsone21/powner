@@ -10,7 +10,7 @@ import (
 	"github.com/pulsone21/powner/internal/ui/partials"
 )
 
-templ MemberModal(t *entities.Team) {
+templ MemberModal(t *entities.Team, members *[]entities.Member) {
 	@modalTrigger("member-modal", "") {
 		@cmp.Tooltip(cmp.TooltipProps{
 			Trigger: cmp.Button(cmp.ButtonProps{
@@ -32,12 +32,16 @@ templ MemberModal(t *entities.Team) {
 		@cmp.ModalBody() {
 			<div class="flex flex-row justify-around">
 				<div class="w-1/2 h-full">
-					<div
-						class="w-full h-full"
-						hx-get={ fmt.Sprintf("/partials/members/list?teamID=%v", t.ID) }
-						hx-trigger="load"
-						hx-swap="outerHTML"
-					></div>
+					if members != nil {
+						@partials.MemberList(*members)
+					} else {
+						<div
+							class="w-full h-full "
+							hx-get={ fmt.Sprintf("/partials/members/list?teamID=%v", t.ID) }
+							hx-trigger="load"
+							hx-swap="outerHTML"
+						></div>
+					}
 				</div>
 				<div class="w-1/2 h-full">
 					@forms.MemberForm(nil)
@@ -58,7 +62,7 @@ templ MemberInfoModal(mem entities.Member) {
 templ NewMemberModal(err errx.ErrorMap) {
 	@modalTrigger("new-member-modal", "") {
 		@cmp.Button(cmp.ButtonProps{
-			Class: "w-full h-full",
+			Class: "px-2 w-fit h-full grow",
 			Text:  "New Member",
 		})
 	}

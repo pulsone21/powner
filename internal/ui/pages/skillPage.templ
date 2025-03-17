@@ -6,8 +6,14 @@ import (
 	"github.com/pulsone21/powner/internal/ui/subpage"
 )
 
-templ SkillPage(skills []entities.Skill, activeSkill *entities.Skill) {
-	@shared.Base(nil) {
-		@subpage.SkillOverview(skills, activeSkill)
+templ SkillOverviewPage(skills []entities.Skill) {
+	@shared.Base(subpage.SkillOverviewTopbar()) {
+		@subpage.SkillOverview(skills, false)
+	}
+}
+
+templ SkillDetailPage(skill entities.Skill) {
+	@shared.Base(subpage.SkillDetailsTopbar(skill)) {
+		@subpage.SkillDetails(skill, false)
 	}
 }

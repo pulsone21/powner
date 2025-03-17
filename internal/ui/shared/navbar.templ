@@ -1,25 +1,27 @@
 package shared
 
 import "github.com/axzilla/templui/icons"
+import "github.com/pulsone21/powner/internal/ui/components"
 
 import cmp "github.com/axzilla/templui/components"
 
 templ Navbar() {
 	<div class="flex flex-col bg-mantle h-full w-full gap-2 items-center rounded-b-lg p-1">
-		@cmp.Tooltip(cmp.TooltipProps{
+		@components.TTooltip(components.TooltipProps{
 			Trigger: cmp.Button(cmp.ButtonProps{
 				Class:      "max-h-12 w-full",
 				Variant:    cmp.ButtonVariantOutline,
 				IconLeft:   icons.Users(icons.IconProps{Size: "24"}),
-				HxGet:      "/partials/teams/overview",
+				HxGet:      "/teams",
 				HxTarget:   "#content",
 				HxSwap:     "innerHTML",
 				Attributes: templ.Attributes{"hx-replace-url": "/teams"},
 			}),
-			Content: templ.Raw("Teams"),
-			Side:    cmp.TooltipRight,
+			Text:      "Teams",
+			ShowArrow: true,
+			Side:      cmp.TooltipRight,
 		})
-		@cmp.Tooltip(cmp.TooltipProps{
+		@components.TTooltip(components.TooltipProps{
 			Trigger: cmp.Button(cmp.ButtonProps{
 				Class:      "max-h-12 w-full",
 				Variant:    cmp.ButtonVariantOutline,
@@ -29,23 +31,25 @@ templ Navbar() {
 				HxSwap:     "innerHTML",
 				Attributes: templ.Attributes{"hx-replace-url": "/members"},
 			}),
-			Content: templ.Raw("Members"),
-			Side:    cmp.TooltipRight,
+			Text:      "Members",
+			ShowArrow: true,
+			Side:      cmp.TooltipRight,
 		})
-		@cmp.Tooltip(cmp.TooltipProps{
+		@components.TTooltip(components.TooltipProps{
 			Trigger: cmp.Button(cmp.ButtonProps{
 				Class:      "max-h-12 w-full",
 				Variant:    cmp.ButtonVariantOutline,
 				IconLeft:   icons.Book(icons.IconProps{Size: "24"}),
-				HxGet:      "/partials/skills/overview",
+				HxGet:      "/skills",
 				HxTarget:   "#content",
 				HxSwap:     "innerHTML",
 				Attributes: templ.Attributes{"hx-replace-url": "/skills"},
 			}),
-			Content: templ.Raw("Skills"),
-			Side:    cmp.TooltipRight,
+			Text:      "Skills",
+			ShowArrow: true,
+			Side:      cmp.TooltipRight,
 		})
-		@cmp.Tooltip(cmp.TooltipProps{
+		@components.TTooltip(components.TooltipProps{
 			Trigger: cmp.Button(cmp.ButtonProps{
 				Class:      "max-h-12 w-full",
 				Variant:    cmp.ButtonVariantOutline,
@@ -55,8 +59,9 @@ templ Navbar() {
 				HxSwap:     "innerHTML",
 				Attributes: templ.Attributes{"hx-replace-url": "/settings"},
 			}),
-			Content: templ.Raw("Settings"),
-			Side:    cmp.TooltipRight,
+			Text:      "Settings",
+			ShowArrow: true,
+			Side:      cmp.TooltipRight,
 		})
 	</div>
 }

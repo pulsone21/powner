@@ -6,8 +6,14 @@ import (
 	"github.com/pulsone21/powner/internal/ui/subpage"
 )
 
-templ TeamPage(teams *[]entities.Team, active *entities.Team) {
-	@shared.Base(nil) {
-		@subpage.TeamsOverview(*teams, active)
+templ TeamsOverviewPage(teams []entities.Team) {
+	@shared.Base(subpage.TeamOverviewTopbar()) {
+		@subpage.TeamsOverview(teams, false)
+	}
+}
+
+templ TeamDetailPage(team entities.Team) {
+	@shared.Base(subpage.TeamDetailsTopbar(team)) {
+		@subpage.TeamDetails(team, false)
 	}
 }

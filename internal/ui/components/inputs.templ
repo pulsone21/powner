@@ -9,10 +9,11 @@ type TextInputProps struct {
 	Label        string        // Label of the field
 	Placeholder  string        // Placeholder of the field
 	Name         string        // name of the key from the payload
-	Type         cmp.InputType // What kind of input type it is
 	HasError     bool          // if the field has an error
 	Required     bool          // if the field is required
 	ErrorMessage string        // what is the error message
+	Description  string        // Optional descirption for the fiedl
+	Type         cmp.InputType // What kind of input type it is
 }
 
 templ TextInput(props TextInputProps) {
@@ -29,6 +30,49 @@ templ TextInput(props TextInputProps) {
 			HasError:    props.HasError,
 			Required:    props.Required,
 		})
+		if props.Description != "" {
+			@cmp.FormDescription(cmp.FormDescriptionProps{}) {
+				{ props.Description }
+			}
+		}
+		@cmp.FormMessage(cmp.FormMessageProps{
+			Message: props.ErrorMessage,
+			Type:    "error",
+		})
+	}
+}
+
+type SelectionProps struct {
+	ID           string             // ID from the FormField for label & input field mapping
+	Label        string             // Label of the field
+	Placeholder  string             // Placeholder of the field
+	Name         string             // name of the key from the payload
+	Description  string             // Optional descirption for the fiedl
+	HasError     bool               // if the field has an error
+	Required     bool               // if the field is required
+	ErrorMessage string             // what is the error message
+	Options      []cmp.SelectOption // The options from the selection
+}
+
+templ SelectionInput(props SelectionProps) {
+	@cmp.FormItem(cmp.FormItemProps{}) {
+		@cmp.Label(cmp.LabelProps{
+			Text: props.Label,
+			For:  fmt.Sprintf("%s-form", props.ID),
+		})
+		@cmp.Select(cmp.SelectProps{
+			ID:          fmt.Sprintf("%s-form", props.ID),
+			Name:        props.Name,
+			Placeholder: props.Placeholder,
+			HasError:    props.HasError,
+			Required:    props.Required,
+			Options:     props.Options,
+		})
+		if props.Description != "" {
+			@cmp.FormDescription(cmp.FormDescriptionProps{}) {
+				{ props.Description }
+			}
+		}
 		@cmp.FormMessage(cmp.FormMessageProps{
 			Message: props.ErrorMessage,
 			Type:    "error",
