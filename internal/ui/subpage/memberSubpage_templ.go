@@ -13,7 +13,6 @@ import (
 	"github.com/axzilla/templui/components"
 	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
-	ic "github.com/pulsone21/powner/internal/ui/icons"
 	"github.com/pulsone21/powner/internal/ui/modals"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
@@ -161,7 +160,7 @@ func MemberDetails(m entities.Member, topbar bool) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(m.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/subpage/memberSubpage.templ`, Line: 48, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/subpage/memberSubpage.templ`, Line: 47, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -174,7 +173,7 @@ func MemberDetails(m entities.Member, topbar bool) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint("Age: ", m.Age))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/subpage/memberSubpage.templ`, Line: 49, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/subpage/memberSubpage.templ`, Line: 48, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -210,11 +209,7 @@ func MemberDetails(m entities.Member, topbar bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.IconButton(ic.SkillAdd, "", templ.Attributes{
-				"title":     "add skill",
-				"hx-get":    fmt.Sprintf("/modals/skills?member=%v", m.ID),
-				"hx-target": "#modalContainer",
-			}).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = modals.SkillModal(m, nil).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

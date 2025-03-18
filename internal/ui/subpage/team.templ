@@ -27,11 +27,15 @@ templ generalOverview(props overviewProps) {
 				<p class="text-destructive">ERROR - You should define either a teams or a sill slice to get this working properly</p>
 			}
 		</div>
+		@components.Separator(components.SeparatorProps{
+			Orientation: components.SeparatorOrientationVertical,
+			Class:       "mx-0",
+		})
 		<div id="Details" class="space-y-2 w-full flex flex-col">
 			if props.Teams != nil {
-				<h2 class="font-black text-2xl">Select a Team to get more informations</h2>
+				<h2 class="text-center mb-3 font-black text-2xl">Select a Team to get more informations</h2>
 			} else if props.Skills != nil {
-				<h2 class="font-black text-2xl">Select a Skill to get more informations</h2>
+				<h2 class="text-center mb-3 font-black text-2xl">Select a Skill to get more informations</h2>
 			} else {
 				<p class="text-destructive">ERROR - You should define either a teams or a sill slice to get this working properly</p>
 			}

@@ -16,6 +16,7 @@ type deleteEntityProps struct {
 templ deleteEntityButton(props deleteEntityProps) {
 	@TTooltip(TooltipProps{
 		Trigger: cmp.Button(cmp.ButtonProps{
+			Size:     cmp.ButtonSizeSm,
 			HxDelete: props.Path,
 			HxTarget: props.Target,
 			HxSwap:   "outerHTML",

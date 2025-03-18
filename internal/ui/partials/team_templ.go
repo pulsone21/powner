@@ -230,6 +230,7 @@ func TeamMemberList(t entities.Team) templ.Component {
 						ctx = templ.InitializeContext(ctx)
 						templ_7745c5c3_Err = components.TTooltip(components.TooltipProps{
 							Trigger: cmp.Button(cmp.ButtonProps{
+								Size:     cmp.ButtonSizeSm,
 								HxDelete: fmt.Sprintf("/partials/teams/%v/members/%v", t.ID, m.ID),
 								HxTarget: "closest li",
 								HxSwap:   "delete",

@@ -196,7 +196,7 @@ func SkillListItem(s entities.Skill, selectable bool) templ.Component {
 				components.ListItemProps{
 					Header: s.Name,
 					Footer: s.Description,
-					Class:  "hover:opacity-100",
+					Class:  "hover:bg-background cursor-default",
 				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var7), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -274,7 +274,7 @@ func SkillAdjustList(mem entities.Member) templ.Component {
 		})
 		templ_7745c5c3_Err = components.List(
 			components.ListProps{
-				Class: "w-1/3 mr-1",
+				Class: "w-full mr-1",
 				ListAttr: templ.Attributes{
 					"hx-get":     fmt.Sprintf("/partials/members/%v/skilllist", mem.ID),
 					"hx-trigger": fmt.Sprintf("%v from:body", service.ChangeMemberEvent),
@@ -308,12 +308,13 @@ func SkillAddjustItem(memId string, s entities.SkillRating) templ.Component {
 			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex flex-row gap-1 w-fit  justify-start items-center\"><div class=\"w-9 h-9 flex items-center justify-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex flex-row gap-4 w-fit justify-start items-center\"><div class=\"w-9 h-9 flex items-center justify-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
 			Trigger: cmp.Button(cmp.ButtonProps{
+				Size:     cmp.ButtonSizeSm,
 				Disabled: (s.Rating + 1) > 5,
 				HxPost:   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating+1),
 				HxTarget: "closest li",
@@ -334,7 +335,7 @@ func SkillAddjustItem(memId string, s entities.SkillRating) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(s.Rating))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/partials/skill.templ`, Line: 99, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/ui/partials/skill.templ`, Line: 100, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -346,6 +347,7 @@ func SkillAddjustItem(memId string, s entities.SkillRating) templ.Component {
 		}
 		templ_7745c5c3_Err = cmp.Tooltip(cmp.TooltipProps{
 			Trigger: cmp.Button(cmp.ButtonProps{
+				Size:     cmp.ButtonSizeSm,
 				Disabled: (s.Rating - 1) < 1,
 				HxPost:   fmt.Sprintf("/partials/skills/%v/member/%v/%v", s.Skill.ID, memId, s.Rating-1),
 				HxTarget: "closest li",

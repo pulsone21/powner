@@ -167,7 +167,7 @@ func ListItem(props ListItemProps) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(props.Footer) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<p class=\"text-subtext0 truncate min-w-0\" title=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<p class=\"text-gray-400 text-sm truncate min-w-0\" title=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

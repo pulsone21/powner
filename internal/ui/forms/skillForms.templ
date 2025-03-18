@@ -4,7 +4,6 @@ import (
 	cmp "github.com/axzilla/templui/components"
 	"github.com/pulsone21/powner/internal/errx"
 	"github.com/pulsone21/powner/internal/ui/components"
-	"github.com/pulsone21/powner/internal/ui/shared"
 )
 
 templ SkillForm(errMap errx.ErrorMap) {
@@ -62,7 +61,12 @@ templ SkillForm(errMap errx.ErrorMap) {
 				})
 			</div>
 			<div class="h-12 w-full">
-				@shared.Button("Save Skill", "", templ.Attributes{"type": "submit"})
+				@cmp.Button(cmp.ButtonProps{
+					Size:  cmp.ButtonSizeSm,
+					Class: "mt-2 w-full",
+					Text:  "Save Skill",
+					Type:  "submit",
+				})
 			</div>
 		</form>
 	</div>

@@ -5,7 +5,6 @@ import (
 	"github.com/axzilla/templui/components"
 	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
-	ic "github.com/pulsone21/powner/internal/ui/icons"
 	"github.com/pulsone21/powner/internal/ui/modals"
 	"github.com/pulsone21/powner/internal/ui/partials"
 	"github.com/pulsone21/powner/internal/ui/shared"
@@ -56,11 +55,7 @@ templ MemberDetails(m entities.Member, topbar bool) {
 					<div class="flex flex-row justify-between mb-2">
 						<p class="content-center font-bold text-lg">Skills</p>
 						<div class="h-10 w-10 mx-2">
-							@shared.IconButton(ic.SkillAdd, "", templ.Attributes{
-								"title":     "add skill",
-								"hx-get":    fmt.Sprintf("/modals/skills?member=%v", m.ID),
-								"hx-target": "#modalContainer",
-							})
+							@modals.SkillModal(m, nil)
 						</div>
 					</div>
 					@partials.SkillAdjustList(m)

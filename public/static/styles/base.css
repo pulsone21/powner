@@ -1898,6 +1898,9 @@
   .text-green-900 {
     color: var(--color-green-900);
   }
+  .text-muted {
+    color: var(--muted);
+  }
   .text-muted-foreground {
     color: var(--muted-foreground);
   }
@@ -1915,6 +1918,9 @@
   }
   .text-red-900 {
     color: var(--color-red-900);
+  }
+  .text-secondary {
+    color: var(--secondary);
   }
   .text-secondary-foreground {
     color: var(--secondary-foreground);
@@ -2442,6 +2448,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--accent);
+      }
+    }
+  }
+  .hover\:bg-background {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--background);
       }
     }
   }

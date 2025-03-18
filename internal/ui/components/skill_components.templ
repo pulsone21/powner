@@ -11,6 +11,7 @@ templ SkillItemAssignButton(sID, targetID uint, dest string, add bool) {
 		case false:
 			@TTooltip(TooltipProps{
 				Trigger: cmp.Button(cmp.ButtonProps{
+					Size:     cmp.ButtonSizeSm,
 					HxPost:   fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
 					HxTarget: "closest li",
 					HxSwap:   "outerHTML",
@@ -22,6 +23,7 @@ templ SkillItemAssignButton(sID, targetID uint, dest string, add bool) {
 		case true:
 			@TTooltip(TooltipProps{
 				Trigger: cmp.Button(cmp.ButtonProps{
+					Size:     cmp.ButtonSizeSm,
 					HxDelete: fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
 					HxTarget: "closest li",
 					HxSwap:   "outerHTML",
