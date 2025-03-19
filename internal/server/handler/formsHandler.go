@@ -9,8 +9,8 @@ import (
 	"github.com/pulsone21/powner/internal/server/middleware"
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
+	"github.com/pulsone21/powner/internal/ui/forms"
 	"github.com/pulsone21/powner/internal/ui/modals"
-	"github.com/pulsone21/powner/internal/ui/partials"
 )
 
 type FormsHandler struct {
@@ -37,15 +37,15 @@ func (h *FormsHandler) RegisterRoutes(t *http.ServeMux) {
 }
 
 func (h *FormsHandler) serveCreateTeamForm(w http.ResponseWriter, r *http.Request) response.IResponse {
-	return response.NewUIResponse(modals.NewTeamModal(), nil)
+	return response.NewUIResponse(modals.NewTeamModal(nil), nil)
 }
 
 func (h *FormsHandler) serveCreateMemberForm(w http.ResponseWriter, r *http.Request) response.IResponse {
-	return response.NewUIResponse(modals.NewMemberModal(), nil)
+	return response.NewUIResponse(modals.NewMemberModal(nil), nil)
 }
 
 func (h *FormsHandler) serveCreateSkillForm(w http.ResponseWriter, r *http.Request) response.IResponse {
-	return response.NewUIResponse(modals.NewSkillModal(), nil)
+	return response.NewUIResponse(modals.NewSkillModal(nil), nil)
 }
 
 func (h *FormsHandler) handleMemberFormRequest(w http.ResponseWriter, r *http.Request) response.IResponse {
@@ -70,12 +70,12 @@ func (h *FormsHandler) handleMemberFormRequest(w http.ResponseWriter, r *http.Re
 	_, sErr := h.mServ.CreateMember(req)
 	if sErr != nil {
 		log.Error("Couldn't create Member", "ValidationErrors:", err)
-		return response.NewUIResponse(partials.MemberForm(*sErr.GetValidationErrors()), nil)
+		return response.NewUIResponse(forms.MemberForm(*sErr.GetValidationErrors()), nil)
 	}
 
 	log.Debug("Created new Member based on Request")
 	w.Header().Add("HX-Trigger", service.CreateMemberEvent)
-	return response.NewUIResponse(partials.MemberForm(nil), nil)
+	return response.NewUIResponse(forms.MemberForm(nil), nil)
 }
 
 func (h *FormsHandler) handleTeamFormRequest(w http.ResponseWriter, r *http.Request) response.IResponse {
@@ -100,12 +100,12 @@ func (h *FormsHandler) handleTeamFormRequest(w http.ResponseWriter, r *http.Requ
 	_, sErr := h.tServ.CreateTeam(req)
 	if sErr != nil {
 		log.Error("Couldn't create team", "ValidationErrors:", err)
-		return response.NewUIResponse(partials.TeamForm(*sErr.GetValidationErrors()), nil)
+		return response.NewUIResponse(forms.TeamForm(*sErr.GetValidationErrors()), nil)
 	}
 
 	log.Debug("Created new team based on Request")
 	w.Header().Add("HX-Trigger", service.CreateTeamEvent)
-	return response.NewUIResponse(partials.TeamForm(nil), nil)
+	return response.NewUIResponse(forms.TeamForm(nil), nil)
 }
 
 func (h *FormsHandler) handleSkillFormRequest(w http.ResponseWriter, r *http.Request) response.IResponse {
@@ -130,10 +130,10 @@ func (h *FormsHandler) handleSkillFormRequest(w http.ResponseWriter, r *http.Req
 	_, sErr := h.sServ.CreateSkill(req)
 	if sErr != nil {
 		log.Error("Couldn't create skill", "ValidationErrors:", err)
-		return response.NewUIResponse(partials.SkillForm(*sErr.GetValidationErrors()), nil)
+		return response.NewUIResponse(forms.SkillForm(*sErr.GetValidationErrors()), nil)
 	}
 
 	log.Debug("Created new skill based on Request")
 	w.Header().Add("HX-Trigger", service.CreateSkillEvent)
-	return response.NewUIResponse(partials.SkillForm(nil), nil)
+	return response.NewUIResponse(forms.SkillForm(nil), nil)
 }

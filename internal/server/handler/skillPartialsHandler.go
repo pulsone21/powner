@@ -9,7 +9,6 @@ import (
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
 	"github.com/pulsone21/powner/internal/ui/partials"
-	"github.com/pulsone21/powner/internal/ui/subpage"
 )
 
 type SkillPartialsHandler struct {
@@ -27,10 +26,8 @@ func NewSkillPartialsHandler(sServ service.SkillService, tServ service.TeamServi
 }
 
 func (h *SkillPartialsHandler) RegisterRoutes(t *http.ServeMux) {
-	t.HandleFunc("GET /skills/overview", setupHandler(h.serveSkillPage))
 	t.HandleFunc("GET /skills/list", setupHandler(h.serveSkillList))
 	t.HandleFunc("DELETE /skills/{id}", setupHandler(h.handleDeleteSkill))
-	t.HandleFunc("GET /skills/{id}/details", setupHandler(h.serveSkillDetails))
 }
 
 // Path: /partials/skills/list
@@ -83,32 +80,4 @@ func (h *SkillPartialsHandler) serveSkillList(w http.ResponseWriter, r *http.Req
 // Path: /partials/skills/{id}
 func (h *SkillPartialsHandler) handleDeleteSkill(w http.ResponseWriter, r *http.Request) response.IResponse {
 	return nil
-}
-
-// Path: /partials/skills/{id}/details
-func (h *SkillPartialsHandler) serveSkillDetails(w http.ResponseWriter, r *http.Request) response.IResponse {
-	log := middleware.GetLogger(r.Context())
-	log.Debug("skill details partial requested")
-
-	id := r.PathValue("id")
-
-	s, err := h.sServ.GetSkillByID(id)
-	if err != nil {
-		return response.NewUIResponse(nil, err)
-	}
-
-	return response.NewUIResponse(subpage.SkillDetails(*s), nil)
-}
-
-func (h *SkillPartialsHandler) serveSkillPage(w http.ResponseWriter, r *http.Request) response.IResponse {
-	log := middleware.GetLogger(r.Context())
-	log.Debug("skillPage partial requested")
-
-	skills, err := h.sServ.GetSkills()
-	if err != nil {
-		return response.NewUIResponse(nil, err)
-	}
-	log.Debug("found all skills")
-
-	return response.NewUIResponse(subpage.SkillOverview(*skills, nil), nil)
 }

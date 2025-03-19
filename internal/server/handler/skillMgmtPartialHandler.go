@@ -53,6 +53,7 @@ func (h *SkillMgmtPartialsHandler) handleAddSkillToTeam(w http.ResponseWriter, r
 		return response.NewUIResponse(nil, err)
 	}
 
+	w.Header().Add("HX-Trigger", service.ChangeTeamEvent)
 	return response.NewUIResponse(templ.NopComponent, nil)
 }
 
@@ -65,6 +66,7 @@ func (h *SkillMgmtPartialsHandler) handleRemoveSkillToTeam(w http.ResponseWriter
 		return response.NewUIResponse(nil, err)
 	}
 
+	w.Header().Add("HX-Trigger", service.ChangeTeamEvent)
 	return response.NewUIResponse(templ.NopComponent, nil)
 }
 

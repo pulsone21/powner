@@ -7,6 +7,7 @@ import (
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
 	"github.com/pulsone21/powner/internal/ui/pages"
+	"github.com/pulsone21/powner/internal/ui/subpage"
 )
 
 type SkillPageHandler struct {
@@ -29,25 +30,36 @@ func (h SkillPageHandler) GetRoutes() *http.ServeMux {
 func (h *SkillPageHandler) generalSkillPage(w http.ResponseWriter, r *http.Request) response.IResponse {
 	log := middleware.GetLogger(r.Context())
 	log.Debug("general skill page requested")
+
 	skills, err := h.sServ.GetSkills()
 	if err != nil {
 		return response.NewUIResponse(nil, err)
 	}
 
-	return response.NewUIResponse(pages.SkillPage(*skills, nil), nil)
+	if ok := r.Header.Get("Hx-Request"); ok != "" {
+		return response.NewUIResponse(subpage.SkillOverview(*skills, true), nil)
+	}
+
+	return response.NewUIResponse(pages.SkillOverviewPage(*skills), nil)
 }
 
 func (h *SkillPageHandler) specificSkillPage(w http.ResponseWriter, r *http.Request) response.IResponse {
 	log := middleware.GetLogger(r.Context())
 	log.Debug("specific skill page requested")
-	skills, err := h.sServ.GetSkills()
-	if err != nil {
-		return response.NewUIResponse(nil, err)
-	}
 
 	s, err := h.sServ.GetSkillByID(r.PathValue("id"))
 	if err != nil {
 		return response.NewUIResponse(nil, err)
 	}
-	return response.NewUIResponse(pages.SkillPage(*skills, s), nil)
+
+	if ok := r.Header.Get("Hx-Request"); ok != "" {
+		return response.NewUIResponse(subpage.SkillDetails(*s, true), nil)
+	}
+
+	skills, err := h.sServ.GetSkills()
+	if err != nil {
+		return response.NewUIResponse(nil, err)
+	}
+
+	return response.NewUIResponse(pages.SkillDetailPage(*s, *skills), nil)
 }

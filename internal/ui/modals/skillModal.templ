@@ -2,45 +2,72 @@ package modals
 
 import (
 	"fmt"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
-	"github.com/pulsone21/powner/internal/service"
+	"github.com/pulsone21/powner/internal/errx"
+	"github.com/pulsone21/powner/internal/ui/forms"
 	"github.com/pulsone21/powner/internal/ui/partials"
-	"github.com/pulsone21/powner/internal/ui/shared"
 )
 
-templ SkillModal(skills []entities.Skill, t entities.SkillHolder) {
-	@baseModal() {
-		<div class="w-full h-full min-w-[400px] bg-base flex justify-between items-center flex-col p-3 rounded-lg">
-			<div class="flex flex-row w-full h-[90%]">
-				// TODO: replace that it works with all SkillHolder entities
-				<div
-					class="w-1/2 min-w-56 bg-mantle rounded-lg mr-2 p-2"
-					hx-get={ fmt.Sprintf("/partials/skills/list?%v=%v", t.GetType(), t.GetID()) }
-					hx-target="this"
-					hx-trigger={ fmt.Sprintf("%v from:body, %v from:body, every 600s", service.CreateSkillEvent, service.DeleteSkillEvent) }
-				>
-					@partials.SkillList(skills, t, "No skills found")
+templ SkillModal(t entities.SkillHolder, skills *[]entities.Skill) {
+	@modalTrigger("skill-modal", "") {
+		@cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:    "w-full h-full",
+				IconLeft: icons.BookPlus(icons.IconProps{Size: "24"}),
+				Variant:  cmp.ButtonVariantGhost,
+			}),
+			Content: templ.Raw("Add Skill"),
+		})
+	}
+	@cmp.Modal(cmp.ModalProps{ID: "skill-modal", Class: "max-w-3/4 max-h-5/6"}) {
+		@cmp.ModalHeader() {
+			{ fmt.Sprintf("Add new skill to the %v", t.GetType()) }
+			@cmp.Separator(cmp.SeparatorProps{
+				Orientation: cmp.SeparatorOrientationHorizontal,
+				Class:       "mb-2",
+			})
+			@cmp.ModalBody() {
+				<div class="flex flex-row justify-around">
+					<div class="w-1/2 h-full">
+						if skills != nil {
+							@partials.SkillList(*skills, t, "No Skills found")
+						} else {
+							<div
+								class="w-full h-full "
+								hx-get={ fmt.Sprintf("/partials/skills/list?%v=%v", t.GetType(), t.GetID()) }
+								hx-trigger="load"
+								hx-swap="outerHTML"
+							></div>
+						}
+					</div>
+					<div class="w-1/2 h-full">
+						@forms.SkillForm(nil)
+					</div>
 				</div>
-				<div class="w-1/2 bg-mantle rounded-lg p-2">
-					@partials.SkillForm(nil)
-				</div>
-			</div>
-			<div class="flex mt-1 justify-between items-center w-3/5 h-10 bottom-0">
-				@shared.Button("Close", "hover:text-red hover:bg-red/25",
-					templ.Attributes{
-						"_": "on click remove #modal",
-					})
-			</div>
-		</div>
+			}
+			@cmp.ModalFooter() {
+			}
+		}
 	}
 }
 
-templ NewSkillModal() {
-	@baseModal() {
-		<div class="w-2/3 bg-base rounded-lg mr-2 p-2">
-			<div class="w-full bg-mantle mr-2 p-2">
-				@partials.SkillForm(nil)
-			</div>
-		</div>
+templ NewSkillModal(err errx.ErrorMap) {
+	@modalTrigger("new-skill-modal", "") {
+		@cmp.Button(cmp.ButtonProps{
+			Class: "w-full h-full",
+			Text:  "New Skill",
+		})
+	}
+	@cmp.Modal(cmp.ModalProps{ID: "new-skill-modal", Class: "max-w-md max-h-2/3"}) {
+		@cmp.ModalHeader() {
+			Create a new Skill
+		}
+		@cmp.ModalBody() {
+			@forms.SkillForm(err)
+		}
+		@cmp.ModalFooter() {
+		}
 	}
 }

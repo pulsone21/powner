@@ -1,6 +1,7 @@
 package charts
 
 import (
+	"fmt"
 	"log"
 	"log/slog"
 
@@ -82,6 +83,7 @@ func newRadarChart(t entities.Team) RadarChart {
 			}
 		}
 
+		slog.Debug(fmt.Sprintf("Trying getting avg out of maxTeam=%v and lenMembers=%v\n", max_team, len(t.Members)))
 		avg_data.Data = append(avg_data.Data, max_team/len(t.Members))
 		max_data.Data = append(max_data.Data, max_team)
 

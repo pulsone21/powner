@@ -6,9 +6,7 @@ import (
 )
 
 templ Settings() {
-	@shared.Base() {
-		<div id="content" class="h-full w-full flex flex-col justify-between">
-			@subpage.SettingsSubpage()
-		</div>
+	@shared.Base(nil) {
+		@subpage.SettingsSubpage()
 	}
 }

@@ -1,31 +1,55 @@
 package modals
 
 import (
+	"fmt"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
 	"github.com/pulsone21/powner/internal/entities"
+	"github.com/pulsone21/powner/internal/errx"
+	"github.com/pulsone21/powner/internal/ui/forms"
 	"github.com/pulsone21/powner/internal/ui/partials"
-	"github.com/pulsone21/powner/internal/ui/shared"
 )
 
-templ MemberModal(mems []entities.Member, t *entities.Team) {
-	@baseModal() {
-		<div class="w-full h-full bg-base flex items-center justify-between flex-col p-2 rounded-lg opacity-100">
-			<div class="flex flex-row w-full h-[93%]">
-				<div class="w-1/2 bg-mantle rounded-lg mr-2 p-2">
-					@partials.MemberAddTeamList(mems, t.ID)
+templ MemberModal(t *entities.Team, members *[]entities.Member) {
+	@modalTrigger("member-modal", "") {
+		@cmp.Tooltip(cmp.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:    "w-full h-full",
+				IconLeft: icons.UserPlus(icons.IconProps{Size: "24"}),
+				Variant:  cmp.ButtonVariantGhost,
+			}),
+			Content: templ.Raw("Add Member"),
+		})
+	}
+	@cmp.Modal(cmp.ModalProps{ID: "member-modal", Class: "max-w-3/4 max-h-5/6"}) {
+		@cmp.ModalHeader() {
+			Add new member to the team
+		}
+		@cmp.Separator(cmp.SeparatorProps{
+			Orientation: cmp.SeparatorOrientationHorizontal,
+			Class:       "mb-2",
+		})
+		@cmp.ModalBody() {
+			<div class="flex flex-row justify-around">
+				<div class="w-1/2 h-full">
+					if members != nil {
+						@partials.MemberList(*members)
+					} else {
+						<div
+							class="w-full h-full "
+							hx-get={ fmt.Sprintf("/partials/members/list?teamID=%v", t.ID) }
+							hx-trigger="load"
+							hx-swap="outerHTML"
+						></div>
+					}
 				</div>
-				<div class="w-1/2 bg-mantle rounded-lg p-2">
-					@partials.MemberForm(nil)
+				<div class="w-1/2 h-full">
+					@forms.MemberForm(nil)
 				</div>
 			</div>
-			<div class="mt-2 flex justify-between items-center w-3/5 h-10 bottom-0">
-				@shared.Button(
-					"Close",
-					"hover:text-red hover:bg-red/25",
-					templ.Attributes{
-						"_": "on click remove #modal",
-					})
-			</div>
-		</div>
+		}
+		@cmp.ModalFooter() {
+		}
 	}
 }
 
@@ -35,12 +59,21 @@ templ MemberInfoModal(mem entities.Member) {
 	}
 }
 
-templ NewMemberModal() {
-	@baseModal() {
-		<div class="w-2/3 bg-base rounded-lg mr-2 p-2">
-			<div class="w-full bg-mantle mr-2 p-2">
-				@partials.MemberForm(nil)
-			</div>
-		</div>
+templ NewMemberModal(err errx.ErrorMap) {
+	@modalTrigger("new-member-modal", "") {
+		@cmp.Button(cmp.ButtonProps{
+			Class: "px-2 w-fit h-full grow",
+			Text:  "New Member",
+		})
+	}
+	@cmp.Modal(cmp.ModalProps{ID: "new-member-modal", Class: "max-w-md max-h-2/3"}) {
+		@cmp.ModalHeader() {
+			Create a new Member
+		}
+		@cmp.ModalBody() {
+			@forms.MemberForm(err)
+		}
+		@cmp.ModalFooter() {
+		}
 	}
 }

@@ -1,49 +1,107 @@
 package shared
 
+import "github.com/axzilla/templui/icons"
+import "github.com/pulsone21/powner/internal/ui/components"
+
+import cmp "github.com/axzilla/templui/components"
+
 templ Navbar() {
-	<div class="flex flex-col bg-mantle h-full min-w-20 items-center rounded-b-lg p-1">
-		<div class="max-h-20 w-full flex items-center my-1">
-			@IconButton("Teams", "", templ.Attributes{
-				"class":          "max-h-12",
-				"hx-get":         "/partials/teams/overview",
-				"hx-target":      "#content",
-				"hx-replace-url": "/teams/",
-				"hx-swap":        "innerHTML",
-			})
-		</div>
-		<div class="max-h-20 w-full flex items-center my-1">
-			@IconButton("Members", "", templ.Attributes{
-				"class":          "max-h-12",
-				"hx-get":         "/partials/members/overview",
-				"hx-target":      "#content",
-				"hx-replace-url": "/members/",
-				"hx-swap":        "innerHTML",
-			})
-		</div>
-		<div class="max-h-20 w-full flex items-center my-1">
-			@IconButton("Skills", "", templ.Attributes{
-				"class":          "max-h-12",
-				"hx-get":         "/partials/skills/overview",
-				"hx-target":      "#content",
-				"hx-swap":        "innerHTML",
-				"hx-replace-url": "/skills/",
-			})
-		</div>
-		<div class="max-h-20 w-full flex items-center my-1">
-			@IconButton("Settings", "", templ.Attributes{
-				"class":          "max-h-12",
-				"hx-get":         "/partials/settings/overview",
-				"hx-target":      "#content",
-				"hx-swap":        "innerHTML",
-				"hx-replace-url": "/settings/",
-			})
-		</div>
+	<div class="flex flex-col bg-mantle h-full w-full gap-2 items-center rounded-b-lg p-1">
+		@components.TTooltip(components.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.Users(icons.IconProps{Size: "24"}),
+				HxGet:      "/teams",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/teams"},
+			}),
+			Text:      "Teams",
+			ShowArrow: true,
+			Side:      cmp.TooltipRight,
+		})
+		@components.TTooltip(components.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.User(icons.IconProps{Size: "24"}),
+				HxGet:      "/members",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/members"},
+			}),
+			Text:      "Members",
+			ShowArrow: true,
+			Side:      cmp.TooltipRight,
+		})
+		@components.TTooltip(components.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.Book(icons.IconProps{Size: "24"}),
+				HxGet:      "/skills",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/skills"},
+			}),
+			Text:      "Skills",
+			ShowArrow: true,
+			Side:      cmp.TooltipRight,
+		})
+		@components.TTooltip(components.TooltipProps{
+			Trigger: cmp.Button(cmp.ButtonProps{
+				Class:      "max-h-12 w-full",
+				Variant:    cmp.ButtonVariantOutline,
+				IconLeft:   icons.Settings(icons.IconProps{Size: "24"}),
+				HxGet:      "/partials/settings/overview",
+				HxTarget:   "#content",
+				HxSwap:     "innerHTML",
+				Attributes: templ.Attributes{"hx-replace-url": "/settings"},
+			}),
+			Text:      "Settings",
+			ShowArrow: true,
+			Side:      cmp.TooltipRight,
+		})
 	</div>
 }
 
 templ SideBar() {
-	<div class="w-20 flex flex-col justify-between">
-		@Logo()
-		@Navbar()
+	<div class="flex flex-col h-full">
+		<div class="w-20 flex flex-col h-full justify-between">
+			@Logo()
+			@Navbar()
+		</div>
+		<div class="w-20 bottom-0 mb-2 flex justify-center items-center">
+			<div class="w-10 h-10 flex group">
+				<script>
+					document.addEventListener('alpine:init', () => {
+						Alpine.store('darkMode',{
+								dark: true,
+
+								toogle() {
+									this.dark = !this.dark
+									document.documentElement.classList.toggle('dark', this.dark);
+									//document.dispatchEvent(new CustomEvent('theme-changed'));
+									}
+
+							})
+					})
+				</script>
+				<div class="absolute bg-muted-foreground blur-md rounded-3xl w-10 h-10 opacity-0  group-hover:opacity-70 transition"></div>
+				<div
+					class="relative cursor-pointer w-10 h-10 rounded-3xl flex justify-center items-center"
+					x-data
+					@click="$store.darkMode.toogle()"
+				>
+					<div x-show="$store.darkMode.dark" transition>
+						@icons.Moon(icons.IconProps{Size: "24"})
+					</div>
+					<div x-show="!$store.darkMode.dark" transition>
+						@icons.Sun(icons.IconProps{Size: "24"})
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 }

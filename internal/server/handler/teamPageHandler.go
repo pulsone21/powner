@@ -7,6 +7,7 @@ import (
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
 	"github.com/pulsone21/powner/internal/ui/pages"
+	"github.com/pulsone21/powner/internal/ui/subpage"
 )
 
 type TeamPageHandler struct {
@@ -29,12 +30,17 @@ func (h TeamPageHandler) GetRoutes() *http.ServeMux {
 func (h *TeamPageHandler) generalTeamPage(w http.ResponseWriter, r *http.Request) response.IResponse {
 	log := middleware.GetLogger(r.Context())
 	log.Debug("general team page requested")
+
 	t, err := h.teamService.GetTeams()
 	if err != nil {
 		return response.NewUIResponse(nil, err)
 	}
 
-	return response.NewUIResponse(pages.TeamPage(t, nil), nil)
+	if ok := r.Header.Get("Hx-Request"); ok != "" {
+		return response.NewUIResponse(subpage.TeamsOverview(*t, true), nil)
+	}
+
+	return response.NewUIResponse(pages.TeamsOverviewPage(*t), nil)
 }
 
 func (h *TeamPageHandler) specificTeamPage(w http.ResponseWriter, r *http.Request) response.IResponse {
@@ -45,10 +51,14 @@ func (h *TeamPageHandler) specificTeamPage(w http.ResponseWriter, r *http.Reques
 		return response.NewUIResponse(nil, err)
 	}
 
-	teams, err := h.teamService.GetTeams()
+	if ok := r.Header.Get("Hx-Request"); ok != "" {
+		return response.NewUIResponse(subpage.TeamDetails(*t, true), nil)
+	}
+
+	ts, err := h.teamService.GetTeams()
 	if err != nil {
 		return response.NewUIResponse(nil, err)
 	}
 
-	return response.NewUIResponse(pages.TeamPage(teams, t), nil)
+	return response.NewUIResponse(pages.TeamDetailPage(*t, *ts), nil)
 }

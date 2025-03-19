@@ -1,31 +1,62 @@
 package shared
 
-templ Base() {
-	<html lang="en" class="overflow-hidden">
+import (
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/helpers"
+	"github.com/axzilla/templui/icons"
+)
+
+templ Base(topbar templ.Component) {
+	<html lang="en" class="overflow-hidden dark">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Powner</title>
 			<link href="/static/styles/base.css" rel="stylesheet"/>
 			<link href="/static/favicon/favicon.ico" rel="icon"/>
+			<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 			<script src="/static/scripts/htmx.min.js"></script>
 			<script src="/static/scripts/htmx.response-target.js"></script>
 			<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
 			<script src="/static/scripts/hyperscript.js"></script>
+			@helpers.ComponentScripts()
 		</head>
 		<body
-			class="mocha flex text-text p-2 h-dv max-h-dvh bg-base "
-			hx-ext="response-targets"
-			hx-target-404="#content"
-			hx-swap="innerHTML"
+			class="flex text-text p-2 h-dv max-h-dvh bg-base "
 		>
 			<div class="bg-base flex flex-row gap-1 max-w-full w-full h-full ">
 				@SideBar()
-				{ children... }
+				@cmp.Separator(cmp.SeparatorProps{
+					Orientation: cmp.SeparatorOrientationVertical,
+					Class:       "mx-0",
+				})
+				<div class="w-full h-full flex flex-col">
+					if topbar != nil {
+						@topbar
+					} else {
+						@TopBar(cmp.Breadcrumb(cmp.BreadcrumbProps{
+							Attributes: templ.Attributes{"id": "breadcrumbs"},
+							Items: []cmp.BreadcrumbItem{
+								{
+									Label:   "Home",
+									Href:    "/",
+									Icon:    icons.House(icons.IconProps{Size: "14"}),
+									Current: true,
+								},
+							},
+						}))
+					}
+					@cmp.Separator(cmp.SeparatorProps{
+						Orientation: cmp.SeparatorOrientationHorizontal,
+						Class:       "mb-2",
+					})
+					<div id="content" class="h-full w-full flex flex-col justify-between">
+						{ children... }
+					</div>
+				</div>
 			</div>
 			<div id="modalContainer"></div>
 			<div id="notificationContainer" class="z-[1000] absolute bottom-4 left-4 flex flex-col w-64 gap-1"></div>
-			<div class="macchiato mocha frappe latte"></div>
 		</body>
 	</html>
 }
@@ -33,5 +64,14 @@ templ Base() {
 templ Container() {
 	<div class="h-full w-full bg-mantle rounded-lg p-2">
 		{ children... }
+	</div>
+}
+
+templ TopBar(breadcrumps templ.Component) {
+	<div id="topbar" hx-swap-oob="true" class="w-full min-h-14 flex flex-row justify-between gap-2 px-2 py-1">
+		@breadcrumps
+		<div class="flex flex-row w-fit h-full items-center justify-center ">
+			{ children... }
+		</div>
 	</div>
 }

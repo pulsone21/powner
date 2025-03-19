@@ -43,3 +43,7 @@ just watch_dev
 ```
 
 that it is in a watch mode for any tailwind or templ changes.
+
+# TODOS:
+
+[ ] Unify all lists with a template

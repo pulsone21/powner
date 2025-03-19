@@ -1,17 +1,54 @@
 package components
 
+import "github.com/axzilla/templui/utils"
+
+type ListItemProps struct {
+	Class      string
+	Header     string
+	Footer     string
+	ParentAttr templ.Attributes
+}
+
+type ListProps struct {
+	Class    string
+	ListAttr templ.Attributes
+}
+
 // INFO: Work for now... see https://github.com/a-h/templ/issues/975
-templ list(placeholder, url, trigger string) {
-	<div
-		hx-get={ url }
-		hx-swap="outerHTML"
-		hx-trigger={ trigger }
+templ List(props ListProps) {
+	<ul
+		role="list"
+		{ props.ListAttr... }
+		class={ utils.TwMerge("w-full scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2", props.Class) }
 	>
-		<ul role="list" class="scroll-smooth h-full overflow-y-auto divide-y-2 divide-base flex flex-col gap-2">
+		{ children... }
+	</ul>
+}
+
+templ ListItem(props ListItemProps) {
+	<li
+		{ props.ParentAttr... }
+		class={ utils.TwMerge(
+		"min-h-10 justify-between flex flex-row items-center rounded-lg p-1 hover:bg-accent transition", 
+		"cursor-pointer",
+		props.Class) }
+	>
+		<div
+			class="min-h-fit flex flex-col max-w-1/2 flex-grow"
+		>
+			<p
+				class="font-bold truncate min-w-fit"
+				title={ props.Header }
+			>{ props.Header }</p>
+			if len(props.Footer) > 0 {
+				<p
+					class="text-gray-400 text-sm truncate min-w-0"
+					title={ props.Footer }
+				>{ props.Footer }</p>
+			}
+		</div>
+		<div class="flex flex-row justify-center ml-4 items-center">
 			{ children... }
-		</ul>
-		//<p class="text-overlay1">
-		//	{ placeholder }
-		//</p>
-	</div>
+		</div>
+	</li>
 }

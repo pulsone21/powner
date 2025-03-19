@@ -1,0 +1,73 @@
+package forms
+
+import (
+	cmp "github.com/axzilla/templui/components"
+	"github.com/pulsone21/powner/internal/errx"
+	"github.com/pulsone21/powner/internal/ui/components"
+)
+
+templ SkillForm(errMap errx.ErrorMap) {
+	<div
+		id="formContainer"
+		class="flex flex-col items-center"
+	>
+		<form
+			id="skillForm"
+			autocomplete="off"
+			class="flex h-full w-5/6 flex-col items-center justify-evenly"
+			hx-post="/api/skill"
+			hx-target="#formContainer"
+			hx-swap="outerHTML"
+		>
+			<div class="w-full h-full flex flex-col gap-2">
+				@components.TextInput(components.TextInputProps{
+					ID:           "name",
+					Label:        "Skillname",
+					Name:         "name",
+					Placeholder:  "Name of the Skill",
+					HasError:     errMap.Has("name"),
+					Type:         cmp.InputTypeText,
+					ErrorMessage: errMap.Get("name"),
+				})
+				@components.TextInput(components.TextInputProps{
+					ID:           "desc",
+					Name:         "description",
+					Label:        "Skill description",
+					Placeholder:  "Description of the Skill",
+					HasError:     errMap.Has("description"),
+					Type:         cmp.InputTypeText,
+					ErrorMessage: errMap.Get("description"),
+				})
+				@components.TextInput(components.TextInputProps{
+					ID:           "importance",
+					Name:         "importance",
+					Label:        "Skill importance",
+					Placeholder:  "Importance",
+					HasError:     errMap.Has("importance"),
+					Type:         cmp.InputTypeNumber,
+					ErrorMessage: errMap.Get("importance"),
+				})
+				@components.SelectionInput(components.SelectionProps{
+					ID:           "type",
+					Name:         "type",
+					Label:        "Skilltype",
+					Placeholder:  "Type of the Skill",
+					HasError:     errMap.Has("type"),
+					ErrorMessage: errMap.Get("type"),
+					Options: []cmp.SelectOption{
+						{Label: "Hard", Value: "0"},
+						{Label: "Soft", Value: "1"},
+					},
+				})
+			</div>
+			<div class="h-12 w-full">
+				@cmp.Button(cmp.ButtonProps{
+					Size:  cmp.ButtonSizeSm,
+					Class: "mt-2 w-full",
+					Text:  "Save Skill",
+					Type:  "submit",
+				})
+			</div>
+		</form>
+	</div>
+}

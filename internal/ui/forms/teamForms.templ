@@ -1,0 +1,29 @@
+package forms
+
+import (
+	cmp "github.com/axzilla/templui/components"
+	"github.com/pulsone21/powner/internal/errx"
+)
+
+templ TeamForm(errMap errx.ErrorMap) {
+	<div
+		id="formContainer"
+		class="bg-mantle flex flex-col items-center"
+	>
+		<form
+			id="teamForm"
+			autocomplete="off"
+			class="flex w-full justify-between flex-col items-center"
+			hx-post="/partials/forms/teams/add"
+			hx-target="#formContainer"
+			hx-swap="outerHTML"
+		>
+			<div class="w-full"></div>
+			@cmp.Button(cmp.ButtonProps{
+				Class: "mt-2 w-full h-full",
+				Text:  "Save Team",
+				Type:  "submit",
+			})
+		</form>
+	</div>
+}

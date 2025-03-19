@@ -1,0 +1,55 @@
+package components
+
+import (
+	"fmt"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
+	"github.com/pulsone21/powner/internal/entities"
+)
+
+type deleteEntityProps struct {
+	Path   string
+	Target string
+	Text   string
+}
+
+templ deleteEntityButton(props deleteEntityProps) {
+	@TTooltip(TooltipProps{
+		Trigger: cmp.Button(cmp.ButtonProps{
+			Size:     cmp.ButtonSizeSm,
+			HxDelete: props.Path,
+			HxTarget: props.Target,
+			HxSwap:   "outerHTML",
+			IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
+			Variant:  cmp.ButtonVariantDestructive,
+		}),
+		Text:      props.Text,
+		Side:      cmp.TooltipLeft,
+		Variant:   cmp.TooltipDestructive,
+		ShowArrow: true,
+	})
+}
+
+templ DeleteMemberButton(m entities.Member) {
+	@deleteEntityButton(deleteEntityProps{
+		Path:   fmt.Sprintf("/partials/members/%v", m.ID),
+		Target: fmt.Sprintf("#mem-%v", m.ID),
+		Text:   "Remove Member",
+	})
+}
+
+templ DeleteTeamButton(teamID string) {
+	@deleteEntityButton(deleteEntityProps{
+		Path:   fmt.Sprintf("/partials/teams/%v", teamID),
+		Target: "closest li",
+		Text:   "Delete Team",
+	})
+}
+
+templ SkillItemDeleteButton(sID uint) {
+	@deleteEntityButton(deleteEntityProps{
+		Path:   fmt.Sprintf("/partials/skills/%v", sID),
+		Target: "closest li",
+		Text:   "Delete Team",
+	})
+}

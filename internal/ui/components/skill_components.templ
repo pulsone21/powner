@@ -1,0 +1,38 @@
+package components
+
+import (
+	"fmt"
+	cmp "github.com/axzilla/templui/components"
+	"github.com/axzilla/templui/icons"
+)
+
+templ SkillItemAssignButton(sID, targetID uint, dest string, add bool) {
+	switch add {
+		case false:
+			@TTooltip(TooltipProps{
+				Trigger: cmp.Button(cmp.ButtonProps{
+					Size:     cmp.ButtonSizeSm,
+					HxPost:   fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
+					HxTarget: "closest li",
+					HxSwap:   "outerHTML",
+					IconLeft: icons.Plus(icons.IconProps{Size: "16"}),
+				}),
+				Text: "Add Skill",
+				Side: cmp.TooltipLeft,
+			})
+		case true:
+			@TTooltip(TooltipProps{
+				Trigger: cmp.Button(cmp.ButtonProps{
+					Size:     cmp.ButtonSizeSm,
+					HxDelete: fmt.Sprintf("/partials/skills/%v/%v/%v", sID, dest, targetID),
+					HxTarget: "closest li",
+					HxSwap:   "outerHTML",
+					IconLeft: icons.Minus(icons.IconProps{Size: "16"}),
+					Variant:  cmp.ButtonVariantDestructive,
+				}),
+				Text:    "Remove Skill",
+				Side:    cmp.TooltipLeft,
+				Variant: cmp.TooltipDestructive,
+			})
+	}
+}

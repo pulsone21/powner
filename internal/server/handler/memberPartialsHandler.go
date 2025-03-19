@@ -9,9 +9,7 @@ import (
 	"github.com/pulsone21/powner/internal/server/middleware"
 	"github.com/pulsone21/powner/internal/server/response"
 	"github.com/pulsone21/powner/internal/service"
-	"github.com/pulsone21/powner/internal/ui/components"
 	"github.com/pulsone21/powner/internal/ui/partials"
-	"github.com/pulsone21/powner/internal/ui/subpage"
 )
 
 type MemberPartialsHandler struct {
@@ -27,45 +25,12 @@ func NewMemberPartialsHandler(mServ service.MemberService, tServ service.TeamSer
 }
 
 func (h *MemberPartialsHandler) RegisterRoutes(t *http.ServeMux) {
-	t.HandleFunc("GET /members/overview", setupHandler(h.serveMemberOverview))
 	t.HandleFunc("GET /members/list", setupHandler(h.serveMemberList))
 	t.HandleFunc("DELETE /members/{id}", setupHandler(h.deleteMemberRequest))
-	t.HandleFunc("GET /members/{id}/details", setupHandler(h.serveMemberDetails))
 	t.HandleFunc("GET /members/{id}/skilllist", setupHandler(h.serveMemberSkillList))
 }
 
-func (h *MemberPartialsHandler) serveMemberOverview(w http.ResponseWriter, r *http.Request) response.IResponse {
-	log := middleware.GetLogger(r.Context())
-	log.Debug("team overview partial requested")
-
-	t, err := h.mServ.GetMembers()
-	if err != nil {
-		return response.NewUIResponse(nil, err)
-	}
-
-	log.Debug("found all teams")
-	return response.NewUIResponse(subpage.MembersOverview(*t, nil), nil)
-}
-
-func (h *MemberPartialsHandler) serveMemberDetails(w http.ResponseWriter, r *http.Request) response.IResponse {
-	log := middleware.GetLogger(r.Context())
-	log.Debug("member details requested")
-
-	id := r.PathValue("id")
-	t, err := h.mServ.GetMemberByID(id)
-	if err != nil {
-		return response.NewUIResponse(nil, err)
-	}
-
-	if t == nil {
-		log.Debug("couldn't find the requested member")
-		return response.NewUIResponse(nil, fmt.Errorf("Couldn't find team with id: %v", id))
-	}
-
-	log.Debug("serving member details")
-	return response.NewUIResponse(subpage.MemberDetails(*t), nil)
-}
-
+// Path: /partials/members/{id}
 func (h *MemberPartialsHandler) deleteMemberRequest(w http.ResponseWriter, r *http.Request) response.IResponse {
 	log := middleware.GetLogger(r.Context())
 	log.Debug("member deletion requested")
@@ -83,6 +48,7 @@ func (h *MemberPartialsHandler) deleteMemberRequest(w http.ResponseWriter, r *ht
 // Path: /partials/members/list
 // Query Parameter: teamID, in (bool flag)
 func (h *MemberPartialsHandler) serveMemberList(w http.ResponseWriter, r *http.Request) response.IResponse {
+	// TODO: Refactore.... Member list has chagned a lot
 	log := middleware.GetLogger(r.Context())
 	log.Debug("memberlist partial requested")
 
@@ -114,10 +80,10 @@ func (h *MemberPartialsHandler) serveMemberList(w http.ResponseWriter, r *http.R
 		if in {
 			return response.NewUIResponse(partials.TeamMemberList(*t), nil)
 		}
-		return response.NewUIResponse(partials.MemberAddTeamList(*mems, t.ID), nil)
+		return response.NewUIResponse(partials.MemberAddTeamList(*&finalM, t.ID), nil)
 	}
 
-	return response.NewUIResponse(partials.MemberList(*mems, components.DeleteMemberButton), nil)
+	return response.NewUIResponse(partials.MemberList(*mems), nil)
 }
 
 // Path: /partials/members/{id}/skilllist

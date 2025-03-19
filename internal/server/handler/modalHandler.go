@@ -66,7 +66,7 @@ func (h *ModalHandler) serveMemberAssignModal(w http.ResponseWriter, r *http.Req
 	log.Debug("filtered out member which are already on the team")
 	fmt.Println(finalM)
 
-	return response.NewUIResponse(modals.MemberModal(finalM, t), nil)
+	return response.NewUIResponse(modals.MemberModal(t, &finalM), nil)
 }
 
 // Path: /modals/skills.
@@ -95,7 +95,7 @@ func (h *ModalHandler) serveSkillAssignModal(w http.ResponseWriter, r *http.Requ
 			}
 		}
 
-		return response.NewUIResponse(modals.SkillModal(finalSk, m), nil)
+		return response.NewUIResponse(modals.SkillModal(m, &finalSk), nil)
 	}
 
 	if r.URL.Query().Has("team") {
@@ -112,8 +112,8 @@ func (h *ModalHandler) serveSkillAssignModal(w http.ResponseWriter, r *http.Requ
 			}
 		}
 
-		return response.NewUIResponse(modals.SkillModal(finalSk, t), nil)
+		return response.NewUIResponse(modals.SkillModal(t, &finalSk), nil)
 	}
 
-	return response.NewUIResponse(nil, fmt.Errorf("Query params unknown or not present"))
+	return response.NewUIResponse(nil, fmt.Errorf("query params unknown or not present"))
 }
