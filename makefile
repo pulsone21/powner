@@ -26,3 +26,6 @@ swag:
 
 dev: 
 	make -j4 templ server tailwind swag
+
+test:
+	go test -v ./...
