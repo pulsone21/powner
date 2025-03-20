@@ -11,6 +11,7 @@ require (
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/swaggo/swag v1.16.4
 	github.com/tylantz/go-tailwind-merge v0.1.0
+	golang.org/x/crypto v0.32.0
 	gorm.io/driver/sqlite v1.5.6
 	gorm.io/gorm v1.25.12
 )
@@ -32,6 +33,7 @@ require (
 	github.com/swaggo/files/v2 v2.0.1 // indirect
 	github.com/tdewolff/parse/v2 v2.7.11 // indirect
 	golang.org/x/net v0.34.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/tools v0.29.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
