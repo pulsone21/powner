@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"fmt"
 	"net/mail"
 	"time"
 
@@ -24,6 +25,16 @@ func NewMember(fName, lName, email string, bDay time.Time) *Member {
 		Birthday:  bDay,
 		Skills:    []SkillRating{},
 	}
+}
+
+func (m *Member) UpdateSkillRating(skillID uint, rating int) error {
+	for _, sR := range m.Skills {
+		if sR.SkillID == skillID {
+			sR.Rating = rating
+			return nil
+		}
+	}
+	return fmt.Errorf("Member dosn't contains skill with id %v", skillID)
 }
 
 func (m Member) HasSkill(skillID uint) bool {
