@@ -1,22 +1,28 @@
 package entities
 
 import (
+	"net/mail"
+	"time"
+
 	"github.com/pulsone21/powner/internal/errx"
-	"gorm.io/gorm"
 )
 
 type Member struct {
-	gorm.Model
-	Name   string        `json:"name"`
-	Age    int           `json:"age"`
-	Skills []SkillRating `json:"skills"`
+	ID        uint          `json:"id"`
+	Firstname string        `json:"firstname"`
+	Lastname  string        `json:"lastname"`
+	Email     string        `json:"email"`
+	Birthday  time.Time     `json:"birthday"`
+	Skills    []SkillRating `json:"skills"`
 }
 
-func NewMember(name string, age int) *Member {
+func NewMember(fName, lName, email string, bDay time.Time) *Member {
 	return &Member{
-		Name:   name,
-		Age:    age,
-		Skills: []SkillRating{},
+		Firstname: fName,
+		Lastname:  lName,
+		Email:     email,
+		Birthday:  bDay,
+		Skills:    []SkillRating{},
 	}
 }
 
@@ -46,19 +52,8 @@ func (m Member) GetSkillRatingBySkill(id uint) *SkillRating {
 	return nil
 }
 
-func (m *Member) HasChanges(name string, age int) (*Member, bool) {
-	changes := false
-	if m.Name != name {
-		changes = true
-		m.Name = name
-	}
-
-	if m.Age != age {
-		changes = true
-		m.Age = age
-	}
-
-	return m, changes
+func (m *Member) HasChanges(newM *Member) bool {
+	return m != newM
 }
 
 type memberSort []Member
@@ -69,18 +64,35 @@ func (s memberSort) Less(i, j int) bool { return s[i].ID > s[j].ID }
 func (s memberSort) toMember() []Member { return []Member(s) }
 
 type MemberRequest struct {
-	Name string `json:"name" schema:"name"`
-	Age  int    `json:"age" schema:"age"`
+	Firstname string `json:"name" schema:"name"`
+	Lastname  string `json:"lastname"`
+	Birthday  int    `json:"age" schema:"age"`
+	Email     string `json:"email"`
 }
 
 func (m MemberRequest) ValidateFields() errx.ErrorMap {
 	var validationErr errx.ErrorMap
-	if m.Age < 16 {
+
+	now := time.Now()
+	bDay := time.Unix(int64(m.Birthday), 0)
+
+	diff := bDay.Sub(now)
+
+	if (diff.Hours() / 24 / 365) < 16 {
 		validationErr.Set("age", "Age must be bigger then 16, no kids labor allowed in here...")
 	}
 
-	if len(m.Name) < 3 {
-		validationErr.Set("name", "Name must be >= 3 chars")
+	if len(m.Firstname) < 1 {
+		validationErr.Set("firstname", "Fastname must be >= 1 chars")
 	}
+
+	if len(m.Lastname) < 1 {
+		validationErr.Set("lastname", "Lastname must be >= 1 chars")
+	}
+
+	if _, err := mail.ParseAddress(m.Email); err != nil {
+		validationErr.Set("email", err.Error())
+	}
+
 	return validationErr
 }

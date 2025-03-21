@@ -2,10 +2,10 @@ package entities
 
 type SkillHolder interface {
 	HasSkill(uint) bool
-	GetType() string
-	GetID() uint
+	Entity
 }
 
 type Entity interface {
-	Member | Skill | SkillRating | Team
+	GetType() string
+	GetID() uint
 }
